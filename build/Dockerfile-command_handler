@@ -1,0 +1,5 @@
+FROM golang:latest
+
+ADD command-handler /bin
+
+ENTRYPOINT ["/bin/command-handler"]
