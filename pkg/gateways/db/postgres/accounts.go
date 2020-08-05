@@ -35,7 +35,7 @@ func (r *AccountsRepository) Create(a *entities.Account) error {
 			type,
 			metadata,
 			balance
-		) VALUES($1, $2, $3, $4, $5, $6, $7)
+		) VALUES ($1, $2, $3, $4, $5, $6, $7)
 		returning created_at`,
 		a.ID,
 		a.Owner,

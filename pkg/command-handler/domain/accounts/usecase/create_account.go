@@ -23,13 +23,16 @@ func NewAccountUseCase(log *logrus.Logger, repository accounts.Repository) *Acco
 
 func (a Accounts) CreateAccount(input accounts.AccountInput) error {
 	if input.Type == "" {
-		return errors.New("missing input type")
+		return errors.New("missing 'type' input field")
 	}
 	if input.Owner == "" {
-		return errors.New("missing input owner")
+		return errors.New("missing 'owner' input field")
 	}
 	if input.Name == "" {
-		return errors.New("missing input name")
+		return errors.New("missing 'name' input field")
+	}
+	if input.Metadata == nil {
+		input.Metadata = []string{}
 	}
 
 	accountType := entities.AccountType(input.Type)
