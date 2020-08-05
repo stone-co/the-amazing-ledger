@@ -1,0 +1,23 @@
+version: '3'
+volumes:
+  postgres_data:
+    driver: local
+services:
+  postgres:
+    image: postgres:9.6-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+    network_mode: host
