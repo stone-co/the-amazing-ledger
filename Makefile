@@ -43,3 +43,9 @@ test-coverage:
 	@echo "Rodando testes"
 	@richgo test -failfast -coverprofile=coverage.out ./...
 	@go tool cover -html=coverage.out -o coverage.html
+
+.PHONY: generate
+generate:
+	@echo "Go Generating"
+	go get github.com/kevinburke/go-bindata/...
+	go generate ./...

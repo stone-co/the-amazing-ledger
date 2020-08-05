@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/accounts"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/healthcheck"
 	"github.com/urfave/negroni"
 )
@@ -15,11 +16,15 @@ import (
 type Api struct {
 	log         *logrus.Logger
 	Healthcheck healthcheck.Handler
+	Accounts    *accounts.Handler
 	//	Middleware  common.Middleware
 }
 
-func NewApi(log *logrus.Logger) *Api {
-	return &Api{log: log}
+func NewApi(log *logrus.Logger, accounts *accounts.Handler) *Api {
+	return &Api{
+		log:      log,
+		Accounts: accounts,
+	}
 }
 
 func (a *Api) Start(host, port string) {
@@ -29,6 +34,9 @@ func (a *Api) Start(host, port string) {
 	// Handlers
 	r.HandleFunc("/health", a.Healthcheck.Get).Methods("GET")
 	r.HandleFunc("/metrics", promhttp.Handler().ServeHTTP).Methods("GET")
+
+	//Accounts
+	r.HandleFunc("/accounts", a.Accounts.Create).Methods("POST")
 
 	n := negroni.New(negroni.NewRecovery(), negroni.NewLogger())
 	n.UseHandler(r)
