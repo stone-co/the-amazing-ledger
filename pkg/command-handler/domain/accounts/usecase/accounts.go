@@ -55,3 +55,22 @@ func (a Accounts) CreateAccount(input accounts.AccountInput) error {
 
 	return nil
 }
+
+func (a Accounts) GetAccount(id string) (accounts.Account, error) {
+	account, err := a.repository.Get(&id)
+	if err != nil {
+		var account = accounts.Account{}
+		return account, fmt.Errorf("Can't get account of id %s: %s", id, err.Error())
+	}
+
+	newAccount := accounts.Account{
+		ID:       account.ID,
+		OwnerID:  account.OwnerID,
+		Type:     string(account.Type),
+		Balance:  account.Balance,
+		Owner:    account.Owner,
+		Name:     account.Name,
+		Metadata: account.Metadata,
+	}
+	return newAccount, err
+}
