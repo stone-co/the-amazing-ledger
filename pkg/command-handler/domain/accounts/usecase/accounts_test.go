@@ -3,6 +3,7 @@ package usecase
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -114,4 +115,49 @@ func TestAccountsUseCase_Create(t *testing.T) {
 		assert.Error(t, err, fmt.Sprintf("unknown account type '%s'", input.Type))
 	})
 
+}
+
+func TestAccountsUseCase_Get(t *testing.T) {
+
+	log := logrus.New()
+	mockRepository := &accounts.RepositoryMock{}
+
+	useCase := NewAccountUseCase(log, mockRepository)
+
+	t.Run("Sucessfully returns an account by id", func(t *testing.T) {
+		id := uuid.New().String()
+		now := time.Now()
+		accountOutput := entities.Account{
+			ID:        id,
+			OwnerID:   "owner_id",
+			Type:      entities.AccountType("asset"),
+			Balance:   0,
+			Owner:     "owner",
+			Name:      "name",
+			Metadata:  []string{},
+			CreatedAt: now,
+			UpdatedAt: nil,
+		}
+
+		mockRepository.OnGet = func(id *string) (entities.Account, error) {
+			return entities.Account{
+				ID:        *id,
+				OwnerID:   "owner_id",
+				Type:      entities.AccountType("asset"),
+				Balance:   0,
+				Owner:     "owner",
+				Name:      "name",
+				Metadata:  []string{},
+				CreatedAt: now,
+				UpdatedAt: nil,
+			}, nil
+		}
+
+		account, err := useCase.GetAccount(id)
+		fmt.Printf("accountOutput: %v\n", accountOutput)
+		fmt.Printf("account: %v\n", account)
+
+		assert.Equal(t, nil, err)
+		assert.Equal(t, accountOutput, account)
+	})
 }
