@@ -54,9 +54,19 @@ func (r *AccountsRepository) Create(a *entities.Account) error {
 func (r *AccountsRepository) Get(id *string) (entities.Account, error) {
 	var account = entities.Account{}
 	row := r.db.QueryRow(context.Background(),
-		`SELECT * FROM accounts where id = $1`, id)
+		`SELECT 
+			id, owner, name, owner_id, type, metadata, balance
+		FROM accounts where id = $1`, id)
 
-	err := row.Scan(&account)
+	err := row.Scan(
+		&account.ID,
+		&account.Owner,
+		&account.Name,
+		&account.OwnerID,
+		&account.Type,
+		&account.Metadata,
+		&account.Balance,
+	)
 	return account, err
 }
 
