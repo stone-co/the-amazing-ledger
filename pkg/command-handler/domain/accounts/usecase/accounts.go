@@ -74,3 +74,11 @@ func (a Accounts) GetAccount(id string) (accounts.Account, error) {
 	}
 	return newAccount, err
 }
+
+func (a Accounts) UpdateBalance(id string, balance int) error {
+	if err := a.repository.Update(&id, &balance); err != nil {
+		return fmt.Errorf("can't update balance: %s", err.Error())
+	}
+
+	return nil
+}
