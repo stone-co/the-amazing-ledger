@@ -59,3 +59,12 @@ func (r *AccountsRepository) Get(id *string) (entities.Account, error) {
 	err := row.Scan(&account)
 	return account, err
 }
+
+func (r *AccountsRepository) Update(id *string, balance *int) error {
+	if _, err := r.db.Exec(context.Background(),
+		`UPDATE accounts set balance = $1 where id = $2`, balance, id); err != nil {
+		return err
+	}
+
+	return nil
+}

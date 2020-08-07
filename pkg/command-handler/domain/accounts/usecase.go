@@ -3,6 +3,7 @@ package accounts
 type UseCase interface {
 	CreateAccount(AccountInput) error
 	GetAccount(string) (Account, error)
+	UpdateBalance(string, int) error
 }
 
 type AccountInput struct {
