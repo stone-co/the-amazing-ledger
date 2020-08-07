@@ -23,13 +23,16 @@ func NewAccountUseCase(log *logrus.Logger, repository accounts.Repository) *Acco
 
 func (a Accounts) CreateAccount(input accounts.AccountInput) error {
 	if input.Type == "" {
-		return errors.New("missing input type")
+		return errors.New("missing 'type' input field")
 	}
 	if input.Owner == "" {
-		return errors.New("missing input owner")
+		return errors.New("missing 'owner' input field")
 	}
 	if input.Name == "" {
-		return errors.New("missing input name")
+		return errors.New("missing 'name' input field")
+	}
+	if input.Metadata == nil {
+		input.Metadata = []string{}
 	}
 
 	accountType := entities.AccountType(input.Type)
@@ -51,4 +54,23 @@ func (a Accounts) CreateAccount(input accounts.AccountInput) error {
 	}
 
 	return nil
+}
+
+func (a Accounts) GetAccount(id string) (accounts.Account, error) {
+	account, err := a.repository.Get(&id)
+	if err != nil {
+		var account = accounts.Account{}
+		return account, fmt.Errorf("Can't get account of id %s: %s", id, err.Error())
+	}
+
+	newAccount := accounts.Account{
+		ID:       account.ID,
+		OwnerID:  account.OwnerID,
+		Type:     string(account.Type),
+		Balance:  account.Balance,
+		Owner:    account.Owner,
+		Name:     account.Name,
+		Metadata: account.Metadata,
+	}
+	return newAccount, err
 }

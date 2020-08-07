@@ -4,4 +4,5 @@ import "github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/accoun
 
 type Repository interface {
 	Create(*entities.Account) error
+	Get(*string) (entities.Account, error)
 }

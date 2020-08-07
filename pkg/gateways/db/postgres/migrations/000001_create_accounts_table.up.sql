@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS accounts (
   metadata _text NOT NULL,
   balance int NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updates_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE,
 
-  CONSTRAINT positive_balance CHECK (balance > 0)
+  CONSTRAINT positive_balance CHECK (balance >= 0)
 );

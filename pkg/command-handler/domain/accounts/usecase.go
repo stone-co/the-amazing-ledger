@@ -2,6 +2,7 @@ package accounts
 
 type UseCase interface {
 	CreateAccount(AccountInput) error
+	GetAccount(string) (Account, error)
 }
 
 type AccountInput struct {
@@ -13,6 +14,7 @@ type AccountInput struct {
 }
 
 type Account struct {
+	ID       string   `json:"id"`
 	OwnerID  string   `json:"owner_id"`
 	Type     string   `json:"type"`
 	Balance  int      `json:"balance"`

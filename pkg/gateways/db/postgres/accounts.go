@@ -35,7 +35,7 @@ func (r *AccountsRepository) Create(a *entities.Account) error {
 			type,
 			metadata,
 			balance
-		) VALUES($1, $2, $3, $4, $5, $6, $7)
+		) VALUES ($1, $2, $3, $4, $5, $6, $7)
 		returning created_at`,
 		a.ID,
 		a.Owner,
@@ -49,4 +49,13 @@ func (r *AccountsRepository) Create(a *entities.Account) error {
 	}
 
 	return nil
+}
+
+func (r *AccountsRepository) Get(id *string) (entities.Account, error) {
+	var account = entities.Account{}
+	row := r.db.QueryRow(context.Background(),
+		`SELECT * FROM accounts where id = $1`, id)
+
+	err := row.Scan(&account)
+	return account, err
 }

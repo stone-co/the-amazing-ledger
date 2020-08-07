@@ -40,7 +40,7 @@ metalint:
 
 .PHONY: test-coverage
 test-coverage:
-	@echo "Rodando testes"
+	@echo "Running tests"
 	@richgo test -failfast -coverprofile=coverage.out ./...
 	@go tool cover -html=coverage.out -o coverage.html
 
