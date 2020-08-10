@@ -10,20 +10,23 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/accounts"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/healthcheck"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/transactions"
 	"github.com/urfave/negroni"
 )
 
 type Api struct {
-	log         *logrus.Logger
-	Healthcheck healthcheck.Handler
-	Accounts    *accounts.Handler
+	log          *logrus.Logger
+	Healthcheck  healthcheck.Handler
+	Accounts     *accounts.Handler
+	Transactions *transactions.Handler
 	//	Middleware  common.Middleware
 }
 
-func NewApi(log *logrus.Logger, accounts *accounts.Handler) *Api {
+func NewApi(log *logrus.Logger, accounts *accounts.Handler, transactions *transactions.Handler) *Api {
 	return &Api{
-		log:      log,
-		Accounts: accounts,
+		log:          log,
+		Accounts:     accounts,
+		Transactions: transactions,
 	}
 }
 
@@ -37,6 +40,9 @@ func (a *Api) Start(host, port string) {
 
 	//Accounts
 	r.HandleFunc("/accounts", a.Accounts.Create).Methods("POST")
+
+	//Transactions
+	r.HandleFunc("/operations", a.Transactions.Create).Methods("POST")
 
 	n := negroni.New(negroni.NewRecovery(), negroni.NewLogger())
 	n.UseHandler(r)

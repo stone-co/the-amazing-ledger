@@ -4,11 +4,13 @@ import (
 	"fmt"
 
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/accounts/usecase"
+	accountUsecase "github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/accounts/usecase"
+	transactionUsecase "github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/transactions/usecase"
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/db/postgres"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/accounts"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/transactions"
 )
 
 func main() {
@@ -31,10 +33,14 @@ func main() {
 	}
 
 	accountsRepository := postgres.NewAccountsRepository(conn, log)
-	accountsUseCase := usecase.NewAccountUseCase(log, accountsRepository)
+	accountsUseCase := accountUsecase.NewAccountUseCase(log, accountsRepository)
 	accountsHandler := accounts.NewAccountsHandler(log, accountsUseCase)
 
+	transactionsRepository := postgres.NewTransactionsRepository(conn, log)
+	transactionsUseCase := transactionUsecase.NewTransactionUseCase(log, transactionsRepository)
+	transactionsHandler := transactions.NewTransactionsHandler(log, transactionsUseCase)
+
 	// Starting gateway http API
-	api := http.NewApi(log, accountsHandler)
+	api := http.NewApi(log, accountsHandler, transactionsHandler)
 	api.Start("0.0.0.0", cfg.API.Port)
 }
