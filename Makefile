@@ -24,6 +24,11 @@ build: compile
 	@echo "==> Building Docker CommandHandler image"
 	@docker build -t ${REGISTRY}/${NAME}-${NAME_COMMAND_HANDLER}:${VERSION} build -f build/Dockerfile-command_handler
 
+.PHONY: push
+push:
+	@echo "==>Push Docker CommandHandler image"
+	@docker push ${REGISTRY}/${NAME}-${NAME_COMMAND_HANDLER}:${VERSION}
+
 .PHONY: clean
 clean:
 	@echo "==> Cleaning releases"

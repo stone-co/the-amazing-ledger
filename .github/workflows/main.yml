@@ -1,0 +1,50 @@
+name: Main
+on:
+  - push
+  - pull_request
+jobs:
+  Test:
+    name: Test job
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.14
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.14
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Download dependencies
+      run: go mod download
+
+    - name: Test
+      run: go get -u github.com/kyoh86/richgo && export PATH=$PATH:$(go env GOPATH)/bin && make test-coverage
+
+  Lint:
+    name: Lint job
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-go@v1
+      with:
+        go-version: 1.14
+    - uses: actions/checkout@v2
+    - run: make metalint
+
+  Build:
+    name: Build Job
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Go 1.14
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.14
+
+    - name: Download dependencies
+      run: go mod download
+
+    - name: Compile API
+      run: make compile

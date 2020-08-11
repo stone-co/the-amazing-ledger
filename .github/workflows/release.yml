@@ -1,0 +1,41 @@
+name: Release
+on:
+  push:
+    tags:
+      - v*.*.*
+    branches:
+      - master
+
+jobs:
+  Build:
+    name: Build Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.14
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.14
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: go mod vendor
+
+      - name: Set env for tags
+        if: github.ref != 'refs/heads/master'
+        run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF:10}
+
+      - name: Set env for master
+        if: github.ref == 'refs/heads/master'
+        run: echo ::set-env name=RELEASE_VERSION::"latest"
+
+      - name: Compile and Build Docker Image
+        run: make REGISTRY=stone-co VERSION=$RELEASE_VERSION build
+
+      - name: Publish
+        uses: azure/docker-login@v1
+        with:
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: docker push stone-co/the-amazing-ledger:$RELEASE_VERSION
