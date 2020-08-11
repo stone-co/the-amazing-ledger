@@ -51,10 +51,10 @@ func (r *AccountsRepository) Create(a *entities.Account) error {
 	return nil
 }
 
-func (r *AccountsRepository) Get(id *string) (entities.Account, error) {
+func (r *AccountsRepository) Get(id string) (entities.Account, error) {
 	var account = entities.Account{}
 	row := r.db.QueryRow(context.Background(),
-		`SELECT 
+		`SELECT
 			id, owner, name, owner_id, type, metadata, balance
 		FROM accounts where id = $1`, id)
 
@@ -70,7 +70,7 @@ func (r *AccountsRepository) Get(id *string) (entities.Account, error) {
 	return account, err
 }
 
-func (r *AccountsRepository) Update(id *string, balance *int) error {
+func (r *AccountsRepository) Update(id string, balance int) error {
 	if _, err := r.db.Exec(context.Background(),
 		`UPDATE accounts set balance = $1 where id = $2`, balance, id); err != nil {
 		return err

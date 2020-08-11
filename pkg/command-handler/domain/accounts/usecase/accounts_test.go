@@ -134,30 +134,24 @@ func TestAccountsUseCase_Get(t *testing.T) {
 			Balance:   0,
 			Owner:     "owner",
 			Name:      "name",
-			Metadata:  []string{},
+			Metadata:  []string{"teste"},
 			CreatedAt: now,
 			UpdatedAt: nil,
 		}
 
-		mockRepository.OnGet = func(id *string) (entities.Account, error) {
-			return entities.Account{
-				ID:        *id,
-				OwnerID:   "owner_id",
-				Type:      entities.AccountType("asset"),
-				Balance:   0,
-				Owner:     "owner",
-				Name:      "name",
-				Metadata:  []string{},
-				CreatedAt: now,
-				UpdatedAt: nil,
-			}, nil
+		mockRepository.OnGet = func(id string) (entities.Account, error) {
+			return accountOutput, nil
 		}
 
 		account, err := useCase.GetAccount(id)
-		fmt.Printf("accountOutput: %v\n", accountOutput)
-		fmt.Printf("account: %v\n", account)
 
 		assert.Equal(t, nil, err)
-		assert.Equal(t, accountOutput, account)
+		assert.Equal(t, accountOutput.ID, account.ID)
+		assert.Equal(t, accountOutput.OwnerID, account.OwnerID)
+		assert.Equal(t, string(accountOutput.Type), account.Type)
+		assert.Equal(t, accountOutput.Balance, account.Balance)
+		assert.Equal(t, accountOutput.Name, account.Name)
+		assert.Equal(t, accountOutput.Owner, account.Owner)
+		assert.Equal(t, accountOutput.Metadata[0], account.Metadata[0])
 	})
 }
