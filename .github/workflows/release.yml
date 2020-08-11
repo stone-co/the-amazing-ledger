@@ -4,7 +4,7 @@ on:
     tags:
       - v*.*.*
     branches:
-      - master
+      - main
 
 jobs:
   Build:
@@ -23,11 +23,11 @@ jobs:
         run: go mod vendor
 
       - name: Set env for tags
-        if: github.ref != 'refs/heads/master'
+        if: github.ref != 'refs/heads/main'
         run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF:10}
 
-      - name: Set env for master
-        if: github.ref == 'refs/heads/master'
+      - name: Set env for main
+        if: github.ref == 'refs/heads/main'
         run: echo ::set-env name=RELEASE_VERSION::"latest"
 
       - name: Compile and Build Docker Image
@@ -38,4 +38,4 @@ jobs:
         with:
           username: ${{ secrets.REGISTRY_USER }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-      - run: docker push stone-co/the-amazing-ledger:$RELEASE_VERSION
+      - run: make REGISTRY=stone-co VERSION=$RELEASE_VERSION push
