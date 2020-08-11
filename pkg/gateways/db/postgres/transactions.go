@@ -32,16 +32,14 @@ func (r *TransactionsRepository) Create(t *entities.Transaction) error {
 			account_id,
 			operation_id,
 			request_id,
-			type,
 			amount,
 			balance_after
-		) VALUES ($1, $2, $3, $4, $5, $6, $7)
+		) VALUES ($1, $2, $3, $4, $5, $6)
 		returning created_at`,
 		t.ID,
 		t.AccountID,
 		t.OperationID,
 		t.RequestID,
-		t.Type,
 		t.Amount,
 		t.BalanceAfter,
 	).Scan(&t.CreatedAt); err != nil {

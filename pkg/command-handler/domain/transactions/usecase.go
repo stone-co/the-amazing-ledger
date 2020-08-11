@@ -1,30 +1,15 @@
 package transactions
 
 type UseCase interface {
-	CreateOperation(OperationInput) error
+	CreateOperation([]TransactionInput) error
 }
 
 type TransactionInput struct {
-	AccountType     string
-	AccountOwnerID  string
-	AccountOwner    string
-	AccountName     string
-	AccountMetadata []string
-	RequestID       string
-	TransactionType string
-	Amount          int
+	AccountType     string   `json:"account_type"`
+	AccountOwnerID  string   `json:"account_owner_id"`
+	AccountOwner    string   `json:"account_owner"`
+	AccountName     string   `json:"account_name"`
+	AccountMetadata []string `json:"account_metadata"`
+	RequestID       string   `json:"request_id"`
+	Amount          int      `json:"amount"`
 }
-
-type OperationInput struct {
-	Operation []TransactionInput
-}
-
-// type Transaction struct {
-// 	ID       string   `json:"id"`
-// 	OwnerID  string   `json:"owner_id"`
-// 	Type     string   `json:"type"`
-// 	Balance  int      `json:"balance"`
-// 	Owner    string   `json:"owner"`
-// 	Name     string   `json:"name"`
-// 	Metadata []string `json:"metadata"`
-// }

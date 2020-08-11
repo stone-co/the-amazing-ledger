@@ -13,7 +13,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		"handler": "CreateOperation",
 	})
 
-	var input transactions.OperationInput
+	var input []transactions.TransactionInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		log.WithError(err).Error("can't decode request body into struct")
 		w.WriteHeader(http.StatusInternalServerError)

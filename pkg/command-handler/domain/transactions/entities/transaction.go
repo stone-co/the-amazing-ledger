@@ -2,11 +2,6 @@ package entities
 
 import "time"
 
-const (
-	Credit TransactionType = "credit"
-	Debit  TransactionType = "debit"
-)
-
 type TransactionType string
 
 type Transaction struct {
@@ -14,7 +9,6 @@ type Transaction struct {
 	AccountID    string
 	OperationID  string
 	RequestID    string
-	Type         TransactionType
 	Amount       int
 	BalanceAfter int
 	CreatedAt    time.Time
