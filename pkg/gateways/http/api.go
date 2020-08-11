@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/apex/log"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -48,7 +47,7 @@ func (a *Api) Start(host, port string) {
 		Addr:    endpoint,
 	}
 
-	log.Infof("starting API at %s", endpoint)
+	a.log.Infof("starting API at %s", endpoint)
 
 	if err := srv.ListenAndServe(); err != nil {
 		a.log.Fatalf("can't run server: %s", err.Error())

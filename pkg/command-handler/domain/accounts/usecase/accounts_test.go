@@ -19,7 +19,7 @@ func TestAccountsUseCase_Create(t *testing.T) {
 
 	useCase := NewAccountUseCase(log, mockRepository)
 
-	t.Run("Sucessfully creates a sample account with minimum inputs", func(t *testing.T) {
+	t.Run("Successfully creates a sample account with minimum inputs", func(t *testing.T) {
 		input := accounts.AccountInput{
 			Type:  "asset",
 			Owner: "owner",
@@ -35,7 +35,7 @@ func TestAccountsUseCase_Create(t *testing.T) {
 		assert.Equal(t, nil, err)
 	})
 
-	t.Run("Sucessfully creates a sample account with a complete input", func(t *testing.T) {
+	t.Run("Successfully creates a sample account with a complete input", func(t *testing.T) {
 
 		input := accounts.AccountInput{
 			Type:     "asset",
@@ -124,7 +124,7 @@ func TestAccountsUseCase_Get(t *testing.T) {
 
 	useCase := NewAccountUseCase(log, mockRepository)
 
-	t.Run("Sucessfully returns an account by id", func(t *testing.T) {
+	t.Run("Successfully returns an account by id", func(t *testing.T) {
 		id := uuid.New().String()
 		now := time.Now()
 		accountOutput := entities.Account{
