@@ -2,9 +2,11 @@ package usecase
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/transactions"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/transactions/entities"
 )
 
 type Transactions struct {
@@ -21,6 +23,7 @@ func NewTransactionUseCase(log *logrus.Logger, repository transactions.Repositor
 
 func (t Transactions) CreateOperation(input []transactions.TransactionInput) error {
 	var err error = nil
+	var operation []entities.Transaction
 
 	// check for empty or single element slice
 	if len(input) == 0 {
@@ -31,7 +34,7 @@ func (t Transactions) CreateOperation(input []transactions.TransactionInput) err
 	}
 
 	var sumAmount int = 0
-	// check for required fields
+	// check for required fields and build entity
 	for _, t := range input {
 		if t.AccountType == "" {
 			err = errors.New("missing 'account_type' input field")
@@ -53,6 +56,11 @@ func (t Transactions) CreateOperation(input []transactions.TransactionInput) err
 			break
 		}
 		sumAmount += t.Amount
+		transaction := entities.Transaction{
+			RequestID:   t.RequestID,
+			Amount:      t.Amount,
+		}
+		operation = append(operation, transaction)
 	}
 
 	// check for zero-sum
@@ -60,7 +68,12 @@ func (t Transactions) CreateOperation(input []transactions.TransactionInput) err
 		err = errors.New("sum of all amounts must be 0!")
 	}
 
-	// if err := t.repository.Create()
+	// check for valid accounts
+
+	// insert operation atomically in database
+	if err := t.repository.Create(&operation); err != nil {
+		return fmt.Errorf("can't create transactions: %s", err.Error())
+	}
 
 	return err
 }

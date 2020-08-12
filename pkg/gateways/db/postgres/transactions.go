@@ -24,9 +24,13 @@ func NewTransactionsRepository(db *pgxpool.Pool, log *logrus.Logger) *Transactio
 	}
 }
 
-func (r *TransactionsRepository) Create(t *entities.Transaction) error {
-	t.ID = uuid.New().String()
-	if err := r.db.QueryRow(context.Background(), `INSERT INTO
+func (r *TransactionsRepository) Create(o *[]entities.Transaction) error {
+	var err error = nil
+	operationId := uuid.New().String()
+
+	for _, t := range *o {
+		transactionId := uuid.New().String()
+		if err := r.db.QueryRow(context.Background(), `INSERT INTO
 		transactions (
 			id,
 			account_id,
@@ -36,15 +40,16 @@ func (r *TransactionsRepository) Create(t *entities.Transaction) error {
 			balance_after
 		) VALUES ($1, $2, $3, $4, $5, $6)
 		returning created_at`,
-		t.ID,
-		t.AccountID,
-		t.OperationID,
-		t.RequestID,
-		t.Amount,
-		t.BalanceAfter,
-	).Scan(&t.CreatedAt); err != nil {
-		return err
+			transactionId,
+			t.AccountID,
+			operationId,
+			t.RequestID,
+			t.Amount,
+			t.BalanceAfter,
+		).Scan(&t.CreatedAt); err != nil {
+			break
+		}
 	}
 
-	return nil
+	return err
 }
