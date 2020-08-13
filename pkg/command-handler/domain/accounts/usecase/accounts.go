@@ -14,7 +14,7 @@ type Accounts struct {
 	repository accounts.Repository
 }
 
-func NewAccountUseCase(log *logrus.Logger, repository accounts.Repository) *Accounts {
+func NewAccountsUseCase(log *logrus.Logger, repository accounts.Repository) *Accounts {
 	return &Accounts{
 		log:        log,
 		repository: repository,

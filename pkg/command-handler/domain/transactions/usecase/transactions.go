@@ -14,7 +14,7 @@ type Transactions struct {
 	repository transactions.Repository
 }
 
-func NewTransactionUseCase(log *logrus.Logger, repository transactions.Repository) *Transactions {
+func NewTransactionsUseCase(log *logrus.Logger, repository transactions.Repository) *Transactions {
 	return &Transactions{
 		log:        log,
 		repository: repository,
@@ -57,8 +57,8 @@ func (t Transactions) CreateOperation(input []transactions.TransactionInput) err
 		}
 		sumAmount += t.Amount
 		transaction := entities.Transaction{
-			RequestID:   t.RequestID,
-			Amount:      t.Amount,
+			RequestID: t.RequestID,
+			Amount:    t.Amount,
 		}
 		operation = append(operation, transaction)
 	}

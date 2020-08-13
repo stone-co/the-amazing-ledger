@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/sirupsen/logrus"
-	accountUsecase "github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/accounts/usecase"
-	transactionUsecase "github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/transactions/usecase"
+	accountsUsecase "github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/accounts/usecase"
+	transactionsUsecase "github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/transactions/usecase"
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/db/postgres"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http"
@@ -33,11 +33,11 @@ func main() {
 	}
 
 	accountsRepository := postgres.NewAccountsRepository(conn, log)
-	accountsUseCase := accountUsecase.NewAccountUseCase(log, accountsRepository)
+	accountsUseCase := accountsUsecase.NewAccountsUseCase(log, accountsRepository)
 	accountsHandler := accounts.NewAccountsHandler(log, accountsUseCase)
 
 	transactionsRepository := postgres.NewTransactionsRepository(conn, log)
-	transactionsUseCase := transactionUsecase.NewTransactionUseCase(log, transactionsRepository)
+	transactionsUseCase := transactionsUsecase.NewTransactionsUseCase(log, transactionsRepository)
 	transactionsHandler := transactions.NewTransactionsHandler(log, transactionsUseCase)
 
 	// Starting gateway http API

@@ -17,7 +17,7 @@ func TestAccountsUseCase_Create(t *testing.T) {
 	log := logrus.New()
 	mockRepository := &accounts.RepositoryMock{}
 
-	useCase := NewAccountUseCase(log, mockRepository)
+	useCase := NewAccountsUseCase(log, mockRepository)
 
 	t.Run("Successfully creates a sample account with minimum inputs", func(t *testing.T) {
 		input := accounts.AccountInput{
@@ -122,7 +122,7 @@ func TestAccountsUseCase_Get(t *testing.T) {
 	log := logrus.New()
 	mockRepository := &accounts.RepositoryMock{}
 
-	useCase := NewAccountUseCase(log, mockRepository)
+	useCase := NewAccountsUseCase(log, mockRepository)
 
 	t.Run("Successfully returns an account by id", func(t *testing.T) {
 		id := uuid.New().String()
