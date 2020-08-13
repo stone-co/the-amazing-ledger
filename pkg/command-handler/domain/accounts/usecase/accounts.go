@@ -57,7 +57,7 @@ func (a Accounts) CreateAccount(input accounts.AccountInput) error {
 }
 
 func (a Accounts) GetAccount(id string) (accounts.Account, error) {
-	account, err := a.repository.Get(&id)
+	account, err := a.repository.Get(id)
 	if err != nil {
 		var account = accounts.Account{}
 		return account, fmt.Errorf("Can't get account of id %s: %s", id, err.Error())
@@ -76,7 +76,7 @@ func (a Accounts) GetAccount(id string) (accounts.Account, error) {
 }
 
 func (a Accounts) UpdateBalance(id string, balance int) error {
-	if err := a.repository.Update(&id, &balance); err != nil {
+	if err := a.repository.Update(id, balance); err != nil {
 		return fmt.Errorf("can't update balance: %s", err.Error())
 	}
 
