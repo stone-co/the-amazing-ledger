@@ -21,7 +21,7 @@ func NewEntriesUseCase(log *logrus.Logger, repository entries.Repository) *Entri
 	}
 }
 
-func (t Entries) CreateTransaction(input []entries.EntryInput) error {
+func (e Entries) CreateTransaction(input []entries.EntryInput) error {
 	var err error = nil
 	transaction := make([]entities.Entry, len(input))
 
@@ -35,30 +35,30 @@ func (t Entries) CreateTransaction(input []entries.EntryInput) error {
 
 	var sumAmount int = 0
 	// check for required fields and build entity
-	for i, t := range input {
-		if t.AccountType == "" {
+	for i, e := range input {
+		if e.AccountType == "" {
 			err = errors.New("missing 'account_type' input field")
 			break
 		}
-		if t.AccountOwner == "" {
+		if e.AccountOwner == "" {
 			err = errors.New("missing 'account_owner' input field")
 			break
 		}
-		if t.AccountName == "" {
+		if e.AccountName == "" {
 			err = errors.New("missing 'account_name' input field")
 			break
 		}
-		if t.AccountMetadata == nil {
-			t.AccountMetadata = []string{}
+		if e.AccountMetadata == nil {
+			e.AccountMetadata = []string{}
 		}
-		if t.Amount == 0 {
+		if e.Amount == 0 {
 			err = errors.New("amount cannot be 0")
 			break
 		}
-		sumAmount += t.Amount
+		sumAmount += e.Amount
 		entry := entities.Entry{
-			RequestID: t.RequestID,
-			Amount:    t.Amount,
+			RequestID: e.RequestID,
+			Amount:    e.Amount,
 		}
 		transaction[i] = entry
 	}
@@ -71,7 +71,7 @@ func (t Entries) CreateTransaction(input []entries.EntryInput) error {
 	//TO-DO check for valid accounts
 
 	// insert transaction atomically in database
-	if create_err := t.repository.Create(&transaction); create_err != nil {
+	if create_err := e.repository.Create(&transaction); create_err != nil {
 		return fmt.Errorf("can't create entries: %s", create_err.Error())
 	}
 
