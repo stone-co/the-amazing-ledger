@@ -1,10 +1,10 @@
-package transactions
+package entries
 
 type UseCase interface {
-	CreateOperation([]TransactionInput) error
+	CreateTransaction([]EntryInput) error
 }
 
-type TransactionInput struct {
+type EntryInput struct {
 	AccountType     string   `json:"account_type"`
 	AccountOwnerID  string   `json:"account_owner_id"`
 	AccountOwner    string   `json:"account_owner"`

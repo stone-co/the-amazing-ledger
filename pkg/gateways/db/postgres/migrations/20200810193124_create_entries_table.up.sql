@@ -1,7 +1,7 @@
-create table if not exists transactions (
+create table if not exists entries (
     id uuid primary key,
 	account_id text not null,
-	operation_id text not null,
+	transaction_id text not null,
 	request_id text null,
 	amount int not null,
 	balance_after int null,

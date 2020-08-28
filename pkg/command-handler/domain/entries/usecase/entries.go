@@ -5,32 +5,32 @@ import (
 	"fmt"
 
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/transactions"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/transactions/entities"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/entries"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/entries/entities"
 )
 
-type Transactions struct {
+type Entries struct {
 	log        *logrus.Logger
-	repository transactions.Repository
+	repository entries.Repository
 }
 
-func NewTransactionsUseCase(log *logrus.Logger, repository transactions.Repository) *Transactions {
-	return &Transactions{
+func NewEntriesUseCase(log *logrus.Logger, repository entries.Repository) *Entries {
+	return &Entries{
 		log:        log,
 		repository: repository,
 	}
 }
 
-func (t Transactions) CreateOperation(input []transactions.TransactionInput) error {
+func (t Entries) CreateTransaction(input []entries.EntryInput) error {
 	var err error = nil
-	operation := make([]entities.Transaction, len(input))
+	transaction := make([]entities.Entry, len(input))
 
 	// check for empty or single element slice
 	if len(input) == 0 {
 		return errors.New("empty input")
 	}
 	if len(input) == 1 {
-		return errors.New("operation needs at least 2 transactions")
+		return errors.New("transaction needs at least 2 entries")
 	}
 
 	var sumAmount int = 0
@@ -56,11 +56,11 @@ func (t Transactions) CreateOperation(input []transactions.TransactionInput) err
 			break
 		}
 		sumAmount += t.Amount
-		transaction := entities.Transaction{
+		entry := entities.Entry{
 			RequestID: t.RequestID,
 			Amount:    t.Amount,
 		}
-		operation[i] = transaction
+		transaction[i] = entry
 	}
 
 	// check for zero-sum
@@ -70,9 +70,9 @@ func (t Transactions) CreateOperation(input []transactions.TransactionInput) err
 
 	//TO-DO check for valid accounts
 
-	// insert operation atomically in database
-	if create_err := t.repository.Create(&operation); create_err != nil {
-		return fmt.Errorf("can't create transactions: %s", create_err.Error())
+	// insert transaction atomically in database
+	if create_err := t.repository.Create(&transaction); create_err != nil {
+		return fmt.Errorf("can't create entries: %s", create_err.Error())
 	}
 
 	return err
