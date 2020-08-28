@@ -16,7 +16,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	var input []entries.EntryInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		log.WithError(err).Error("can't decode request body into struct")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
