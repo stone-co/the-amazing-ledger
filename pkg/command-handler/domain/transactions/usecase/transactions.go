@@ -23,7 +23,7 @@ func NewTransactionsUseCase(log *logrus.Logger, repository transactions.Reposito
 
 func (t Transactions) CreateOperation(input []transactions.TransactionInput) error {
 	var err error = nil
-	var operation []entities.Transaction
+	operation := make([]entities.Transaction, len(input))
 
 	// check for empty or single element slice
 	if len(input) == 0 {
@@ -35,7 +35,7 @@ func (t Transactions) CreateOperation(input []transactions.TransactionInput) err
 
 	var sumAmount int = 0
 	// check for required fields and build entity
-	for _, t := range input {
+	for i, t := range input {
 		if t.AccountType == "" {
 			err = errors.New("missing 'account_type' input field")
 			break
@@ -60,7 +60,7 @@ func (t Transactions) CreateOperation(input []transactions.TransactionInput) err
 			RequestID: t.RequestID,
 			Amount:    t.Amount,
 		}
-		operation = append(operation, transaction)
+		operation[i] = transaction
 	}
 
 	// check for zero-sum
@@ -68,11 +68,11 @@ func (t Transactions) CreateOperation(input []transactions.TransactionInput) err
 		err = errors.New("sum of all amounts must be 0!")
 	}
 
-	// check for valid accounts
+	//TO-DO check for valid accounts
 
 	// insert operation atomically in database
-	if err := t.repository.Create(&operation); err != nil {
-		return fmt.Errorf("can't create transactions: %s", err.Error())
+	if create_err := t.repository.Create(&operation); create_err != nil {
+		return fmt.Errorf("can't create transactions: %s", create_err.Error())
 	}
 
 	return err

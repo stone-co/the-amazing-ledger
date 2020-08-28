@@ -30,7 +30,7 @@ func (r *TransactionsRepository) Create(o *[]entities.Transaction) error {
 
 	for _, t := range *o {
 		transactionId := uuid.New().String()
-		if err := r.db.QueryRow(context.Background(), `INSERT INTO
+		if err = r.db.QueryRow(context.Background(), `INSERT INTO
 		transactions (
 			id,
 			account_id,
