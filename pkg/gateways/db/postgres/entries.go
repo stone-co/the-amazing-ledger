@@ -25,7 +25,6 @@ func NewEntriesRepository(db *pgxpool.Pool, log *logrus.Logger) *EntriesReposito
 }
 
 func (r *EntriesRepository) Create(o *[]entities.Entry) error {
-	var err error = nil
 	transactionId := uuid.New().String()
 
 	tx, err := r.db.Begin(context.Background())
