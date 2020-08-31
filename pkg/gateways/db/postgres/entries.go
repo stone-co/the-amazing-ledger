@@ -28,9 +28,14 @@ func (r *EntriesRepository) Create(o *[]entities.Entry) error {
 	var err error = nil
 	transactionId := uuid.New().String()
 
+	tx, err := r.db.Begin(context.Background())
+	if err != nil {
+		return err
+	}
+
 	for _, e := range *o {
 		entryId := uuid.New().String()
-		if err = r.db.QueryRow(context.Background(), `INSERT INTO
+		if err = tx.QueryRow(context.Background(), `INSERT INTO
 		entries (
 			id,
 			account_id,
@@ -47,8 +52,13 @@ func (r *EntriesRepository) Create(o *[]entities.Entry) error {
 			e.Amount,
 			e.BalanceAfter,
 		).Scan(&e.CreatedAt); err != nil {
-			break
+			return err
 		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
 	}
 
 	return err
