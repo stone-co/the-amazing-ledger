@@ -17,12 +17,14 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		log.WithError(err).Error("can't decode request body into struct")
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
 
 	if err := h.UseCase.CreateTransaction(input); err != nil {
 		log.WithError(err).Error("error creating transaction")
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
 		return
 	}
 
