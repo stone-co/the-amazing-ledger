@@ -38,22 +38,22 @@ func (e Entries) CreateTransaction(input []entries.EntryInput) error {
 	for i, e := range input {
 		if e.AccountType == "" {
 			err = errors.New("missing 'account_type' input field")
-			break
+			return err
 		}
 		if e.AccountOwner == "" {
 			err = errors.New("missing 'account_owner' input field")
-			break
+			return err
 		}
 		if e.AccountName == "" {
 			err = errors.New("missing 'account_name' input field")
-			break
+			return err
 		}
 		if e.AccountMetadata == nil {
 			e.AccountMetadata = []string{}
 		}
 		if e.Amount == 0 {
 			err = errors.New("amount cannot be 0")
-			break
+			return err
 		}
 		sumAmount += e.Amount
 		entry := entities.Entry{
@@ -65,7 +65,7 @@ func (e Entries) CreateTransaction(input []entries.EntryInput) error {
 
 	// check for zero-sum
 	if sumAmount != 0 {
-		err = errors.New("sum of all amounts must be 0!")
+		return errors.New("sum of all amounts must be 0!")
 	}
 
 	//TO-DO check for valid accounts
