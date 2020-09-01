@@ -75,6 +75,25 @@ func (a Accounts) GetAccount(id string) (accounts.Account, error) {
 	return newAccount, err
 }
 
+func (a Accounts) SearchAccount(accountType string, accountOwnerID string, accountOwner string, accountName string, accountMetadata string) (accounts.Account, error) {
+	account, err := a.repository.Search(accountType, accountOwnerID, accountOwner, accountName, accountMetadata)
+	if err != nil {
+		var account = accounts.Account{}
+		return account, fmt.Errorf("Can't get account: %s", err.Error())
+	}
+
+	newAccount := accounts.Account{
+		ID:       account.ID,
+		OwnerID:  account.OwnerID,
+		Type:     string(account.Type),
+		Balance:  account.Balance,
+		Owner:    account.Owner,
+		Name:     account.Name,
+		Metadata: account.Metadata,
+	}
+	return newAccount, err
+}
+
 func (a Accounts) UpdateBalance(id string, balance int) error {
 	if err := a.repository.Update(id, balance); err != nil {
 		return fmt.Errorf("can't update balance: %s", err.Error())

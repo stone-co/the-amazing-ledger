@@ -70,6 +70,36 @@ func (r *AccountsRepository) Get(id string) (entities.Account, error) {
 	return account, err
 }
 
+func (r *AccountsRepository) Search(accountType string, accountOwnerID string, accountOwner string, accountName string, accountMetadata string) (entities.Account, error) {
+	var account = entities.Account{}
+	row := r.db.QueryRow(context.Background(),
+		`select
+			id, owner, name, owner_id, type, metadata, balance
+		from accounts 
+		where 
+		accountType = $1,
+		and accountOwnerID = $2,
+		and accountOwner = $3,
+		and accountName = $4,
+		and accountMetadata = $5`,
+		accountType,
+		accountOwnerID,
+		accountOwner,
+		accountName,
+		accountMetadata)
+
+	err := row.Scan(
+		&account.ID,
+		&account.Owner,
+		&account.Name,
+		&account.OwnerID,
+		&account.Type,
+		&account.Metadata,
+		&account.Balance,
+	)
+	return account, err
+}
+
 func (r *AccountsRepository) Update(id string, balance int) error {
 	if _, err := r.db.Exec(context.Background(),
 		`UPDATE accounts set balance = $1 where id = $2`, balance, id); err != nil {
