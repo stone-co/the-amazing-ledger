@@ -6,25 +6,25 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/accounts"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/accounts/entities"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
-var _ accounts.Repository = &AccountsRepository{}
+var _ ledger.Repository = &LedgerRepository{}
 
-type AccountsRepository struct {
+type LedgerRepository struct {
 	db  *pgxpool.Pool
 	log *logrus.Logger
 }
 
-func NewAccountsRepository(db *pgxpool.Pool, log *logrus.Logger) *AccountsRepository {
-	return &AccountsRepository{
+func NewLedgerRepository(db *pgxpool.Pool, log *logrus.Logger) *LedgerRepository {
+	return &LedgerRepository{
 		db:  db,
 		log: log,
 	}
 }
 
-func (r *AccountsRepository) Create(a *entities.Account) error {
+func (r *LedgerRepository) CreateAccount(a *entities.Account) error {
 	a.ID = uuid.New().String()
 	if err := r.db.QueryRow(context.Background(), `INSERT INTO
 		accounts (
@@ -51,7 +51,7 @@ func (r *AccountsRepository) Create(a *entities.Account) error {
 	return nil
 }
 
-func (r *AccountsRepository) Get(id string) (entities.Account, error) {
+func (r *LedgerRepository) GetAccount(id string) (entities.Account, error) {
 	var account = entities.Account{}
 	row := r.db.QueryRow(context.Background(),
 		`SELECT
@@ -70,7 +70,7 @@ func (r *AccountsRepository) Get(id string) (entities.Account, error) {
 	return account, err
 }
 
-func (r *AccountsRepository) Search(accountType string, accountOwnerID string, accountOwner string, accountName string, accountMetadata string) (entities.Account, error) {
+func (r *LedgerRepository) SearchAccount(accountType string, accountOwnerID string, accountOwner string, accountName string, accountMetadata string) (entities.Account, error) {
 	var account = entities.Account{}
 	row := r.db.QueryRow(context.Background(),
 		`select
@@ -100,11 +100,50 @@ func (r *AccountsRepository) Search(accountType string, accountOwnerID string, a
 	return account, err
 }
 
-func (r *AccountsRepository) Update(id string, balance int) error {
+func (r *LedgerRepository) UpdateBalance(id string, balance int) error {
 	if _, err := r.db.Exec(context.Background(),
 		`UPDATE accounts set balance = $1 where id = $2`, balance, id); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (r *LedgerRepository) CreateTransaction(o *[]entities.Entry) error {
+	transactionId := uuid.New().String()
+
+	tx, err := r.db.Begin(context.Background())
+	if err != nil {
+		return err
+	}
+
+	for _, e := range *o {
+		entryId := uuid.New().String()
+		if err = tx.QueryRow(context.Background(), `INSERT INTO
+		entries (
+			id,
+			account_id,
+			transaction_id,
+			request_id,
+			amount,
+			balance_after
+		) VALUES ($1, $2, $3, $4, $5, $6)
+		returning created_at`,
+			entryId,
+			e.AccountID,
+			transactionId,
+			e.RequestID,
+			e.Amount,
+			e.BalanceAfter,
+		).Scan(&e.CreatedAt); err != nil {
+			return err
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
+	}
+
+	return err
 }

@@ -5,23 +5,23 @@ import (
 	"fmt"
 
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/accounts"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/accounts/entities"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
 type Accounts struct {
 	log        *logrus.Logger
-	repository accounts.Repository
+	repository ledger.Repository
 }
 
-func NewAccountsUseCase(log *logrus.Logger, repository accounts.Repository) *Accounts {
+func NewAccountsUseCase(log *logrus.Logger, repository ledger.Repository) *Accounts {
 	return &Accounts{
 		log:        log,
 		repository: repository,
 	}
 }
 
-func (a Accounts) CreateAccount(input accounts.AccountInput) error {
+func (a Accounts) CreateAccount(input ledger.AccountInput) error {
 	if input.Type == "" {
 		return errors.New("missing 'type' input field")
 	}
@@ -49,21 +49,21 @@ func (a Accounts) CreateAccount(input accounts.AccountInput) error {
 		Balance:  0,
 	}
 
-	if err := a.repository.Create(&account); err != nil {
+	if err := a.repository.CreateAccount(&account); err != nil {
 		return fmt.Errorf("can't create account: %s", err.Error())
 	}
 
 	return nil
 }
 
-func (a Accounts) GetAccount(id string) (accounts.Account, error) {
-	account, err := a.repository.Get(id)
+func (a Accounts) GetAccount(id string) (ledger.Account, error) {
+	account, err := a.repository.GetAccount(id)
 	if err != nil {
-		var account = accounts.Account{}
+		var account = ledger.Account{}
 		return account, fmt.Errorf("Can't get account of id %s: %s", id, err.Error())
 	}
 
-	newAccount := accounts.Account{
+	newAccount := ledger.Account{
 		ID:       account.ID,
 		OwnerID:  account.OwnerID,
 		Type:     string(account.Type),
@@ -75,14 +75,14 @@ func (a Accounts) GetAccount(id string) (accounts.Account, error) {
 	return newAccount, err
 }
 
-func (a Accounts) SearchAccount(accountType string, accountOwnerID string, accountOwner string, accountName string, accountMetadata string) (accounts.Account, error) {
-	account, err := a.repository.Search(accountType, accountOwnerID, accountOwner, accountName, accountMetadata)
+func (a Accounts) SearchAccount(accountType string, accountOwnerID string, accountOwner string, accountName string, accountMetadata string) (ledger.Account, error) {
+	account, err := a.repository.SearchAccount(accountType, accountOwnerID, accountOwner, accountName, accountMetadata)
 	if err != nil {
-		var account = accounts.Account{}
+		var account = ledger.Account{}
 		return account, fmt.Errorf("Can't get account: %s", err.Error())
 	}
 
-	newAccount := accounts.Account{
+	newAccount := ledger.Account{
 		ID:       account.ID,
 		OwnerID:  account.OwnerID,
 		Type:     string(account.Type),
@@ -95,7 +95,7 @@ func (a Accounts) SearchAccount(accountType string, accountOwnerID string, accou
 }
 
 func (a Accounts) UpdateBalance(id string, balance int) error {
-	if err := a.repository.Update(id, balance); err != nil {
+	if err := a.repository.UpdateBalance(id, balance); err != nil {
 		return fmt.Errorf("can't update balance: %s", err.Error())
 	}
 

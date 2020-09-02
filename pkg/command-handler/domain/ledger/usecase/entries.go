@@ -5,23 +5,23 @@ import (
 	"fmt"
 
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/entries"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/entries/entities"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
 type Entries struct {
 	log        *logrus.Logger
-	repository entries.Repository
+	repository ledger.Repository
 }
 
-func NewEntriesUseCase(log *logrus.Logger, repository entries.Repository) *Entries {
+func NewEntriesUseCase(log *logrus.Logger, repository ledger.Repository) *Entries {
 	return &Entries{
 		log:        log,
 		repository: repository,
 	}
 }
 
-func (e Entries) CreateTransaction(input []entries.EntryInput) error {
+func (e Entries) CreateTransaction(input []ledger.EntryInput) error {
 	var err error = nil
 	transaction := make([]entities.Entry, len(input))
 
@@ -71,7 +71,7 @@ func (e Entries) CreateTransaction(input []entries.EntryInput) error {
 	//TO-DO check for valid accounts
 
 	// insert transaction atomically in database
-	if create_err := e.repository.Create(&transaction); create_err != nil {
+	if create_err := e.repository.CreateTransaction(&transaction); create_err != nil {
 		return fmt.Errorf("can't create entries: %s", create_err.Error())
 	}
 

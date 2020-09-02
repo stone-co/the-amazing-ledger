@@ -1,6 +1,6 @@
-package entries
+package ledger
 
-type UseCase interface {
+type EntriesUseCase interface {
 	CreateTransaction([]EntryInput) error
 }
 

@@ -4,8 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sirupsen/logrus"
-	accountsUsecase "github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/accounts/usecase"
-	entriesUsecase "github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/entries/usecase"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/db/postgres"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http"
@@ -32,12 +31,12 @@ func main() {
 		log.WithError(err).Fatal("Error running postgres migrations")
 	}
 
-	accountsRepository := postgres.NewAccountsRepository(conn, log)
-	accountsUseCase := accountsUsecase.NewAccountsUseCase(log, accountsRepository)
+	ledgerRepository := postgres.NewLedgerRepository(conn, log)
+
+	accountsUseCase := usecase.NewAccountsUseCase(log, ledgerRepository)
 	accountsHandler := accounts.NewAccountsHandler(log, accountsUseCase)
 
-	entriesRepository := postgres.NewEntriesRepository(conn, log)
-	entriesUseCase := entriesUsecase.NewEntriesUseCase(log, entriesRepository)
+	entriesUseCase := usecase.NewEntriesUseCase(log, ledgerRepository)
 	entriesHandler := entries.NewEntriesHandler(log, entriesUseCase)
 
 	// Starting gateway http API

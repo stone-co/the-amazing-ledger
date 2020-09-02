@@ -1,6 +1,6 @@
-package accounts
+package ledger
 
-type UseCase interface {
+type AccountsUseCase interface {
 	CreateAccount(AccountInput) error
 	GetAccount(string) (Account, error)
 	UpdateBalance(string, int) error

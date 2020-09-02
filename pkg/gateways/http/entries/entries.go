@@ -2,15 +2,15 @@ package entries
 
 import (
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/entries"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger"
 )
 
 type Handler struct {
 	log     *logrus.Logger
-	UseCase entries.UseCase
+	UseCase ledger.EntriesUseCase
 }
 
-func NewEntriesHandler(log *logrus.Logger, useCase entries.UseCase) *Handler {
+func NewEntriesHandler(log *logrus.Logger, useCase ledger.EntriesUseCase) *Handler {
 	return &Handler{
 		log:     log,
 		UseCase: useCase,
