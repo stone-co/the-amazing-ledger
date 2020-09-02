@@ -7,19 +7,19 @@ type AccountsUseCase interface {
 }
 
 type AccountInput struct {
-	Type     string
-	OwnerID  string
-	Owner    string
-	Name     string
-	Metadata []string
+	Type     string   `json:"type"`
+	OwnerID  string   `json:"owner_id"`
+	Owner    string   `json:"owner"`
+	Name     string   `json:"name"`
+	Metadata []string `json:"metadata"`
 }
 
 type Account struct {
 	ID       string   `json:"id"`
-	OwnerID  string   `json:"owner_id"`
 	Type     string   `json:"type"`
-	Balance  int      `json:"balance"`
+	OwnerID  string   `json:"owner_id"`
 	Owner    string   `json:"owner"`
 	Name     string   `json:"name"`
 	Metadata []string `json:"metadata"`
+	Balance  int      `json:"balance"`
 }

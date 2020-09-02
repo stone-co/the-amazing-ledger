@@ -69,6 +69,7 @@ func (e Entries) CreateTransaction(input []ledger.EntryInput) error {
 	}
 
 	//TO-DO check for valid accounts
+	// SearchOrCreateAccount
 
 	// insert transaction atomically in database
 	if create_err := e.repository.CreateTransaction(&transaction); create_err != nil {

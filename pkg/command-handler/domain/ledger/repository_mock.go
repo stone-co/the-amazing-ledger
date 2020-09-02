@@ -5,7 +5,7 @@ import "github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger
 type RepositoryMock struct {
 	OnCreateAccount     func(*entities.Account) error
 	OnGetAccount        func(string) (entities.Account, error)
-	OnSearchAccount     func(string, string, string, string, string) (entities.Account, error)
+	OnSearchAccount     func(*entities.Account) (entities.Account, error)
 	OnUpdateBalance     func(string, int) error
 	OnCreateTransaction func(*[]entities.Entry) error
 }
@@ -18,8 +18,8 @@ func (s RepositoryMock) GetAccount(id string) (entities.Account, error) {
 	return s.OnGetAccount(id)
 }
 
-func (s RepositoryMock) SearchAccount(accountType string, accountOwnerID string, accountOwner string, accountName string, accountMetadata string) (entities.Account, error) {
-	return s.OnSearchAccount(accountType, accountOwnerID, accountOwner, accountName, accountMetadata)
+func (s RepositoryMock) SearchAccount(a *entities.Account) (entities.Account, error) {
+	return s.OnSearchAccount(a)
 }
 
 func (s RepositoryMock) UpdateBalance(id string, balance int) error {
