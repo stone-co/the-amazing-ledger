@@ -1,7 +1,7 @@
 package ledger
 
 type AccountsUseCase interface {
-	CreateAccount(AccountInput) error
+	CreateAccount(AccountInput) (Account, error)
 	GetAccount(string) (Account, error)
 	UpdateBalance(string, int) error
 }

@@ -33,11 +33,9 @@ func main() {
 
 	ledgerRepository := postgres.NewLedgerRepository(conn, log)
 
-	accountsUseCase := usecase.NewAccountsUseCase(log, ledgerRepository)
-	accountsHandler := accounts.NewAccountsHandler(log, accountsUseCase)
-
-	entriesUseCase := usecase.NewEntriesUseCase(log, ledgerRepository)
-	entriesHandler := entries.NewEntriesHandler(log, entriesUseCase)
+	ledgerUseCase := usecase.NewLedgerUseCase(log, ledgerRepository)
+	accountsHandler := accounts.NewAccountsHandler(log, ledgerUseCase)
+	entriesHandler := entries.NewEntriesHandler(log, ledgerUseCase)
 
 	// Starting gateway http API
 	api := http.NewApi(log, accountsHandler, entriesHandler)

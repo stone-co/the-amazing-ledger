@@ -24,9 +24,9 @@ func NewLedgerRepository(db *pgxpool.Pool, log *logrus.Logger) *LedgerRepository
 	}
 }
 
-func (r *LedgerRepository) CreateAccount(a *entities.Account) error {
+func (r *LedgerRepository) CreateAccount(a *entities.Account) (entities.Account, error) {
 	a.ID = uuid.New().String()
-	if err := r.db.QueryRow(context.Background(), `INSERT INTO
+	row := r.db.QueryRow(context.Background(), `INSERT INTO
 		accounts (
 			id,
 			owner,
@@ -36,7 +36,16 @@ func (r *LedgerRepository) CreateAccount(a *entities.Account) error {
 			metadata,
 			balance
 		) VALUES ($1, $2, $3, $4, $5, $6, $7)
-		returning created_at`,
+		returning 
+		id,
+		type,
+		owner_id,
+		owner,
+		name,
+		metadata,
+		balance,
+		created_at,
+		updated_at`,
 		a.ID,
 		a.Owner,
 		a.Name,
@@ -44,11 +53,23 @@ func (r *LedgerRepository) CreateAccount(a *entities.Account) error {
 		a.Type,
 		a.Metadata,
 		a.Balance,
-	).Scan(&a.CreatedAt); err != nil {
-		return err
+	)
+
+	if err := row.Scan(
+		&a.ID,
+		&a.Type,
+		&a.OwnerID,
+		&a.Owner,
+		&a.Name,
+		&a.Metadata,
+		&a.Balance,
+		&a.CreatedAt,
+		&a.UpdatedAt,
+	); err != nil {
+		return entities.Account{}, err
 	}
 
-	return nil
+	return *a, nil
 }
 
 func (r *LedgerRepository) GetAccount(id string) (entities.Account, error) {
@@ -71,7 +92,6 @@ func (r *LedgerRepository) GetAccount(id string) (entities.Account, error) {
 }
 
 func (r *LedgerRepository) SearchAccount(a *entities.Account) (entities.Account, error) {
-	var account = entities.Account{}
 	row := r.db.QueryRow(context.Background(),
 		`select
 			id, owner, name, owner_id, type, metadata, balance
@@ -90,15 +110,15 @@ func (r *LedgerRepository) SearchAccount(a *entities.Account) (entities.Account,
 		a.Metadata)
 
 	err := row.Scan(
-		&account.ID,
-		&account.Owner,
-		&account.Name,
-		&account.OwnerID,
-		&account.Type,
-		&account.Metadata,
-		&account.Balance,
+		&a.ID,
+		&a.Owner,
+		&a.Name,
+		&a.OwnerID,
+		&a.Type,
+		&a.Metadata,
+		&a.Balance,
 	)
-	return account, err
+	return *a, err
 }
 
 func (r *LedgerRepository) UpdateBalance(id string, balance int) error {
