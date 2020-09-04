@@ -172,27 +172,10 @@ func (l LedgerUseCase) CreateTransaction(input []ledger.EntryInput) error {
 			Metadata: e.AccountMetadata,
 		})
 
-		fmt.Printf("account: %+v\n", account)
-
 		if err != nil {
 			return err
 		}
 
-		// if e.AccountType == "" {
-		// 	err = errors.New("missing 'account_type' input field")
-		// 	return err
-		// }
-		// if e.AccountOwner == "" {
-		// 	err = errors.New("missing 'account_owner' input field")
-		// 	return err
-		// }
-		// if e.AccountName == "" {
-		// 	err = errors.New("missing 'account_name' input field")
-		// 	return err
-		// }
-		// if e.AccountMetadata == nil {
-		// 	e.AccountMetadata = []string{}
-		// }
 		if e.Amount == 0 {
 			err = errors.New("amount cannot be 0")
 			return err
