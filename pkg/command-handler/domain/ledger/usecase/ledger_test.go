@@ -17,7 +17,7 @@ func TestAccountsUseCase_Create(t *testing.T) {
 	log := logrus.New()
 	mockRepository := &ledger.RepositoryMock{}
 
-	useCase := NewAccountsUseCase(log, mockRepository)
+	useCase := NewLedgerUseCase(log, mockRepository)
 
 	t.Run("Successfully creates a sample account with minimum inputs", func(t *testing.T) {
 		input := ledger.AccountInput{
@@ -26,11 +26,11 @@ func TestAccountsUseCase_Create(t *testing.T) {
 			Name:  "account_name",
 		}
 
-		mockRepository.OnCreateAccount = func(account *entities.Account) error {
-			return nil
+		mockRepository.OnCreateAccount = func(account *entities.Account) (entities.Account, error) {
+			return entities.Account{}, nil
 		}
 
-		err := useCase.CreateAccount(input)
+		_, err := useCase.CreateAccount(input)
 
 		assert.Equal(t, nil, err)
 	})
@@ -45,11 +45,11 @@ func TestAccountsUseCase_Create(t *testing.T) {
 			Metadata: []string{"metadatum_1", "metadatum_2"},
 		}
 
-		mockRepository.OnCreateAccount = func(account *entities.Account) error {
-			return nil
+		mockRepository.OnCreateAccount = func(account *entities.Account) (entities.Account, error) {
+			return entities.Account{}, nil
 		}
 
-		err := useCase.CreateAccount(input)
+		_, err := useCase.CreateAccount(input)
 
 		assert.Equal(t, nil, err)
 	})
@@ -60,11 +60,11 @@ func TestAccountsUseCase_Create(t *testing.T) {
 			Name:  "account_name",
 		}
 
-		mockRepository.OnCreateAccount = func(account *entities.Account) error {
-			return nil
+		mockRepository.OnCreateAccount = func(account *entities.Account) (entities.Account, error) {
+			return entities.Account{}, nil
 		}
 
-		err := useCase.CreateAccount(input)
+		_, err := useCase.CreateAccount(input)
 
 		assert.Error(t, err, "missing 'type' input field")
 	})
@@ -75,11 +75,11 @@ func TestAccountsUseCase_Create(t *testing.T) {
 			Name: "account_name",
 		}
 
-		mockRepository.OnCreateAccount = func(account *entities.Account) error {
-			return nil
+		mockRepository.OnCreateAccount = func(account *entities.Account) (entities.Account, error) {
+			return entities.Account{}, nil
 		}
 
-		err := useCase.CreateAccount(input)
+		_, err := useCase.CreateAccount(input)
 
 		assert.Error(t, err, "missing 'owner' input field")
 	})
@@ -90,11 +90,11 @@ func TestAccountsUseCase_Create(t *testing.T) {
 			Owner: "owner",
 		}
 
-		mockRepository.OnCreateAccount = func(account *entities.Account) error {
-			return nil
+		mockRepository.OnCreateAccount = func(account *entities.Account) (entities.Account, error) {
+			return entities.Account{}, nil
 		}
 
-		err := useCase.CreateAccount(input)
+		_, err := useCase.CreateAccount(input)
 
 		assert.Error(t, err, "missing 'name' input field")
 	})
@@ -106,11 +106,11 @@ func TestAccountsUseCase_Create(t *testing.T) {
 			Name:  "account_name",
 		}
 
-		mockRepository.OnCreateAccount = func(account *entities.Account) error {
-			return nil
+		mockRepository.OnCreateAccount = func(account *entities.Account) (entities.Account, error) {
+			return entities.Account{}, nil
 		}
 
-		err := useCase.CreateAccount(input)
+		_, err := useCase.CreateAccount(input)
 
 		assert.Error(t, err, fmt.Sprintf("unknown account type '%s'", input.Type))
 	})
@@ -122,7 +122,7 @@ func TestAccountsUseCase_Get(t *testing.T) {
 	log := logrus.New()
 	mockRepository := &ledger.RepositoryMock{}
 
-	useCase := NewAccountsUseCase(log, mockRepository)
+	useCase := NewLedgerUseCase(log, mockRepository)
 
 	t.Run("Successfully returns an account by id", func(t *testing.T) {
 		id := uuid.New().String()

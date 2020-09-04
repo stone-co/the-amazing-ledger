@@ -3,14 +3,14 @@ package ledger
 import "github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 
 type RepositoryMock struct {
-	OnCreateAccount     func(*entities.Account) error
+	OnCreateAccount     func(*entities.Account) (entities.Account, error)
 	OnGetAccount        func(string) (entities.Account, error)
 	OnSearchAccount     func(*entities.Account) (entities.Account, error)
 	OnUpdateBalance     func(string, int) error
 	OnCreateTransaction func(*[]entities.Entry) error
 }
 
-func (s RepositoryMock) CreateAccount(a *entities.Account) error {
+func (s RepositoryMock) CreateAccount(a *entities.Account) (entities.Account, error) {
 	return s.OnCreateAccount(a)
 }
 

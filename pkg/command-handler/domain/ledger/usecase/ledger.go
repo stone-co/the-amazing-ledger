@@ -150,7 +150,6 @@ func (l LedgerUseCase) UpdateBalance(id string, balance int) error {
 }
 
 func (l LedgerUseCase) CreateTransaction(input []ledger.EntryInput) error {
-	var err error = nil
 	transaction := make([]entities.Entry, len(input))
 
 	// check for empty or single element slice
@@ -177,8 +176,7 @@ func (l LedgerUseCase) CreateTransaction(input []ledger.EntryInput) error {
 		}
 
 		if e.Amount == 0 {
-			err = errors.New("amount cannot be 0")
-			return err
+			return errors.New("amount cannot be 0")
 		}
 		sumAmount += e.Amount
 		entry := entities.Entry{
@@ -199,5 +197,5 @@ func (l LedgerUseCase) CreateTransaction(input []ledger.EntryInput) error {
 		return fmt.Errorf("can't create entries: %s", create_err.Error())
 	}
 
-	return err
+	return nil
 }
