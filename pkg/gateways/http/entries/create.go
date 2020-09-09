@@ -1,4 +1,4 @@
-package accounts
+package entries
 
 import (
 	"encoding/json"
@@ -10,19 +10,27 @@ import (
 
 func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	log := h.log.WithFields(logrus.Fields{
-		"handler": "CreateAccount",
+		"handler": "CreateTransaction",
 	})
 
-	var input ledger.AccountInput
+	var input []ledger.EntryInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		log.WithError(err).Error("can't decode request body into struct")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
+		_, err = w.Write([]byte(err.Error()))
+		if err != nil {
+			log.WithError(err).Error("can't write response")
+		}
 		return
 	}
 
-	if _, err := h.UseCase.CreateAccount(input); err != nil {
-		log.WithError(err).Error("error creating account")
+	if err := h.UseCase.CreateTransaction(input); err != nil {
+		log.WithError(err).Error("error creating transaction")
 		w.WriteHeader(http.StatusInternalServerError)
+		_, err = w.Write([]byte(err.Error()))
+		if err != nil {
+			log.WithError(err).Error("can't write response")
+		}
 		return
 	}
 

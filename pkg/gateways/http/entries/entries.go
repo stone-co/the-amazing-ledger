@@ -1,4 +1,4 @@
-package accounts
+package entries
 
 import (
 	"github.com/sirupsen/logrus"
@@ -7,10 +7,10 @@ import (
 
 type Handler struct {
 	log     *logrus.Logger
-	UseCase ledger.AccountsUseCase
+	UseCase ledger.EntriesUseCase
 }
 
-func NewAccountsHandler(log *logrus.Logger, useCase ledger.AccountsUseCase) *Handler {
+func NewEntriesHandler(log *logrus.Logger, useCase ledger.EntriesUseCase) *Handler {
 	return &Handler{
 		log:     log,
 		UseCase: useCase,

@@ -11,12 +11,12 @@ type AccountType string
 
 type Account struct {
 	ID        string // primary key
-	OwnerID   string
 	Type      AccountType
-	Balance   int
+	OwnerID   string
 	Owner     string
 	Name      string
 	Metadata  []string
+	Balance   int
 	CreatedAt time.Time
 	UpdatedAt *time.Time
 }
