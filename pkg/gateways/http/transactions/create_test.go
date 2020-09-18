@@ -16,10 +16,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	ContentTypeJSON = "application/json"
-)
-
 func TestHandler_Create(t *testing.T) {
 	target := "/transactions"
 	body, _ := json.Marshal(CreateTransactionRequest{})

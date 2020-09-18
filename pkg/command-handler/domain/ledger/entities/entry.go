@@ -8,7 +8,7 @@ type VersionType uint64
 
 const (
 	AnyAccountVersion VersionType = 0
-	NewAccount                    = 1
+	NewAccount        VersionType = 1
 )
 
 type Entry struct {

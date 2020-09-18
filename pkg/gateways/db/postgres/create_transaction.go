@@ -13,7 +13,9 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 		return err
 	}
 
-	defer tx.Rollback(ctx)
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
 
 	query := `
 		INSERT INTO
