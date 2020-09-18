@@ -34,7 +34,7 @@ type PostgresConfig struct {
 	Host         string `envconfig:"DATABASE_HOST" default:"localhost"`
 	Port         string `envconfig:"DATABASE_PORT" default:"5432"`
 	PoolSize     string `envconfig:"DATABASE_POOL_SIZE" default:"10"`
-	SSLMode      string `envconfig:"DATABASE_SSLMODE" default:"prefer"`
+	SSLMode      string `envconfig:"DATABASE_SSLMODE" default:"disable"`
 	SSLRootCert  string `envconfig:"DATABASE_SSL_ROOTCERT"`
 	SSLCert      string `envconfig:"DATABASE_SSL_CERT"`
 	SSLKey       string `envconfig:"DATABASE_SSL_KEY"`
