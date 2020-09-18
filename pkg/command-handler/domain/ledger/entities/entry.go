@@ -1,16 +1,30 @@
 package entities
 
-import "time"
+import (
+	"github.com/google/uuid"
+)
 
-type EntryType string
+type VersionType uint64
+
+const (
+	AnyAccountVersion VersionType = 0
+	NewAccount                    = 1
+)
 
 type Entry struct {
-	ID            string
-	AccountID     string
-	TransactionID string
-	RequestID     string
-	Amount        int
-	BalanceAfter  int
-	CreatedAt     time.Time
-	UpdatedAt     *time.Time
+	ID        uuid.UUID
+	Operation OperationType
+	AccountID uuid.UUID
+	Version   VersionType
+	Amount    int
+}
+
+func NewEntry(id uuid.UUID, operation OperationType, accountID uuid.UUID, version VersionType, amount int) *Entry {
+	return &Entry{
+		ID:        id,
+		Operation: operation,
+		AccountID: accountID,
+		Version:   version,
+		Amount:    amount,
+	}
 }
