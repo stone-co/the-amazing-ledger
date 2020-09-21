@@ -10,14 +10,18 @@ import (
 )
 
 type LedgerUseCase struct {
-	log        *logrus.Logger
-	repository ledger.Repository
+	log            *logrus.Logger
+	repository     ledger.Repository
+	cachedAccounts *entities.CachedAccounts
+	lastVersion    entities.Version
 }
 
 func NewLedgerUseCase(log *logrus.Logger, repository ledger.Repository) *LedgerUseCase {
 	return &LedgerUseCase{
-		log:        log,
-		repository: repository,
+		log:            log,
+		repository:     repository,
+		cachedAccounts: entities.NewCachedAccounts(),
+		lastVersion:    1,
 	}
 }
 

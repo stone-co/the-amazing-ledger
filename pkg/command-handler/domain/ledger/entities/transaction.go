@@ -11,6 +11,7 @@ var (
 	ErrInvalidEntriesNumber = errors.New("invalid entries number")
 	ErrInvalidBalance       = errors.New("invalid balance")
 	ErrIdempotencyKey       = errors.New("idempotency key violation")
+	ErrInvalidVersion       = errors.New("invalid version")
 )
 
 type Transaction struct {

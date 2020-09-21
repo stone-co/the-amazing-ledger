@@ -42,7 +42,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 			ID:        entry.ID,
 			Operation: entities.OperationTypeFromString(entry.Operation),
 			AccountID: entry.AccountID,
-			Version:   entities.VersionType(entry.Version),
+			Version:   entities.Version(entry.Version),
 			Amount:    entry.Amount,
 		})
 	}
