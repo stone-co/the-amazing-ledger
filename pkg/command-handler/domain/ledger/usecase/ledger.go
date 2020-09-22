@@ -152,3 +152,7 @@ func (l LedgerUseCase) UpdateBalance(id string, balance int) error {
 
 	return nil
 }
+
+func (l LedgerUseCase) GetLastVersion() entities.Version {
+	return l.lastVersion
+}
