@@ -3,7 +3,6 @@ package http
 import (
 	"context"
 	"fmt"
-	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
+	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/accounts"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/entries"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/healthcheck"
