@@ -39,5 +39,5 @@ func main() {
 
 	// Starting gateway http API
 	api := http.NewApi(log, accountsHandler, entriesHandler)
-	api.Start("0.0.0.0", cfg.API.Port)
+	api.Start("0.0.0.0", cfg.API)
 }

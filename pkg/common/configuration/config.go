@@ -22,7 +22,8 @@ func LoadConfig() (*Config, error) {
 }
 
 type APIConfig struct {
-	Port string `envconfig:"API_PORT" default:"3000"`
+	Port            string `envconfig:"API_PORT" default:"3000"`
+	ShutdownTimeout string `envconfig:"API_SHUTDOWN_TIMEOUT" default:"5s"`
 }
 
 type PostgresConfig struct {
