@@ -3,6 +3,11 @@ package http
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -11,10 +16,6 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/entries"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/healthcheck"
 	"github.com/urfave/negroni"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 type Api struct {
