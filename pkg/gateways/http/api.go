@@ -3,12 +3,6 @@ package http
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -17,6 +11,10 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/entries"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/healthcheck"
 	"github.com/urfave/negroni"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 type Api struct {
@@ -84,13 +82,8 @@ func (a *Api) Start(host string, cfg configuration.APIConfig) {
 
 	case sig := <-shutdown:
 		a.log.Printf("%v : Start shutdown", sig)
-		timeout, err := time.ParseDuration(cfg.ShutdownTimeout)
-		if err != nil {
-			a.log.Warnf("error parsing duration %q. fallbacking to 5 seconds\n", cfg.ShutdownTimeout)
-			timeout = 5 * time.Second
-		}
 		// Give outstanding requests a deadline for completion.
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
 		defer cancel()
 
 		// Asking listener to shutdown and shed load.
