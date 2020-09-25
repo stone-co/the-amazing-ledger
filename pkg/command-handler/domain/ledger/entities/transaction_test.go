@@ -132,8 +132,7 @@ func TestNewTransaction(t *testing.T) {
 		{
 			name: "Creating a transation with an invalid operation must fail",
 			args: args{
-				id:        id,
-				createdAt: createdAt,
+				id: id,
 				entries: []Entry{
 					*NewEntry(uuid.New(), InvalidOperation, uuid.New(), AnyAccountVersion, 123),
 					*NewEntry(uuid.New(), CreditOperation, uuid.New(), AnyAccountVersion, 123),
