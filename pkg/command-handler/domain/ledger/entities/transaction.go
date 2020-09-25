@@ -39,6 +39,10 @@ func NewTransaction(id uuid.UUID, createdAt time.Time, entries ...Entry) (*Trans
 			return nil, ErrInvalidData
 		}
 
+		if entry.Operation == InvalidOperation {
+			return nil, ErrInvalidData
+		}
+
 		if entry.Operation == DebitOperation {
 			balance += entry.Amount
 		} else {
