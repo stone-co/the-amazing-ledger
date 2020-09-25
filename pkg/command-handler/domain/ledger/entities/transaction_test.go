@@ -130,7 +130,7 @@ func TestNewTransaction(t *testing.T) {
 			expectedErr: ErrInvalidData,
 		},
 		{
-			name: "Creating a transation with an invalid operation must fail",
+			name: "Creating a transaction with an invalid operation must fail",
 			args: args{
 				id: id,
 				entries: []Entry{
