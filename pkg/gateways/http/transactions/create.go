@@ -3,7 +3,6 @@ package transactions
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -11,9 +10,8 @@ import (
 )
 
 type CreateTransactionRequest struct {
-	ID        uuid.UUID `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	Entries   []struct {
+	ID      uuid.UUID `json:"id"`
+	Entries []struct {
 		ID        uuid.UUID `json:"id"`
 		Operation string    `json:"operation"`
 		AccountID uuid.UUID `json:"account_id"`
@@ -49,7 +47,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	if err := h.UseCase.CreateTransaction(r.Context(), input.ID, input.CreatedAt, entries); err != nil {
+	if err := h.UseCase.CreateTransaction(r.Context(), input.ID, entries); err != nil {
 		log.WithError(err).Error("error creating transaction")
 		w.WriteHeader(http.StatusBadRequest)
 		_, err = w.Write([]byte(err.Error()))

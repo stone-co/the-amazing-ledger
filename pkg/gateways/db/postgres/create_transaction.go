@@ -25,9 +25,8 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 	  			operation,
 				amount,
 				version,
-				transaction_id,
-				created_at
-			) VALUES ($1, $2, $3, $4, $5, $6, $7)
+				transaction_id
+			) VALUES ($1, $2, $3, $4, $5, $6)
 	`
 
 	var batch pgx.Batch
@@ -41,7 +40,6 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 			entry.Amount,
 			entry.Version,
 			transaction.ID,
-			transaction.CreatedAt,
 		)
 	}
 

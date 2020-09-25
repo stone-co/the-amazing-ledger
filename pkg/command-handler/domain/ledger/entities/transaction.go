@@ -2,7 +2,6 @@ package entities
 
 import (
 	"errors"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -15,17 +14,12 @@ var (
 )
 
 type Transaction struct {
-	ID        uuid.UUID
-	CreatedAt time.Time
-	Entries   []Entry
+	ID      uuid.UUID
+	Entries []Entry
 }
 
-func NewTransaction(id uuid.UUID, createdAt time.Time, entries ...Entry) (*Transaction, error) {
+func NewTransaction(id uuid.UUID, entries ...Entry) (*Transaction, error) {
 	if id == uuid.Nil {
-		return nil, ErrInvalidData
-	}
-
-	if createdAt.IsZero() {
 		return nil, ErrInvalidData
 	}
 
@@ -55,9 +49,8 @@ func NewTransaction(id uuid.UUID, createdAt time.Time, entries ...Entry) (*Trans
 	}
 
 	t := &Transaction{
-		ID:        id,
-		CreatedAt: createdAt,
-		Entries:   entries,
+		ID:      id,
+		Entries: entries,
 	}
 
 	return t, nil

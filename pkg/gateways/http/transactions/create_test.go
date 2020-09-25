@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -53,7 +52,7 @@ func createHandler(err error) Handler {
 	return Handler{
 		log: logrus.New(),
 		UseCase: &ledger.TransactionsMock{
-			OnCreateTransaction: func(ctx context.Context, id uuid.UUID, createdAt time.Time, entries []entities.Entry) error {
+			OnCreateTransaction: func(ctx context.Context, id uuid.UUID, entries []entities.Entry) error {
 				return err
 			},
 		},
