@@ -1,6 +1,8 @@
 package ledger
 
 import (
+	"context"
+
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
@@ -9,5 +11,5 @@ type Repository interface {
 	GetAccount(id string) (entities.Account, error)
 	SearchAccount(*entities.Account) (entities.Account, error)
 	UpdateBalance(id string, balance int) error
-	CreateTransaction(*[]entities.Entry) error
+	CreateTransaction(context.Context, *entities.Transaction) error
 }
