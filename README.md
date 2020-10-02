@@ -13,7 +13,7 @@ The Amazing Ledger records a journal that keeps track of all credits and debits 
 
 Since it is a double-entry accounting system, there must always be a debit from at least one account for every credit made to another account, therefore all **entries** must balance to zero within a **transaction**.
 
-For example, 
+For example,
 
 | Account          | Amount |
 |------------------|--------|
@@ -26,6 +26,22 @@ The system supports the following account types:
 - **liability**: Represents the money you owe and is a synonym to debt. The values of theses accounts are naturally negative.
 - **expense**: Represents the money you spent, where money goes. The values of theses accounts are naturally positive.
 - **income**: Represents the money you have earned, where money comes from. The values of theses accounts are naturally negative.
+
+# Development
+
+To init development environment and run the amazing ledger, flow this steps.
+
+```bash
+$ docker-compose -f docker-compose-dev.yml up
+$ make compile
+$ ./build/command-handler
+```
+
+## Running tests
+
+```bash
+$ make test
+```
 
 # Usage
 
