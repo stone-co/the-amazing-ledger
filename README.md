@@ -30,3 +30,13 @@ The system supports the following account types:
 # Usage
 
 A Web API is used to issue commands and query for data in the ledger.
+
+```bash
+curl -i -X POST localhost:3000/transactions -d \
+'{"id":"28c547fa-4dd4-2593-945c-495678d7a123", "entries":[{"id":
+"16b23084-686b-434a-8323-db483ce1e584", "operation":"debit",
+"account_id":"16b23084-686b-434a-8323-db483ce1e589", "version": 0, "amount":
+123},{"id": "16b23084-686b-434a-8323-db483ce1e586", "operation":"credit",
+"account_id":"16b23084-686b-434a-8323-db483ce1e581", "version": 0, "amount":
+123}]}'
+```
