@@ -31,8 +31,15 @@ The system supports the following account types:
 
 To init development environment and run the amazing ledger, flow this steps.
 
+Database setup
+
 ```bash
 $ docker-compose -f docker-compose-dev.yml up
+```
+
+Wait for database setup and run in another shell this commands.
+
+```bash
 $ make compile
 $ ./build/command-handler
 ```
