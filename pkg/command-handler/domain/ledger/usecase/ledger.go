@@ -10,14 +10,18 @@ import (
 )
 
 type LedgerUseCase struct {
-	log        *logrus.Logger
-	repository ledger.Repository
+	log            *logrus.Logger
+	repository     ledger.Repository
+	cachedAccounts *entities.CachedAccounts
+	lastVersion    entities.Version
 }
 
 func NewLedgerUseCase(log *logrus.Logger, repository ledger.Repository) *LedgerUseCase {
 	return &LedgerUseCase{
-		log:        log,
-		repository: repository,
+		log:            log,
+		repository:     repository,
+		cachedAccounts: entities.NewCachedAccounts(),
+		lastVersion:    1,
 	}
 }
 
@@ -147,4 +151,8 @@ func (l LedgerUseCase) UpdateBalance(id string, balance int) error {
 	}
 
 	return nil
+}
+
+func (l LedgerUseCase) GetLastVersion() entities.Version {
+	return l.lastVersion
 }

@@ -129,6 +129,18 @@ func TestNewTransaction(t *testing.T) {
 			want:        nil,
 			expectedErr: ErrInvalidData,
 		},
+		{
+			name: "Creating a transaction with an invalid operation must fail",
+			args: args{
+				id: id,
+				entries: []Entry{
+					*NewEntry(uuid.New(), InvalidOperation, uuid.New(), AnyAccountVersion, 123),
+					*NewEntry(uuid.New(), CreditOperation, uuid.New(), AnyAccountVersion, 123),
+				},
+			},
+			want:        nil,
+			expectedErr: ErrInvalidData,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

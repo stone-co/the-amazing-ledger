@@ -11,6 +11,7 @@ var (
 	ErrInvalidEntriesNumber = errors.New("invalid entries number")
 	ErrInvalidBalance       = errors.New("invalid balance")
 	ErrIdempotencyKey       = errors.New("idempotency key violation")
+	ErrInvalidVersion       = errors.New("invalid version")
 )
 
 type Transaction struct {
@@ -30,6 +31,10 @@ func NewTransaction(id uuid.UUID, entries ...Entry) (*Transaction, error) {
 	balance := 0
 	for _, entry := range entries {
 		if entry.Amount <= 0 {
+			return nil, ErrInvalidData
+		}
+
+		if entry.Operation == InvalidOperation {
 			return nil, ErrInvalidData
 		}
 
