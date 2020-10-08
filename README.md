@@ -13,7 +13,7 @@ The Amazing Ledger records a journal that keeps track of all credits and debits 
 
 Since it is a double-entry accounting system, there must always be a debit from at least one account for every credit made to another account, therefore all **entries** must balance to zero within a **transaction**.
 
-For example, 
+For example,
 
 | Account          | Amount |
 |------------------|--------|
@@ -27,6 +27,39 @@ The system supports the following account types:
 - **expense**: Represents the money you spent, where money goes. The values of theses accounts are naturally positive.
 - **income**: Represents the money you have earned, where money comes from. The values of theses accounts are naturally negative.
 
+# Development
+
+To init development environment and run the amazing ledger, flow these steps.
+
+Database setup
+
+```bash
+$ docker-compose -f docker-compose-dev.yml up
+```
+
+Wait for database setup and run in another shell this commands.
+
+```bash
+$ make compile
+$ ./build/command-handler
+```
+
+## Running tests
+
+```bash
+$ make test
+```
+
 # Usage
 
 A Web API is used to issue commands and query for data in the ledger.
+
+```bash
+curl -i -X POST localhost:3000/transactions -d \
+'{"id":"28c547fa-4dd4-2593-945c-495678d7a123", "entries":[{"id":
+"16b23084-686b-434a-8323-db483ce1e584", "operation":"debit",
+"account_id":"16b23084-686b-434a-8323-db483ce1e589", "version": 0, "amount":
+123},{"id": "16b23084-686b-434a-8323-db483ce1e586", "operation":"credit",
+"account_id":"16b23084-686b-434a-8323-db483ce1e581", "version": 0, "amount":
+123}]}'
+```
