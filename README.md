@@ -29,7 +29,7 @@ The system supports the following account types:
 
 # Development
 
-To init development environment and run the amazing ledger, flow this steps.
+To init development environment and run the amazing ledger, flow these steps.
 
 Database setup
 
