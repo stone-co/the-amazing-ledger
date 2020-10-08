@@ -102,7 +102,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		assert.Equal(t, lastVersion, useCase.GetLastVersion())
 	})
 
-	t.Run("Object version does not change when the transaction fails", func(t *testing.T) {
+	t.Run("Global object version does not change when the transaction fails", func(t *testing.T) {
 		useCase := newFakeUseCase(nil)
 
 		lastVersion := useCase.GetLastVersion()
@@ -157,27 +157,28 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
 		assert.Nil(t, err)
 
+		lastVersion := useCase.GetLastVersion()
+		idempotencyKey := uuid.New()
+		e1 = entities.NewEntry(idempotencyKey, entities.DebitOperation, accountID1, 4, 123)
+		e2 = entities.NewEntry(idempotencyKey, entities.CreditOperation, accountID2, 5, 123)
+		entries = []entities.Entry{*e1, *e2}
 		useCase.repository = &ledger.RepositoryMock{
 			OnCreateTransaction: func(context.Context, *entities.Transaction) error {
 				return entities.ErrIdempotencyKey
 			},
 		}
-
-		e1 = entities.NewEntry(uuid.New(), entities.DebitOperation, accountID1, 2, 123)
-		e2 = entities.NewEntry(uuid.New(), entities.CreditOperation, accountID2, 3, 123)
-		entries = []entities.Entry{*e1, *e2}
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
-		assert.True(t, errors.Is(err, entities.ErrInvalidVersion))
+		assert.True(t, errors.Is(err, entities.ErrIdempotencyKey))
+		assert.NotEqual(t, lastVersion, useCase.GetLastVersion())
 
+		e1 = entities.NewEntry(uuid.New(), entities.DebitOperation, accountID1, 4, 123)
+		e2 = entities.NewEntry(uuid.New(), entities.CreditOperation, accountID2, 5, 123)
+		entries = []entities.Entry{*e1, *e2}
 		useCase.repository = &ledger.RepositoryMock{
 			OnCreateTransaction: func(context.Context, *entities.Transaction) error {
 				return nil
 			},
 		}
-
-		e1 = entities.NewEntry(uuid.New(), entities.DebitOperation, accountID1, 4, 123)
-		e2 = entities.NewEntry(uuid.New(), entities.CreditOperation, accountID2, 5, 123)
-		entries = []entities.Entry{*e1, *e2}
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
 		assert.Nil(t, err)
 	})
