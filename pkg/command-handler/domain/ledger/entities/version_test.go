@@ -14,3 +14,8 @@ func TestVersion_Next(t *testing.T) {
 	assert.Equal(t, Version(2), v.Next())
 	assert.Equal(t, Version(2), v.Current())
 }
+
+func TestVersion_CheckConstants(t *testing.T) {
+	assert.Equal(t, AnyAccountVersion, Version(0))
+	assert.Equal(t, NewAccountVersion, Version(1))
+}
