@@ -23,7 +23,7 @@ func NewCachedAccounts() *CachedAccounts {
 
 func (c *CachedAccounts) LoadOrStore(accountID uuid.UUID) *CachedAccountInfo {
 	object := &CachedAccountInfo{
-		Version: 1,
+		Version: NewAccountVersion,
 	}
 
 	objectInMap, _ := c.objects.LoadOrStore(accountID, object)
