@@ -2,8 +2,6 @@ package entities
 
 import (
 	"sync"
-
-	"github.com/google/uuid"
 )
 
 type CachedAccountInfo struct {
@@ -21,7 +19,7 @@ func NewCachedAccounts() *CachedAccounts {
 	}
 }
 
-func (c *CachedAccounts) LoadOrStore(accountID uuid.UUID) *CachedAccountInfo {
+func (c *CachedAccounts) LoadOrStore(accountID string) *CachedAccountInfo {
 	object := &CachedAccountInfo{
 		Version: NewAccountVersion,
 	}
@@ -30,7 +28,7 @@ func (c *CachedAccounts) LoadOrStore(accountID uuid.UUID) *CachedAccountInfo {
 	return objectInMap.(*CachedAccountInfo)
 }
 
-func (c *CachedAccounts) Store(accountID uuid.UUID, version Version) {
+func (c *CachedAccounts) Store(accountID string, version Version) {
 	object := &CachedAccountInfo{
 		Version: version,
 	}

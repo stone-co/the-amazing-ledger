@@ -25,7 +25,7 @@ CREATE TYPE operation_type AS ENUM (
 
 CREATE TABLE entries (
 	id             UUID primary key,
-	account_id     UUID not null,
+	account_id     TEXT not null,
 	operation      OPERATION_TYPE not null,
 	amount         INT not null,
 	version        BIGINT not null,
