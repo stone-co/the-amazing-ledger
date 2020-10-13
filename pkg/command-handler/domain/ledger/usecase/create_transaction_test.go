@@ -13,9 +13,12 @@ import (
 )
 
 func TestLedgerUseCase_CreateTransaction(t *testing.T) {
+	accountID1 := uuid.New().String()
+	accountID2 := uuid.New().String()
+
 	t.Run("Successfully creates a transaction with minimum inputs", func(t *testing.T) {
-		e1 := entities.NewEntry(uuid.New(), entities.DebitOperation, "account/111", entities.AnyAccountVersion, 123)
-		e2 := entities.NewEntry(uuid.New(), entities.CreditOperation, "account/222", entities.AnyAccountVersion, 123)
+		e1 := entities.NewEntry(uuid.New(), entities.DebitOperation, accountID1, entities.AnyAccountVersion, 123)
+		e2 := entities.NewEntry(uuid.New(), entities.CreditOperation, accountID2, entities.AnyAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
 
 		err := newFakeUseCase(nil).CreateTransaction(context.Background(), uuid.New(), entries)
@@ -24,8 +27,6 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 	})
 
 	t.Run("Successfully creates a transaction with new accounts", func(t *testing.T) {
-		accountID1 := "account/111"
-		accountID2 := "account/222"
 		e1 := entities.NewEntry(uuid.New(), entities.DebitOperation, accountID1, entities.NewAccountVersion, 123)
 		e2 := entities.NewEntry(uuid.New(), entities.CreditOperation, accountID2, entities.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
@@ -38,8 +39,6 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 	t.Run("Successfully creates a transaction with expected version", func(t *testing.T) {
 		useCase := newFakeUseCase(nil)
 
-		accountID1 := "account/111"
-		accountID2 := "account/222"
 		e1 := entities.NewEntry(uuid.New(), entities.DebitOperation, accountID1, entities.NewAccountVersion, 123)
 		e2 := entities.NewEntry(uuid.New(), entities.CreditOperation, accountID2, entities.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
@@ -59,8 +58,6 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 	t.Run("Fail with invalid expected version", func(t *testing.T) {
 		useCase := newFakeUseCase(nil)
 
-		accountID1 := "account/111"
-		accountID2 := "account/222"
 		e1 := entities.NewEntry(uuid.New(), entities.DebitOperation, accountID1, entities.NewAccountVersion, 123)
 		e2 := entities.NewEntry(uuid.New(), entities.CreditOperation, accountID2, entities.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
@@ -80,8 +77,6 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 	t.Run("When transaction fail, the counter isn't incremented", func(t *testing.T) {
 		useCase := newFakeUseCase(nil)
 
-		accountID1 := "account/111"
-		accountID2 := "account/222"
 		e1 := entities.NewEntry(uuid.New(), entities.DebitOperation, accountID1, entities.NewAccountVersion, 123)
 		e2 := entities.NewEntry(uuid.New(), entities.CreditOperation, accountID2, entities.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
@@ -106,8 +101,6 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		useCase := newFakeUseCase(nil)
 
 		lastVersion := useCase.GetLastVersion()
-		accountID1 := "account/111"
-		accountID2 := "account/222"
 		e1 := entities.NewEntry(uuid.New(), entities.DebitOperation, accountID1, entities.NewAccountVersion, 123)
 		e2 := entities.NewEntry(uuid.New(), entities.CreditOperation, accountID2, entities.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
@@ -143,8 +136,6 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 	t.Run("Object version does not change when the idempotency fails, but global counter is changed", func(t *testing.T) {
 		useCase := newFakeUseCase(nil)
 
-		accountID1 := "account/111"
-		accountID2 := "account/222"
 		e1 := entities.NewEntry(uuid.New(), entities.DebitOperation, accountID1, entities.NewAccountVersion, 123)
 		e2 := entities.NewEntry(uuid.New(), entities.CreditOperation, accountID2, entities.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
