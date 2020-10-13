@@ -14,7 +14,7 @@ type CreateTransactionRequest struct {
 	Entries []struct {
 		ID        uuid.UUID `json:"id"`
 		Operation string    `json:"operation"`
-		AccountID uuid.UUID `json:"account_id"`
+		AccountID string    `json:"account_id"`
 		Version   uint64    `json:"version"`
 		Amount    int       `json:"amount"`
 	} `json:"entries"`

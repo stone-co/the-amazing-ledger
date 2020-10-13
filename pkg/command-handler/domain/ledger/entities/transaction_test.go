@@ -17,13 +17,13 @@ func TestNewTransaction(t *testing.T) {
 
 	id := uuid.New()
 	validTwoEntries := []Entry{
-		*NewEntry(uuid.New(), DebitOperation, uuid.New(), AnyAccountVersion, 123),
-		*NewEntry(uuid.New(), CreditOperation, uuid.New(), AnyAccountVersion, 123),
+		*NewEntry(uuid.New(), DebitOperation, "account/111", AnyAccountVersion, 123),
+		*NewEntry(uuid.New(), CreditOperation, "account/222", AnyAccountVersion, 123),
 	}
 	validThreeEntries := []Entry{
-		*NewEntry(uuid.New(), DebitOperation, uuid.New(), AnyAccountVersion, 400),
-		*NewEntry(uuid.New(), CreditOperation, uuid.New(), AnyAccountVersion, 300),
-		*NewEntry(uuid.New(), CreditOperation, uuid.New(), AnyAccountVersion, 100),
+		*NewEntry(uuid.New(), DebitOperation, "account/333", AnyAccountVersion, 400),
+		*NewEntry(uuid.New(), CreditOperation, "account/444", AnyAccountVersion, 300),
+		*NewEntry(uuid.New(), CreditOperation, "account/555", AnyAccountVersion, 100),
 	}
 
 	tests := []struct {
@@ -77,8 +77,8 @@ func TestNewTransaction(t *testing.T) {
 			args: args{
 				id: id,
 				entries: []Entry{
-					*NewEntry(uuid.New(), DebitOperation, uuid.New(), AnyAccountVersion, 123),
-					*NewEntry(uuid.New(), CreditOperation, uuid.New(), AnyAccountVersion, 234),
+					*NewEntry(uuid.New(), DebitOperation, "account/111", AnyAccountVersion, 123),
+					*NewEntry(uuid.New(), CreditOperation, "account/222", AnyAccountVersion, 234),
 				},
 			},
 			want:        nil,
@@ -89,9 +89,9 @@ func TestNewTransaction(t *testing.T) {
 			args: args{
 				id: id,
 				entries: []Entry{
-					*NewEntry(uuid.New(), DebitOperation, uuid.New(), AnyAccountVersion, 400),
-					*NewEntry(uuid.New(), CreditOperation, uuid.New(), AnyAccountVersion, 200),
-					*NewEntry(uuid.New(), CreditOperation, uuid.New(), AnyAccountVersion, 100),
+					*NewEntry(uuid.New(), DebitOperation, "account/111", AnyAccountVersion, 400),
+					*NewEntry(uuid.New(), CreditOperation, "account/222", AnyAccountVersion, 200),
+					*NewEntry(uuid.New(), CreditOperation, "account/333", AnyAccountVersion, 100),
 				},
 			},
 			want:        nil,
@@ -110,8 +110,8 @@ func TestNewTransaction(t *testing.T) {
 			args: args{
 				id: id,
 				entries: []Entry{
-					*NewEntry(uuid.New(), DebitOperation, uuid.New(), AnyAccountVersion, 0),
-					*NewEntry(uuid.New(), CreditOperation, uuid.New(), AnyAccountVersion, 0),
+					*NewEntry(uuid.New(), DebitOperation, "account/111", AnyAccountVersion, 0),
+					*NewEntry(uuid.New(), CreditOperation, "account/222", AnyAccountVersion, 0),
 				},
 			},
 			want:        nil,
@@ -122,8 +122,8 @@ func TestNewTransaction(t *testing.T) {
 			args: args{
 				id: id,
 				entries: []Entry{
-					*NewEntry(uuid.New(), InvalidOperation, uuid.New(), AnyAccountVersion, 123),
-					*NewEntry(uuid.New(), CreditOperation, uuid.New(), AnyAccountVersion, 123),
+					*NewEntry(uuid.New(), InvalidOperation, "account/111", AnyAccountVersion, 123),
+					*NewEntry(uuid.New(), CreditOperation, "account/222", AnyAccountVersion, 123),
 				},
 			},
 			want:        nil,
@@ -134,8 +134,8 @@ func TestNewTransaction(t *testing.T) {
 			args: args{
 				id: id,
 				entries: []Entry{
-					*NewEntry(uuid.New(), InvalidOperation, uuid.New(), AnyAccountVersion, 123),
-					*NewEntry(uuid.New(), CreditOperation, uuid.New(), AnyAccountVersion, 123),
+					*NewEntry(uuid.New(), InvalidOperation, "account/111", AnyAccountVersion, 123),
+					*NewEntry(uuid.New(), CreditOperation, "account/222", AnyAccountVersion, 123),
 				},
 			},
 			want:        nil,
