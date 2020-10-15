@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/sirupsen/logrus"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
@@ -33,6 +35,10 @@ func main() {
 	ledgerRepository := postgres.NewLedgerRepository(conn, log)
 
 	ledgerUseCase := usecase.NewLedgerUseCase(log, ledgerRepository)
+	err = ledgerUseCase.LoadObjectsIntoCache(context.Background())
+	if err != nil {
+		log.WithError(err).Fatal("failed to populate cache")
+	}
 
 	accountsHandler := accounts.NewAccountsHandler(log, ledgerUseCase)
 	transactionsHandler := transactions.NewHandler(log, ledgerUseCase)

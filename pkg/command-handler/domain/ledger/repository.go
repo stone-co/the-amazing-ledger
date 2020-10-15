@@ -12,4 +12,5 @@ type Repository interface {
 	SearchAccount(*entities.Account) (entities.Account, error)
 	UpdateBalance(id string, balance int) error
 	CreateTransaction(context.Context, *entities.Transaction) error
+	LoadObjectsIntoCache(ctx context.Context, objects *entities.CachedAccounts) (entities.Version, error)
 }

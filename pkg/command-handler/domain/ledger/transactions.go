@@ -9,4 +9,5 @@ import (
 
 type TransactionsUseCase interface {
 	CreateTransaction(ctx context.Context, id uuid.UUID, entries []entities.Entry) error
+	LoadObjectsIntoCache(ctx context.Context) error
 }
