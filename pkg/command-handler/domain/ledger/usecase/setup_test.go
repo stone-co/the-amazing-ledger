@@ -23,8 +23,7 @@ func newFakeCreateTransactionUseCase(result error) *LedgerUseCase {
 func newFakeLoadObjectsIntoCacheUseCase(maxVersion entities.Version, result error) *LedgerUseCase {
 	log := logrus.New()
 
-	mockRepository := &ledger.RepositoryMock{}
-	mockRepository = &ledger.RepositoryMock{
+	mockRepository := &ledger.RepositoryMock{
 		OnLoadObjectsIntoCache: func(ctx context.Context, cachedAccounts *entities.CachedAccounts) (entities.Version, error) {
 			return maxVersion, result
 		},

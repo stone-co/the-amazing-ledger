@@ -28,15 +28,14 @@ func main() {
 	}
 	defer conn.Close()
 
-	if err := postgres.RunMigrations(cfg.Postgres.URL()); err != nil {
+	if err = postgres.RunMigrations(cfg.Postgres.URL()); err != nil {
 		log.WithError(err).Fatal("error running postgres migrations")
 	}
 
 	ledgerRepository := postgres.NewLedgerRepository(conn, log)
 
 	ledgerUseCase := usecase.NewLedgerUseCase(log, ledgerRepository)
-	err = ledgerUseCase.LoadObjectsIntoCache(context.Background())
-	if err != nil {
+	if err = ledgerUseCase.LoadObjectsIntoCache(context.Background()); err != nil {
 		log.WithError(err).Fatal("failed to populate cache")
 	}
 
