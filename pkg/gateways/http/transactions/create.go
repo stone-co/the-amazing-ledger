@@ -12,11 +12,11 @@ import (
 type CreateTransactionRequest struct {
 	ID      uuid.UUID `json:"id"`
 	Entries []struct {
-		ID        uuid.UUID `json:"id"`
-		Operation string    `json:"operation"`
-		AccountID string    `json:"account_id"`
-		Version   uint64    `json:"version"`
-		Amount    int       `json:"amount"`
+		ID              uuid.UUID `json:"id"`
+		Operation       string    `json:"operation"`
+		AccountID       string    `json:"account_id"`
+		ExpectedVersion uint64    `json:"expected_version"`
+		Amount          int       `json:"amount"`
 	} `json:"entries"`
 }
 
@@ -42,7 +42,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 			ID:        entry.ID,
 			Operation: entities.OperationTypeFromString(entry.Operation),
 			AccountID: entry.AccountID,
-			Version:   entities.Version(entry.Version),
+			Version:   entities.Version(entry.ExpectedVersion),
 			Amount:    entry.Amount,
 		})
 	}
