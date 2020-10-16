@@ -26,7 +26,7 @@ func (l *LedgerUseCase) CreateTransaction(ctx context.Context, id uuid.UUID, ent
 			continue
 		}
 
-		if entry.Version != account.Version {
+		if entry.Version != account.CurrentVersion {
 			return entities.ErrInvalidVersion
 		}
 	}
@@ -40,7 +40,7 @@ func (l *LedgerUseCase) CreateTransaction(ctx context.Context, id uuid.UUID, ent
 	}
 
 	for i := range accounts {
-		accounts[i].Version = entries[i].Version
+		accounts[i].CurrentVersion = entries[i].Version
 	}
 
 	return nil

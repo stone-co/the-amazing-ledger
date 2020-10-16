@@ -6,7 +6,7 @@ import (
 
 type CachedAccountInfo struct {
 	sync.Mutex
-	Version Version
+	CurrentVersion Version
 }
 
 type CachedAccounts struct {
@@ -21,7 +21,7 @@ func NewCachedAccounts() *CachedAccounts {
 
 func (c *CachedAccounts) LoadOrStore(accountID string) *CachedAccountInfo {
 	object := &CachedAccountInfo{
-		Version: NewAccountVersion,
+		CurrentVersion: NewAccountVersion,
 	}
 
 	objectInMap, _ := c.objects.LoadOrStore(accountID, object)
@@ -30,7 +30,7 @@ func (c *CachedAccounts) LoadOrStore(accountID string) *CachedAccountInfo {
 
 func (c *CachedAccounts) Store(accountID string, version Version) {
 	object := &CachedAccountInfo{
-		Version: version,
+		CurrentVersion: version,
 	}
 
 	c.objects.Store(accountID, object)
