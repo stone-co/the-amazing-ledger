@@ -9,6 +9,8 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
+var _ ledger.TransactionsUseCase = &LedgerUseCase{}
+
 type LedgerUseCase struct {
 	log            *logrus.Logger
 	repository     ledger.Repository

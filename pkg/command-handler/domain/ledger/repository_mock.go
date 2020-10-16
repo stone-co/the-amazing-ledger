@@ -7,11 +7,12 @@ import (
 )
 
 type RepositoryMock struct {
-	OnCreateAccount     func(*entities.Account) (entities.Account, error)
-	OnGetAccount        func(string) (entities.Account, error)
-	OnSearchAccount     func(*entities.Account) (entities.Account, error)
-	OnUpdateBalance     func(string, int) error
-	OnCreateTransaction func(context.Context, *entities.Transaction) error
+	OnCreateAccount        func(*entities.Account) (entities.Account, error)
+	OnGetAccount           func(string) (entities.Account, error)
+	OnSearchAccount        func(*entities.Account) (entities.Account, error)
+	OnUpdateBalance        func(string, int) error
+	OnCreateTransaction    func(context.Context, *entities.Transaction) error
+	OnLoadObjectsIntoCache func(ctx context.Context, cachedAccounts *entities.CachedAccounts) (entities.Version, error)
 }
 
 func (s RepositoryMock) CreateAccount(a *entities.Account) (entities.Account, error) {
@@ -32,4 +33,8 @@ func (s RepositoryMock) UpdateBalance(id string, balance int) error {
 
 func (s RepositoryMock) CreateTransaction(ctx context.Context, transaction *entities.Transaction) error {
 	return s.OnCreateTransaction(ctx, transaction)
+}
+
+func (s RepositoryMock) LoadObjectsIntoCache(ctx context.Context, cachedAccounts *entities.CachedAccounts) (entities.Version, error) {
+	return s.OnLoadObjectsIntoCache(ctx, cachedAccounts)
 }
