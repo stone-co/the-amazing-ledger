@@ -32,6 +32,11 @@ type GRPCConfig struct {
 	Port int `envconfig:"GRPC_PORT" default:"50051"`
 }
 
+type GrpcConfig struct {
+	Port            string        `envconfig:"GRPC_PORT" default:"50051"`
+	ShutdownTimeout time.Duration `envconfig:"API_SHUTDOWN_TIMEOUT" default:"5s"`
+}
+
 type PostgresConfig struct {
 	DatabaseName string `envconfig:"DATABASE_NAME" default:"dev"`
 	User         string `envconfig:"DATABASE_USER" default:"postgres"`
