@@ -6,8 +6,10 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger"
-	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/transactions/proto"
+	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
 )
+
+var _ pb.LedgerServiceServer = &Handler{}
 
 // TODO: move to outside
 type Handler struct {
@@ -23,7 +25,7 @@ func NewHandler(log *logrus.Logger, useCase ledger.TransactionsUseCase) *Handler
 	}
 }
 
-func (s *Handler) SayHello(ctx context.Context, in pb.CreateTransactionInput) (*pb.CreateTransactionResult, error) {
+func (s *Handler) CreateTransaction(ctx context.Context, in *pb.CreateTransactionRequest) (*pb.CreateTransactionResponse, error) {
 	log.Printf("Received: %v", in.GetId())
-	return &pb.CreateTransactionResult{Message: "Transaction " + in.GetId()}, nil
+	return &pb.CreateTransactionResponse{Status: pb.CreateTransactionResponse_SUCCESS}, nil
 }

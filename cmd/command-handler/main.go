@@ -43,10 +43,10 @@ func main() {
 	accountsHandler := accounts.NewAccountsHandler(log, ledgerUseCase)
 	transactionsHandler := transactions.NewHandler(log, ledgerUseCase)
 
+	grpcServer := grpc.NewServer(log)
+	go grpcServer.Start(cfg.Grpc)
+
 	// Starting gateway http API
 	api := http.NewApi(log, accountsHandler, transactionsHandler)
 	api.Start("0.0.0.0", cfg.API)
-
-	grpcServer := grpc.NewServer(log)
-	grpcServer.Start(cfg.Grpc)
 }
