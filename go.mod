@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/golang-migrate/migrate/v4 v4.12.2
+	github.com/golang/protobuf v1.4.3
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.4
 	github.com/jackc/pgx/v4 v4.8.1
@@ -17,6 +18,7 @@ require (
 	github.com/urfave/negroni v1.0.0
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73 // indirect
 	google.golang.org/grpc v1.32.0
+	google.golang.org/grpc/examples v0.0.0-20201019205402-ce5e36655676
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c // indirect
