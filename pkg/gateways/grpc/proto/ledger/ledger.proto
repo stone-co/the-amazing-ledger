@@ -1,41 +1,38 @@
-// Copyright 2015 gRPC authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 syntax = "proto3";
 
-option go_package = "github.com/stone-co/the-amazing-ledger/pkg/grpc/transactions";
+option go_package = "github.com/stone-co/the-amazing-ledger/pkg/grpc/proto/ledger";
 
-package transactions;
+package ledger;
 
-// The greeting service definition.
-service Transactions {
-  rpc CreateTransaction (CreateTransactionInput) returns (CreateTransactionInput) {}
+service LedgerService {
+  rpc CreateTransaction (CreateTransactionRequest) returns (CreateTransactionResponse) {}
 }
 
-message CreateTransactionInput {
+message CreateTransactionRequest {
   string id = 1;
   repeated Entry entries = 2;
 }
 
 message Entry  {
   string id = 1;
-  string Operation = 2;
-  string account_id = 3;
-  string expected_version = 4;
+  string account_id = 2;
+  uint64 expected_version = 3;
+  Operation operation = 4;
   uint32 amount = 5;
 }
 
-message CreateTransactionResult {
-  string message = 1;
+enum Operation {
+  DEBIT = 0;
+  CREDIT = 1;
+};
+
+message CreateTransactionResponse {
+  enum Status {
+    SUCCESS = 0;
+    INVALID_VERSION = 1;
+    INVALID_AMOUNT = 2;
+    INVALID_BALANCE = 3;
+    INVALID_DATA = 4;
+  }
+  Status status = 1;
 }
