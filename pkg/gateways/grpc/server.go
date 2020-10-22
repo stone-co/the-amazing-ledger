@@ -3,6 +3,7 @@ package grpc
 import (
 	"log"
 	"net"
+	"strconv"
 
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -24,14 +25,13 @@ func NewServer(log *logrus.Logger, handler *transactions.Handler) *Server {
 	}
 }
 
-func (s *Server) Start(cfg configuration.GrpcConfig) {
-
-	lis, err := net.Listen("tcp", ":"+cfg.Port)
+func (s *Server) Start(cfg configuration.GRPCConfig) {
+	lis, err := net.Listen("tcp", ":"+strconv.Itoa(cfg.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s.log.Infof("starting grpc server at %s port", cfg.Port)
+	s.log.Infof("starting grpc server at %d port", cfg.Port)
 	server := grpc.NewServer()
 
 	pb.RegisterLedgerServiceServer(server, s.handler)
