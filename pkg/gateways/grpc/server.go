@@ -9,30 +9,32 @@ import (
 
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/transactions"
 )
 
 type Server struct {
-	log *logrus.Logger
-	pb.UnimplementedLedgerServiceServer
+	log     *logrus.Logger
+	handler *transactions.Handler
 }
 
-func NewServer(log *logrus.Logger) *Server {
+func NewServer(log *logrus.Logger, handler *transactions.Handler) *Server {
 	return &Server{
-		log: log,
+		log:     log,
+		handler: handler,
 	}
 }
 
-func (a *Server) Start(cfg configuration.GrpcConfig) {
+func (s *Server) Start(cfg configuration.GrpcConfig) {
 
 	lis, err := net.Listen("tcp", ":"+cfg.Port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	a.log.Infof("starting grpc server at %s port", cfg.Port)
+	s.log.Infof("starting grpc server at %s port", cfg.Port)
 	server := grpc.NewServer()
 
-	pb.RegisterLedgerServiceServer(server, &Server{})
+	pb.RegisterLedgerServiceServer(server, s.handler)
 
 	if err := server.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

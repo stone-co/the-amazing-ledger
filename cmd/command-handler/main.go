@@ -8,10 +8,6 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/db/postgres"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/accounts"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/transactions"
 )
 
 func main() {
@@ -40,13 +36,6 @@ func main() {
 		log.WithError(err).Fatal("failed to populate cache")
 	}
 
-	accountsHandler := accounts.NewAccountsHandler(log, ledgerUseCase)
-	transactionsHandler := transactions.NewHandler(log, ledgerUseCase)
-
-	grpcServer := grpc.NewServer(log)
-	go grpcServer.Start(cfg.Grpc)
-
-	// Starting gateway http API
-	api := http.NewApi(log, accountsHandler, transactionsHandler)
-	api.Start("0.0.0.0", cfg.API)
+	grpcServerStart(cfg.Grpc, log, ledgerUseCase)
+	httpServerStart(cfg.API, log, ledgerUseCase)
 }
