@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/sirupsen/logrus"
+
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http"
