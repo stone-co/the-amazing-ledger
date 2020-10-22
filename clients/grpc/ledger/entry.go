@@ -14,7 +14,7 @@ const (
 )
 
 func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion entities.Version, operation Operation, amount int) error {
-	var pbOperation pb.Operation = 0
+	var pbOperation pb.Operation
 
 	if operation == Debit {
 		pbOperation = pb.Operation_DEBIT
