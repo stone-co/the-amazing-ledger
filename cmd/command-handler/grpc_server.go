@@ -9,7 +9,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/transactions"
 )
 
-func grpcServerStart(config configuration.GrpcConfig, log *logrus.Logger, useCase *usecase.LedgerUseCase) {
+func grpcServerStart(config configuration.GRPCConfig, log *logrus.Logger, useCase *usecase.LedgerUseCase) {
 	transactionsGrpcHandler := transactions.NewHandler(log, useCase)
 	grpcServer := grpc.NewServer(log, transactionsGrpcHandler)
 	go grpcServer.Start(config)

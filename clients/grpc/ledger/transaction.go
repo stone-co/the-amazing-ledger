@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
 )
@@ -15,17 +16,16 @@ type Transaction struct {
 }
 
 func (c *Connection) NewTransaction(id uuid.UUID) *Transaction {
-
 	transaction := &Transaction{}
-	transaction.Message = &pb.SaveTransactionRequest{}
-	transaction.Message.Id = id.String()
+	transaction.Message = &pb.SaveTransactionRequest{
+		Id: id.String(),
+	}
 
 	return transaction
 }
 
 func (c *Connection) SaveTransaction(transaction *Transaction) error {
 	response, err := c.client.SaveTransaction(context.Background(), transaction.Message)
-
 	if err != nil {
 		return fmt.Errorf("save transaction failed: %w", err)
 	}

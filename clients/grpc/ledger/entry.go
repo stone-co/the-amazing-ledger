@@ -2,18 +2,19 @@ package ledger
 
 import (
 	"github.com/google/uuid"
+
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
 )
 
-type Operation int32
+type Operation int
 
 const (
 	Debit  Operation = 0
 	Credit Operation = 1
 )
 
-func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion entities.Version, operation Operation, amount int) error {
+func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion entities.Version, operation Operation, amount int) {
 	var pbOperation pb.Operation
 
 	if operation == Debit {
@@ -29,6 +30,4 @@ func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion e
 		Operation:       pbOperation,
 		Amount:          int32(amount),
 	})
-
-	return nil
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
 )
