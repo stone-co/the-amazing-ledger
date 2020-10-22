@@ -5,10 +5,10 @@ option go_package = "github.com/stone-co/the-amazing-ledger/pkg/grpc/proto/ledge
 package ledger;
 
 service LedgerService {
-  rpc CreateTransaction (CreateTransactionRequest) returns (CreateTransactionResponse) {}
+  rpc SaveTransaction (SaveTransactionRequest) returns (SaveTransactionResponse) {}
 }
 
-message CreateTransactionRequest {
+message SaveTransactionRequest {
   string id = 1;
   repeated Entry entries = 2;
 }
@@ -18,7 +18,7 @@ message Entry  {
   string account_id = 2;
   uint64 expected_version = 3;
   Operation operation = 4;
-  uint32 amount = 5;
+  int32 amount = 5;
 }
 
 enum Operation {
@@ -26,13 +26,6 @@ enum Operation {
   CREDIT = 1;
 };
 
-message CreateTransactionResponse {
-  enum Status {
-    SUCCESS = 0;
-    INVALID_VERSION = 1;
-    INVALID_AMOUNT = 2;
-    INVALID_BALANCE = 3;
-    INVALID_DATA = 4;
-  }
-  Status status = 1;
+message SaveTransactionResponse {
+  string error = 1;
 }
