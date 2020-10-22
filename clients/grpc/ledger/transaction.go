@@ -1,37 +1,37 @@
-package client
+package ledger
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"time"
 
+	"github.com/google/uuid"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
-
-	"github.com/golang/protobuf/ptypes"
 )
 
 type Transaction struct {
-	Message *pb.CreateTransactionRequest
+	Message *pb.SaveTransactionRequest
 }
 
-func (c *Connection) NewTransaction(id string) *Transaction {
+func (c *Connection) NewTransaction(id uuid.UUID) *Transaction {
 
 	transaction := &Transaction{}
-	transaction.Message = &proto.CreateTransactionRequest{}
-	transaction.Message.Id = id
+	transaction.Message = &pb.SaveTransactionRequest{}
+	transaction.Message.Id = id.String()
 
 	return transaction
 }
 
-func (c *Connection) CreateTransaction(transaction *Transaction) error {
-	response, err := c.client.CreateTransaction(context.Background(), transaction.Message)
+func (c *Connection) SaveTransaction(transaction *Transaction) error {
+	response, err := c.client.SaveTransaction(context.Background(), transaction.Message)
 
 	if err != nil {
-		return fmt.Errorf("create transaction failed: %w", err)
+		return fmt.Errorf("save transaction failed: %w", err)
 	}
 
-	if response.Status != pb.CreateTransactionResponse_SUCCESS {
-		return fmt.Errorf("create transaction failed: %w", response.Status.String())
+	if response.Error != entities.NoError.Error() {
+		return errors.New(response.Error)
 	}
 
 	return nil

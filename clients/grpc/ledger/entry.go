@@ -1,34 +1,33 @@
-package client
+package ledger
 
 import (
-	"encoding/json"
-
+	"github.com/google/uuid"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
 )
 
 type Operation int32
 
 const (
-	DEBIT  Operation = 0
-	CREDIT Operation = 1
+	Debit  Operation = 0
+	Credit Operation = 1
 )
 
-func (t *Transaction) AddEntry(id string, accountId string, expectedVersion uint64, operation Operation, amount int) error {
-
+func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion entities.Version, operation Operation, amount int) error {
 	var pbOperation pb.Operation = 0
 
-	if operation == DEBIT {
+	if operation == Debit {
 		pbOperation = pb.Operation_DEBIT
 	} else {
 		pbOperation = pb.Operation_CREDIT
 	}
 
-	s.Message.Entries = append(s.Message.Entries, &pb.Entry{
-		Id:              id,
+	t.Message.Entries = append(t.Message.Entries, &pb.Entry{
+		Id:              id.String(),
 		AccountId:       accountId,
-		ExpectedVersion: expectedVersion,
+		ExpectedVersion: uint64(expectedVersion),
 		Operation:       pbOperation,
-		Amount:          amount,
+		Amount:          int32(amount),
 	})
 
 	return nil
