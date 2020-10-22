@@ -26,7 +26,5 @@ func defineTransactionWithThreeEntries(conn *ledger.Connection) {
 
 	// Save transaction
 	err := conn.SaveTransaction(t)
-	if err != nil {
-		log.Fatal("save transaction fail: %w", err)
-	}
+	AssertEqual(nil, err)
 }
