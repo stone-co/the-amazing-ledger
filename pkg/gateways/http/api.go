@@ -51,7 +51,7 @@ func (a *Api) Start(host string, cfg configuration.APIConfig) {
 	n := negroni.New(negroni.NewRecovery(), negroni.NewLogger())
 	n.UseHandler(r)
 
-	endpoint := fmt.Sprintf("%s:%s", host, cfg.Port)
+	endpoint := fmt.Sprintf("%s:%d", host, cfg.Port)
 
 	// Make a channel to listen for an interrupt or terminate signal from the OS.
 	// Use a buffered channel because the signal package requires it.
