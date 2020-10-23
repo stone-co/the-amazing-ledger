@@ -36,6 +36,6 @@ func main() {
 		log.WithError(err).Fatal("failed to populate cache")
 	}
 
-	grpcServerStart(cfg.Grpc, log, ledgerUseCase)
+	grpcServerStart(cfg.GRPC, log, ledgerUseCase)
 	httpServerStart(cfg.API, log, ledgerUseCase)
 }

@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	API      APIConfig
-	Grpc     GRPCConfig
+	GRPC     GRPCConfig
 	Postgres PostgresConfig
 }
 
