@@ -7,17 +7,10 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
 )
 
-type Operation int
-
-const (
-	Debit  Operation = 0
-	Credit Operation = 1
-)
-
-func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion entities.Version, operation Operation, amount int) {
+func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion entities.Version, operation entities.OperationType, amount int) {
 	var pbOperation proto.Operation
 
-	if operation == Debit {
+	if operation == entities.DebitOperation {
 		pbOperation = proto.Operation_DEBIT
 	} else {
 		pbOperation = proto.Operation_CREDIT

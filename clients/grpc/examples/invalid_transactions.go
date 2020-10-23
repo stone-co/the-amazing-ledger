@@ -24,8 +24,8 @@ func transactionWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.
 	accountID1 := uuid.New().String()
 	accountID2 := uuid.New().String()
 
-	t.AddEntry(uuid.New(), accountID1, entities.NewAccountVersion, ledger.Debit, 15000)
-	t.AddEntry(uuid.New(), accountID2, entities.NewAccountVersion, ledger.Credit, 15000)
+	t.AddEntry(uuid.New(), accountID1, entities.NewAccountVersion, entities.DebitOperation, 15000)
+	t.AddEntry(uuid.New(), accountID2, entities.NewAccountVersion, entities.CreditOperation, 15000)
 
 	err := conn.SaveTransaction(t)
 	AssertEqual(entities.ErrInvalidData, err)
@@ -41,8 +41,8 @@ func entryWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.Connec
 	accountID2 := uuid.New().String()
 
 	invalidUUID := uuid.Nil
-	t.AddEntry(uuid.New(), accountID1, entities.NewAccountVersion, ledger.Debit, 15000)
-	t.AddEntry(invalidUUID, accountID2, entities.NewAccountVersion, ledger.Credit, 15000)
+	t.AddEntry(uuid.New(), accountID1, entities.NewAccountVersion, entities.DebitOperation, 15000)
+	t.AddEntry(invalidUUID, accountID2, entities.NewAccountVersion, entities.CreditOperation, 15000)
 
 	err := conn.SaveTransaction(t)
 	AssertEqual(entities.ErrInvalidData, err)
