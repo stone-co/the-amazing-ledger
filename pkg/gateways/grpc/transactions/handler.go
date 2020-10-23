@@ -4,10 +4,10 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger"
-	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
 )
 
-var _ pb.LedgerServiceServer = &Handler{}
+var _ proto.LedgerServiceServer = &Handler{}
 
 type Handler struct {
 	log     *logrus.Logger

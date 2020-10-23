@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
-	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
 )
 
 type Operation int
@@ -15,15 +15,15 @@ const (
 )
 
 func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion entities.Version, operation Operation, amount int) {
-	var pbOperation pb.Operation
+	var pbOperation proto.Operation
 
 	if operation == Debit {
-		pbOperation = pb.Operation_DEBIT
+		pbOperation = proto.Operation_DEBIT
 	} else {
-		pbOperation = pb.Operation_CREDIT
+		pbOperation = proto.Operation_CREDIT
 	}
 
-	t.Message.Entries = append(t.Message.Entries, &pb.Entry{
+	t.Message.Entries = append(t.Message.Entries, &proto.Entry{
 		Id:              id.String(),
 		AccountId:       accountId,
 		ExpectedVersion: uint64(expectedVersion),

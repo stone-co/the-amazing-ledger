@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
-	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/transactions"
 )
 
@@ -34,7 +34,7 @@ func (s *Server) Start(cfg configuration.GRPCConfig) {
 	s.log.Infof("starting grpc server at %d port", cfg.Port)
 	server := grpc.NewServer()
 
-	pb.RegisterLedgerServiceServer(server, s.handler)
+	proto.RegisterLedgerServiceServer(server, s.handler)
 
 	if err := server.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

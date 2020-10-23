@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-option go_package = "github.com/stone-co/the-amazing-ledger/pkg/grpc/proto/ledger";
+option go_package = "github.com/stone-co/the-amazing-ledger/pkg/grpc/proto";
 
-package ledger;
+package proto;
 
 service LedgerService {
   rpc SaveTransaction (SaveTransactionRequest) returns (SaveTransactionResponse) {}

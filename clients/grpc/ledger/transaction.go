@@ -8,16 +8,16 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
-	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
 )
 
 type Transaction struct {
-	Message *pb.SaveTransactionRequest
+	Message *proto.SaveTransactionRequest
 }
 
 func (c *Connection) NewTransaction(id uuid.UUID) *Transaction {
 	transaction := &Transaction{}
-	transaction.Message = &pb.SaveTransactionRequest{
+	transaction.Message = &proto.SaveTransactionRequest{
 		Id: id.String(),
 	}
 

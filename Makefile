@@ -58,5 +58,5 @@ test-coverage:
 .PHONY: generate
 generate:
 	@echo "Go Generating"
-	@protoc --go_out=plugins=grpc:. pkg/gateways/grpc/proto/ledger/ledger.proto --go_opt=paths=source_relative
+	@protoc --go_out=plugins=grpc:. pkg/gateways/grpc/proto/ledger.proto --go_opt=paths=source_relative
 	go generate ./...

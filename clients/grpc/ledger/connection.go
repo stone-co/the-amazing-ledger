@@ -5,12 +5,12 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto/ledger"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
 )
 
 type Connection struct {
 	conn   *grpc.ClientConn
-	client pb.LedgerServiceClient
+	client proto.LedgerServiceClient
 }
 
 func Connect(host string, port int) (*Connection, error) {
@@ -19,7 +19,7 @@ func Connect(host string, port int) (*Connection, error) {
 		return nil, fmt.Errorf("did not connect: %s", err)
 	}
 
-	client := pb.NewLedgerServiceClient(conn)
+	client := proto.NewLedgerServiceClient(conn)
 
 	return &Connection{
 		conn:   conn,
