@@ -32,7 +32,6 @@ jobs:
     - uses: golangci/golangci-lint-action@v2
       with:
         version: v1.31
-    - run: make metalint
 
   Build:
     name: Build Job
