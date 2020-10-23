@@ -39,5 +39,4 @@ func (s *Server) Start(cfg configuration.GRPCConfig) {
 	if err := server.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
-
 }
