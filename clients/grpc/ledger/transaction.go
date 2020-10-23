@@ -24,8 +24,8 @@ func (c *Connection) NewTransaction(id uuid.UUID) *Transaction {
 	return transaction
 }
 
-func (c *Connection) SaveTransaction(transaction *Transaction) error {
-	response, err := c.client.SaveTransaction(context.Background(), transaction.Message)
+func (c *Connection) SaveTransaction(ctx context.Context, transaction *Transaction) error {
+	response, err := c.client.SaveTransaction(ctx, transaction.Message)
 	if err != nil {
 		return fmt.Errorf("save transaction failed: %w", err)
 	}

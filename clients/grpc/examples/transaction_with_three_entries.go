@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 
@@ -24,6 +26,6 @@ func defineTransactionWithThreeEntries(log *logrus.Entry, conn *ledger.Connectio
 	t.AddEntry(uuid.New(), accountID3, entities.NewAccountVersion, entities.CreditOperation, 5000)
 
 	// Save transaction
-	err := conn.SaveTransaction(t)
+	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 }

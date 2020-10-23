@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 
@@ -27,7 +29,7 @@ func transactionWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.
 	t.AddEntry(uuid.New(), accountID1, entities.NewAccountVersion, entities.DebitOperation, 15000)
 	t.AddEntry(uuid.New(), accountID2, entities.NewAccountVersion, entities.CreditOperation, 15000)
 
-	err := conn.SaveTransaction(t)
+	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(entities.ErrInvalidData, err)
 }
 
@@ -44,7 +46,7 @@ func entryWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.Connec
 	t.AddEntry(uuid.New(), accountID1, entities.NewAccountVersion, entities.DebitOperation, 15000)
 	t.AddEntry(invalidUUID, accountID2, entities.NewAccountVersion, entities.CreditOperation, 15000)
 
-	err := conn.SaveTransaction(t)
+	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(entities.ErrInvalidData, err)
 }
 
@@ -54,6 +56,6 @@ func withoutEntriesReturnsInvalidEntriesNumber(log *logrus.Entry, conn *ledger.C
 
 	t := conn.NewTransaction(uuid.New())
 
-	err := conn.SaveTransaction(t)
+	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(entities.ErrInvalidEntriesNumber, err)
 }
