@@ -19,7 +19,6 @@ func Connect(host string, port int) (*Connection, error) {
 		return nil, fmt.Errorf("did not connect: %s", err)
 	}
 
-	// TODO: is's ok? 1 for all calls?
 	client := pb.NewLedgerServiceClient(conn)
 
 	return &Connection{

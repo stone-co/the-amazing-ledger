@@ -1,23 +1,22 @@
 package main
 
 import (
-	"log"
-
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 
 	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
-func invalidTransactionsTests(conn *ledger.Connection) {
-	transactionWithInvalidIdReturnsInvalidData(conn)
-	entryWithInvalidIdReturnsInvalidData(conn)
-	withoutEntriesReturnsInvalidEntriesNumber(conn)
+func invalidTransactionsTests(log *logrus.Entry, conn *ledger.Connection) {
+	transactionWithInvalidIdReturnsInvalidData(log, conn)
+	entryWithInvalidIdReturnsInvalidData(log, conn)
+	withoutEntriesReturnsInvalidEntriesNumber(log, conn)
 }
 
-func transactionWithInvalidIdReturnsInvalidData(conn *ledger.Connection) {
-	log.Println("transactionWithInvalidIdReturnsInvalidData example starting...")
-	defer log.Println("transactionWithInvalidIdReturnsInvalidData example finishing...")
+func transactionWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.Connection) {
+	log.Println("starting transactionWithInvalidIdReturnsInvalidData")
+	defer log.Println("finishing transactionWithInvalidIdReturnsInvalidData")
 
 	invalidUUID := uuid.Nil
 	t := conn.NewTransaction(invalidUUID)
@@ -32,9 +31,9 @@ func transactionWithInvalidIdReturnsInvalidData(conn *ledger.Connection) {
 	AssertEqual(entities.ErrInvalidData, err)
 }
 
-func entryWithInvalidIdReturnsInvalidData(conn *ledger.Connection) {
-	log.Println("entryWithInvalidIdReturnsInvalidData example starting...")
-	defer log.Println("entryWithInvalidIdReturnsInvalidData example finishing...")
+func entryWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.Connection) {
+	log.Println("starting entryWithInvalidIdReturnsInvalidData")
+	defer log.Println("finishing entryWithInvalidIdReturnsInvalidData")
 
 	t := conn.NewTransaction(uuid.New())
 
@@ -49,9 +48,9 @@ func entryWithInvalidIdReturnsInvalidData(conn *ledger.Connection) {
 	AssertEqual(entities.ErrInvalidData, err)
 }
 
-func withoutEntriesReturnsInvalidEntriesNumber(conn *ledger.Connection) {
-	log.Println("entryWithInvalidIdReturnsInvalidData example starting...")
-	defer log.Println("entryWithInvalidIdReturnsInvalidData example finishing...")
+func withoutEntriesReturnsInvalidEntriesNumber(log *logrus.Entry, conn *ledger.Connection) {
+	log.Println("starting withoutEntriesReturnsInvalidEntriesNumber")
+	defer log.Println("finishing withoutEntriesReturnsInvalidEntriesNumber")
 
 	t := conn.NewTransaction(uuid.New())
 

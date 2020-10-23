@@ -1,17 +1,16 @@
 package main
 
 import (
-	"log"
-
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 
 	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
-func defineTransactionWithThreeEntries(conn *ledger.Connection) {
-	log.Println("defineTransactionWithThreeEntries example starting...")
-	defer log.Println("defineTransactionWithThreeEntries example finishing...")
+func defineTransactionWithThreeEntries(log *logrus.Entry, conn *ledger.Connection) {
+	log.Println("starting defineTransactionWithThreeEntries")
+	defer log.Println("finishing defineTransactionWithThreeEntries")
 
 	// Define a new transaction with 3 entries
 	t := conn.NewTransaction(uuid.New())

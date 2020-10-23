@@ -1,15 +1,16 @@
 package main
 
 import (
-	"log"
-	"reflect"
-
+	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
 )
 
 func main() {
-	log.Println("Ledger client example starting...")
-	defer log.Println("Ledger client example finishing...")
+	logrus := logrus.New()
+	log := logrus.WithField("ClientSDK", "Test")
+
+	log.Println("GRPC example starting...")
+	defer log.Println("GRPC example finishing...")
 
 	// Connect to the Ledger gRPC server
 	host := "localhost"
@@ -21,12 +22,6 @@ func main() {
 
 	defer conn.Close()
 
-	defineTransactionWithThreeEntries(conn)
-	invalidTransactionsTests(conn)
-}
-
-func AssertEqual(expected, actual interface{}) {
-	if reflect.DeepEqual(expected, actual) == false {
-		log.Fatalf("Expected: %v Actual: %v\n", expected, actual)
-	}
+	defineTransactionWithThreeEntries(log, conn)
+	invalidTransactionsTests(log, conn)
 }
