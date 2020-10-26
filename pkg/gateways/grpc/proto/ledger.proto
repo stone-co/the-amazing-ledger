@@ -8,23 +8,28 @@ service LedgerService {
   rpc SaveTransaction(SaveTransactionRequest) returns (SaveTransactionResponse);
 }
 
+// SaveTransactionRequest represents a transaction to be saved. A transaction must
+// have at least two entries, with a valid balance. More info here:
+// https://en.wikipedia.org/wiki/Double-entry_bookkeeping
 message SaveTransactionRequest {
-  string id = 1;
-  repeated Entry entries = 2;
+  string id = 1;              // ID (UUID) to link the entries to a transaction.
+  repeated Entry entries = 2; // The list of entries, where len(entries) must be >= 2.
 }
 
+// Entry represents a new entry on the Ledger.
 message Entry  {
-  string id = 1;
-  string account_id = 2;
-  uint64 expected_version = 3;
-  Operation operation = 4;
-  int32 amount = 5;
+  string id = 1;               // It's the idempotency key, and must be unique (UUID).
+  string account_id = 2;       // Account involved in the operation.
+  uint64 expected_version = 3; // To deal with optimistic lock.
+  Operation operation = 4;     // Operation: debit or credit.
+  int32 amount = 5;            // Amount (in cents).
 }
 
+// Operation has the possible operations to be used in Entry.
 enum Operation {
-  OPERATION_UNSPECIFIED = 0;
-  OPERATION_DEBIT = 1;
-  OPERATION_CREDIT = 2;
+  OPERATION_UNSPECIFIED = 0; // Don't use. It's just a default value.
+  OPERATION_DEBIT = 1;       // Debit operation.
+  OPERATION_CREDIT = 2;      // Credit operation.
 };
 
 message SaveTransactionResponse {

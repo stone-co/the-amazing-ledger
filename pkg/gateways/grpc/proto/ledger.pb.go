@@ -29,12 +29,13 @@ const (
 // of the legacy proto package is being used.
 const _ = proto.ProtoPackageIsVersion4
 
+// Operation has the possible operations to be used in Entry.
 type Operation int32
 
 const (
-	Operation_OPERATION_UNSPECIFIED Operation = 0
-	Operation_OPERATION_DEBIT       Operation = 1
-	Operation_OPERATION_CREDIT      Operation = 2
+	Operation_OPERATION_UNSPECIFIED Operation = 0 // Don't use. It's just a default value.
+	Operation_OPERATION_DEBIT       Operation = 1 // Debit operation.
+	Operation_OPERATION_CREDIT      Operation = 2 // Credit operation.
 )
 
 // Enum value maps for Operation.
@@ -78,13 +79,16 @@ func (Operation) EnumDescriptor() ([]byte, []int) {
 	return file_pkg_gateways_grpc_proto_ledger_proto_rawDescGZIP(), []int{0}
 }
 
+// SaveTransactionRequest represents a transaction to be saved. A transaction must
+// have at least two entries, with a valid balance. More info here:
+// https://en.wikipedia.org/wiki/Double-entry_bookkeeping
 type SaveTransactionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id      string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Entries []*Entry `protobuf:"bytes,2,rep,name=entries,proto3" json:"entries,omitempty"`
+	Id      string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`           // ID (UUID) to link the entries to a transaction.
+	Entries []*Entry `protobuf:"bytes,2,rep,name=entries,proto3" json:"entries,omitempty"` // The list of entries, where len(entries) must be >= 2.
 }
 
 func (x *SaveTransactionRequest) Reset() {
@@ -133,16 +137,17 @@ func (x *SaveTransactionRequest) GetEntries() []*Entry {
 	return nil
 }
 
+// Entry represents a new entry on the Ledger.
 type Entry struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id              string    `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	AccountId       string    `protobuf:"bytes,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	ExpectedVersion uint64    `protobuf:"varint,3,opt,name=expected_version,json=expectedVersion,proto3" json:"expected_version,omitempty"`
-	Operation       Operation `protobuf:"varint,4,opt,name=operation,proto3,enum=proto.Operation" json:"operation,omitempty"`
-	Amount          int32     `protobuf:"varint,5,opt,name=amount,proto3" json:"amount,omitempty"`
+	Id              string    `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                                   // It's the idempotency key, and must be unique (UUID).
+	AccountId       string    `protobuf:"bytes,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`                    // Account involved in the operation.
+	ExpectedVersion uint64    `protobuf:"varint,3,opt,name=expected_version,json=expectedVersion,proto3" json:"expected_version,omitempty"` // To deal with optimistic lock.
+	Operation       Operation `protobuf:"varint,4,opt,name=operation,proto3,enum=proto.Operation" json:"operation,omitempty"`               // Operation: debit or credit.
+	Amount          int32     `protobuf:"varint,5,opt,name=amount,proto3" json:"amount,omitempty"`                                          // Amount (in cents).
 }
 
 func (x *Entry) Reset() {
