@@ -69,7 +69,7 @@ func (a *Api) Start(host string, cfg configuration.APIConfig) {
 
 	// Start the service listening for requests.
 	go func() {
-		a.log.Infof("starting API at %s", endpoint)
+		a.log.Infof("starting http api at %s", endpoint)
 		serverErrors <- srv.ListenAndServe()
 	}()
 
