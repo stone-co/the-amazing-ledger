@@ -11,9 +11,9 @@ func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion e
 	var pbOperation proto.Operation
 
 	if operation == entities.DebitOperation {
-		pbOperation = proto.Operation_DEBIT
+		pbOperation = proto.Operation_OPERATION_DEBIT
 	} else {
-		pbOperation = proto.Operation_CREDIT
+		pbOperation = proto.Operation_OPERATION_CREDIT
 	}
 
 	t.Message.Entries = append(t.Message.Entries, &proto.Entry{

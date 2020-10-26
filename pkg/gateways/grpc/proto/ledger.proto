@@ -5,7 +5,7 @@ option go_package = "github.com/stone-co/the-amazing-ledger/pkg/grpc/proto";
 package proto;
 
 service LedgerService {
-  rpc SaveTransaction (SaveTransactionRequest) returns (SaveTransactionResponse) {}
+  rpc SaveTransaction(SaveTransactionRequest) returns (SaveTransactionResponse);
 }
 
 message SaveTransactionRequest {
@@ -22,10 +22,10 @@ message Entry  {
 }
 
 enum Operation {
-  DEBIT = 0;
-  CREDIT = 1;
+  OPERATION_UNSPECIFIED = 0;
+  OPERATION_DEBIT = 1;
+  OPERATION_CREDIT = 2;
 };
 
 message SaveTransactionResponse {
-  string error = 1;
 }
