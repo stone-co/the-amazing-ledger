@@ -3,7 +3,6 @@ package entities
 import "errors"
 
 var (
-	NoError                 = errors.New("")
 	ErrInvalidData          = errors.New("invalid data")
 	ErrInvalidEntriesNumber = errors.New("invalid entries number")
 	ErrInvalidBalance       = errors.New("invalid balance")
