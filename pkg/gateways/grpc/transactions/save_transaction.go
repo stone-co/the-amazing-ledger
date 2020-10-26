@@ -5,6 +5,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
@@ -20,10 +22,10 @@ func (h *Handler) SaveTransaction(ctx context.Context, in *proto.SaveTransaction
 		entryID, err := uuid.Parse(entry.Id)
 		if err != nil {
 			log.WithError(err).Error("parsing entry id")
-			return &proto.SaveTransactionResponse{Error: entities.ErrInvalidData.Error()}, nil
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		var op entities.OperationType
-		if entry.Operation == proto.Operation_DEBIT {
+		if entry.Operation == proto.Operation_OPERATION_DEBIT {
 			op = entities.DebitOperation
 		} else {
 			op = entities.CreditOperation
@@ -40,13 +42,17 @@ func (h *Handler) SaveTransaction(ctx context.Context, in *proto.SaveTransaction
 	tid, err := uuid.Parse(in.Id)
 	if err != nil {
 		log.WithError(err).Error("parsing transaction id")
-		return &proto.SaveTransactionResponse{Error: entities.ErrInvalidData.Error()}, nil
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	if err := h.UseCase.CreateTransaction(ctx, tid, entries); err != nil {
 		log.WithError(err).Error("creating transaction")
-		return &proto.SaveTransactionResponse{Error: err.Error()}, nil
+		if err == entities.ErrInvalidVersion {
+			return nil, status.Error(codes.Aborted, err.Error())
+		}
+
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	return &proto.SaveTransactionResponse{Error: entities.NoError.Error()}, nil
+	return &proto.SaveTransactionResponse{}, nil
 }
