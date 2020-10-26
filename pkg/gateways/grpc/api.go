@@ -1,9 +1,9 @@
 package grpc
 
 import (
+	"fmt"
 	"log"
 	"net"
-	"strconv"
 
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -13,28 +13,30 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/transactions"
 )
 
-type Server struct {
+type API struct {
 	log     *logrus.Logger
 	handler *transactions.Handler
 }
 
-func NewServer(log *logrus.Logger, handler *transactions.Handler) *Server {
-	return &Server{
+func NewAPI(log *logrus.Logger, handler *transactions.Handler) *API {
+	return &API{
 		log:     log,
 		handler: handler,
 	}
 }
 
-func (s *Server) Start(cfg configuration.GRPCConfig) {
-	lis, err := net.Listen("tcp", ":"+strconv.Itoa(cfg.Port))
+func (a *API) Start(cfg configuration.GRPCConfig) {
+	endpoint := fmt.Sprintf(":%d", cfg.Port)
+
+	lis, err := net.Listen("tcp", endpoint)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s.log.Infof("starting grpc server at %d port", cfg.Port)
+	a.log.Infof("starting grpc api at %s", endpoint)
 	server := grpc.NewServer()
 
-	proto.RegisterLedgerServiceServer(server, s.handler)
+	proto.RegisterLedgerServiceServer(server, a.handler)
 
 	if err := server.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
