@@ -4,8 +4,10 @@ option go_package = "github.com/stone-co/the-amazing-ledger/pkg/grpc/proto";
 
 package proto;
 
+import "google/protobuf/empty.proto";
+
 service LedgerService {
-  rpc SaveTransaction(SaveTransactionRequest) returns (SaveTransactionResponse);
+  rpc SaveTransaction(SaveTransactionRequest) returns (google.protobuf.Empty);
 }
 
 // SaveTransactionRequest represents a transaction to be saved. A transaction must
@@ -27,10 +29,7 @@ message Entry  {
 
 // Operation has the possible operations to be used in Entry.
 enum Operation {
-  OPERATION_UNSPECIFIED = 0; // Don't use. It's just a default value.
+  OPERATION_UNSPECIFIED = 0; // Don't use. It's just the default value.
   OPERATION_DEBIT = 1;       // Debit operation.
   OPERATION_CREDIT = 2;      // Credit operation.
 };
-
-message SaveTransactionResponse {
-}
