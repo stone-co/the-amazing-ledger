@@ -10,7 +10,7 @@ import (
 )
 
 func grpcAPIStart(config configuration.GRPCConfig, log *logrus.Logger, useCase *usecase.LedgerUseCase) {
-	transactionsGrpcHandler := transactions.NewHandler(log, useCase)
-	grpcAPI := grpc.NewAPI(log, transactionsGrpcHandler)
-	go grpcAPI.Start(config)
+	transactionsHandler := transactions.NewHandler(log, useCase)
+	api := grpc.NewAPI(log, transactionsHandler)
+	api.Start(config)
 }
