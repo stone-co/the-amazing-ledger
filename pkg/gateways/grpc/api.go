@@ -9,8 +9,12 @@ import (
 	"syscall"
 	"time"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
@@ -42,7 +46,25 @@ func (a *API) Start(cfg configuration.GRPCConfig) {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	srv := grpc.NewServer()
+	// Define a func to handle panic
+	dealPanic := func(p interface{}) (err error) {
+		log.Printf("panic triggered: %v", p)
+		return status.Errorf(codes.Unknown, "panic triggered: %v", p)
+	}
+
+	opts := []grpc_recovery.Option{
+		grpc_recovery.WithRecoveryHandler(dealPanic),
+	}
+
+	srv := grpc.NewServer(
+		grpc_middleware.WithUnaryServerChain(
+			grpc_recovery.UnaryServerInterceptor(opts...),
+		),
+		grpc_middleware.WithStreamServerChain(
+			grpc_recovery.StreamServerInterceptor(opts...),
+		),
+	)
+
 	proto.RegisterLedgerServiceServer(srv, a.handler)
 
 	// Make a channel to listen for errors coming from the listener. Use a
