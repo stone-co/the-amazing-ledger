@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"sync"
 
 	"github.com/sirupsen/logrus"
 
@@ -36,6 +37,18 @@ func main() {
 		log.WithError(err).Fatal("failed to populate cache")
 	}
 
-	grpcAPIStart(cfg.GRPC, log, ledgerUseCase)
-	httpAPIStart(cfg.API, log, ledgerUseCase)
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		grpcAPIStart(cfg.GRPC, log, ledgerUseCase)
+	}()
+
+	go func() {
+		defer wg.Done()
+		httpAPIStart(cfg.API, log, ledgerUseCase)
+	}()
+
+	wg.Wait()
 }
