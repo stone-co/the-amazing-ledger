@@ -3,6 +3,7 @@ package transactions
 import (
 	"context"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
@@ -12,7 +13,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
 )
 
-func (h *Handler) SaveTransaction(ctx context.Context, in *proto.SaveTransactionRequest) (*proto.SaveTransactionResponse, error) {
+func (h *Handler) SaveTransaction(ctx context.Context, in *proto.SaveTransactionRequest) (*empty.Empty, error) {
 	log := h.log.WithFields(logrus.Fields{
 		"handler": "SaveTransaction",
 	})
@@ -54,5 +55,5 @@ func (h *Handler) SaveTransaction(ctx context.Context, in *proto.SaveTransaction
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	return &proto.SaveTransactionResponse{}, nil
+	return &empty.Empty{}, nil
 }
