@@ -29,7 +29,8 @@ type HTTPConfig struct {
 }
 
 type GRPCConfig struct {
-	Port int `envconfig:"GRPC_PORT" default:"50051"`
+	Port            int           `envconfig:"GRPC_PORT" default:"50051"`
+	ShutdownTimeout time.Duration `envconfig:"GRPC_SHUTDOWN_TIMEOUT" default:"5s"`
 }
 
 type PostgresConfig struct {
