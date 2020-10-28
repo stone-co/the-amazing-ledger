@@ -63,3 +63,15 @@ curl -i -X POST localhost:3000/transactions -d \
 "account_id":"16b23084-686b-434a-8323-db483ce1e581", "version": 0, "amount":
 123}]}'
 ```
+
+# ROADMAP
+
+- [x] HTTP API
+- [x] Save transactions
+- [x] gRPC API
+- [ ] Get information about an account (balance and current version)
+- [ ] Get the history of an account (operations)
+- [ ] Accounting reports
+- [ ] End2End tests (gRPC)
+- [ ] Stress tests (gRPC)
+- [ ] Load test (gRPC)
