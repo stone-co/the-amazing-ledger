@@ -34,7 +34,7 @@ func NewApi(log *logrus.Logger, accounts *accounts.Handler, transactions *transa
 	}
 }
 
-func (a *Api) Start(host string, cfg configuration.APIConfig) {
+func (a *Api) Start(host string, cfg configuration.HTTPConfig) {
 	// Router
 	r := mux.NewRouter()
 
@@ -51,7 +51,7 @@ func (a *Api) Start(host string, cfg configuration.APIConfig) {
 	n := negroni.New(negroni.NewRecovery(), negroni.NewLogger())
 	n.UseHandler(r)
 
-	endpoint := fmt.Sprintf("%s:%s", host, cfg.Port)
+	endpoint := fmt.Sprintf("%s:%d", host, cfg.Port)
 
 	// Make a channel to listen for an interrupt or terminate signal from the OS.
 	// Use a buffered channel because the signal package requires it.
@@ -69,7 +69,7 @@ func (a *Api) Start(host string, cfg configuration.APIConfig) {
 
 	// Start the service listening for requests.
 	go func() {
-		a.log.Infof("starting API at %s", endpoint)
+		a.log.Infof("starting http api at %s", endpoint)
 		serverErrors <- srv.ListenAndServe()
 	}()
 
@@ -79,10 +79,10 @@ func (a *Api) Start(host string, cfg configuration.APIConfig) {
 	// Blocking main and waiting for shutdown.
 	select {
 	case err := <-serverErrors:
-		a.log.WithError(err).Fatal("server error")
+		a.log.WithError(err).Fatal("http server error")
 
 	case sig := <-shutdown:
-		a.log.Printf("%v : Start shutdown", sig)
+		a.log.Printf("%v : Start http api shutdown", sig)
 		// Give outstanding requests a deadline for completion.
 		ctx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
 		defer cancel()
@@ -90,7 +90,8 @@ func (a *Api) Start(host string, cfg configuration.APIConfig) {
 		// Asking listener to shutdown and shed load.
 		if err := srv.Shutdown(ctx); err != nil {
 			_ = srv.Close()
-			a.log.WithError(err).Fatal("could not stop server gracefully")
+			a.log.WithError(err).Fatal("could not stop http server gracefully")
 		}
+		a.log.Printf("%v : Finished http api shutdown", sig)
 	}
 }

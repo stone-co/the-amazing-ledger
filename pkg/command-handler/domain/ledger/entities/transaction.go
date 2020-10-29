@@ -1,17 +1,7 @@
 package entities
 
 import (
-	"errors"
-
 	"github.com/google/uuid"
-)
-
-var (
-	ErrInvalidData          = errors.New("invalid data")
-	ErrInvalidEntriesNumber = errors.New("invalid entries number")
-	ErrInvalidBalance       = errors.New("invalid balance")
-	ErrIdempotencyKey       = errors.New("idempotency key violation")
-	ErrInvalidVersion       = errors.New("invalid version")
 )
 
 type Transaction struct {
@@ -30,11 +20,11 @@ func NewTransaction(id uuid.UUID, entries ...Entry) (*Transaction, error) {
 
 	balance := 0
 	for _, entry := range entries {
-		if entry.Amount <= 0 {
+		if entry.ID == uuid.Nil {
 			return nil, ErrInvalidData
 		}
 
-		if entry.Operation == InvalidOperation {
+		if entry.Amount <= 0 {
 			return nil, ErrInvalidData
 		}
 

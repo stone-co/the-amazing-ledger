@@ -2,15 +2,13 @@ package main
 
 import (
 	"context"
+	"sync"
 
 	"github.com/sirupsen/logrus"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/db/postgres"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/accounts"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/transactions"
 )
 
 func main() {
@@ -39,10 +37,18 @@ func main() {
 		log.WithError(err).Fatal("failed to populate cache")
 	}
 
-	accountsHandler := accounts.NewAccountsHandler(log, ledgerUseCase)
-	transactionsHandler := transactions.NewHandler(log, ledgerUseCase)
+	var wg sync.WaitGroup
+	wg.Add(2)
 
-	// Starting gateway http API
-	api := http.NewApi(log, accountsHandler, transactionsHandler)
-	api.Start("0.0.0.0", cfg.API)
+	go func() {
+		defer wg.Done()
+		grpcAPIStart(cfg.GRPC, log, ledgerUseCase)
+	}()
+
+	go func() {
+		defer wg.Done()
+		httpAPIStart(cfg.API, log, ledgerUseCase)
+	}()
+
+	wg.Wait()
 }
