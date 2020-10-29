@@ -44,6 +44,14 @@ $ make compile
 $ ./build/command-handler
 ```
 
+## Setup
+
+Download and install dependency tools
+
+```bash
+$ make setup
+```
+
 ## Running tests
 
 ```bash

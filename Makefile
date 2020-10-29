@@ -9,6 +9,14 @@ TERM=xterm-256color
 CLICOLOR_FORCE=true
 RICHGO_FORCE_COLOR=1
 
+.PHONY: setup
+setup:
+	@echo "==> Setup: Getting tools"
+	@go get -u github.com/golang/protobuf/protoc-gen-go
+	@go get github.com/kevinburke/go-bindata/...
+	@curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin
+	@go install ./...
+
 .PHONY: test
 test:
 	@echo "==> Running Tests"
@@ -37,9 +45,7 @@ clean:
 
 .PHONY: metalint
 metalint:
-	@echo "==> installing golangci-lint"
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin
-	go install ./...
+	@echo "==> Running golangci-lint"
 	go test -i ./...
 	$$(go env GOPATH)/bin/golangci-lint run -c ./.golangci.yml ./...
 
@@ -52,5 +58,5 @@ test-coverage:
 .PHONY: generate
 generate:
 	@echo "Go Generating"
-	go get github.com/kevinburke/go-bindata/...
+	@protoc --go_out=plugins=grpc:. pkg/gateways/grpc/proto/ledger.proto --go_opt=paths=source_relative
 	go generate ./...
