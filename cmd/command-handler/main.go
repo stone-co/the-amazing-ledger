@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
@@ -75,7 +74,7 @@ func main() {
 	// Blocking main and waiting for shutdown.
 	select {
 	case err := <-serverErrors:
-		log.Fatal(errors.Wrap(err, "server error"))
+		log.Fatal(fmt.Errorf("server error: %w", err))
 
 	case sig := <-shutdown:
 		log.Printf("NewServer shutdown %v\n", sig)
@@ -88,7 +87,7 @@ func main() {
 		log.Printf("Stopping HTTP Server %v\n", sig)
 		if err := httpServer.Shutdown(ctx); err != nil {
 			_ = httpServer.Close()
-			log.Fatal(errors.Wrap(err, "could not stop server gracefully"))
+			log.Fatal(fmt.Errorf("could not stop server gracefully: %w", err))
 		}
 		log.Printf("HTTP Server Stopped %v\n", sig)
 
