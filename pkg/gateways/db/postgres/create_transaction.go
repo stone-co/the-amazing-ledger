@@ -35,7 +35,7 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 		batch.Queue(
 			query,
 			entry.ID,
-			entry.AccountID,
+			entry.Account.Name(),
 			entry.Operation.String(),
 			entry.Amount,
 			entry.Version,

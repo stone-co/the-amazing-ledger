@@ -27,7 +27,7 @@ func main() {
 	defer conn.Close()
 
 	if err = postgres.RunMigrations(cfg.Postgres.URL()); err != nil {
-		log.WithError(err).Fatal("error running postgres migrations")
+		log.WithError(err).Fatal("running postgres migrations")
 	}
 
 	ledgerRepository := postgres.NewLedgerRepository(conn, log)
