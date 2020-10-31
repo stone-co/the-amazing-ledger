@@ -6,7 +6,7 @@ import (
 
 type Transaction struct {
 	ID      uuid.UUID
-	Entries []Entry
+	Entries []Entry // TODO: pointer?
 }
 
 func NewTransaction(id uuid.UUID, entries ...Entry) (*Transaction, error) {
@@ -20,18 +20,6 @@ func NewTransaction(id uuid.UUID, entries ...Entry) (*Transaction, error) {
 
 	balance := 0
 	for _, entry := range entries {
-		if entry.ID == uuid.Nil {
-			return nil, ErrInvalidData
-		}
-
-		if entry.Amount <= 0 {
-			return nil, ErrInvalidData
-		}
-
-		if entry.Operation == InvalidOperation {
-			return nil, ErrInvalidData
-		}
-
 		if entry.Operation == DebitOperation {
 			balance += entry.Amount
 		} else {
