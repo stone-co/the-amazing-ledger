@@ -23,8 +23,8 @@ func transactionWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.
 	invalidUUID := uuid.Nil
 	t := conn.NewTransaction(invalidUUID)
 
-	accountID1 := uuid.New().String()
-	accountID2 := uuid.New().String()
+	accountID1 := "liability:clients:available:" + uuid.New().String()
+	accountID2 := "liability:clients:available:" + uuid.New().String()
 
 	t.AddEntry(uuid.New(), accountID1, entities.NewAccountVersion, entities.DebitOperation, 15000)
 	t.AddEntry(uuid.New(), accountID2, entities.NewAccountVersion, entities.CreditOperation, 15000)
@@ -39,8 +39,8 @@ func entryWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.Connec
 
 	t := conn.NewTransaction(uuid.New())
 
-	accountID1 := uuid.New().String()
-	accountID2 := uuid.New().String()
+	accountID1 := "liability:clients:available:" + uuid.New().String()
+	accountID2 := "liability:clients:available:" + uuid.New().String()
 
 	invalidUUID := uuid.Nil
 	t.AddEntry(uuid.New(), accountID1, entities.NewAccountVersion, entities.DebitOperation, 15000)

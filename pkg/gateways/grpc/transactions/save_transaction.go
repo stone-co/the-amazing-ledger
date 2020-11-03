@@ -18,26 +18,36 @@ func (h *Handler) SaveTransaction(ctx context.Context, in *proto.SaveTransaction
 		"handler": "SaveTransaction",
 	})
 
-	entries := []entities.Entry{}
+	domainEntries := []entities.Entry{}
 	for _, entry := range in.Entries {
 		entryID, err := uuid.Parse(entry.Id)
 		if err != nil {
 			log.WithError(err).Error("parsing entry id")
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
+
 		var op entities.OperationType
 		if entry.Operation == proto.Operation_OPERATION_DEBIT {
 			op = entities.DebitOperation
-		} else {
+		} else if entry.Operation == proto.Operation_OPERATION_CREDIT {
 			op = entities.CreditOperation
+		} else {
+			op = entities.InvalidOperation
 		}
-		entries = append(entries, entities.Entry{
-			ID:        entryID,
-			Operation: op,
-			AccountID: entry.AccountId,
-			Version:   entities.Version(entry.ExpectedVersion),
-			Amount:    int(entry.Amount),
-		})
+
+		domainEntry, err := entities.NewEntry(
+			entryID,
+			op,
+			entry.AccountId,
+			entities.Version(entry.ExpectedVersion),
+			int(entry.Amount),
+		)
+		if err != nil {
+			log.WithError(err).Error("creating entry")
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+
+		domainEntries = append(domainEntries, *domainEntry)
 	}
 
 	tid, err := uuid.Parse(in.Id)
@@ -46,7 +56,7 @@ func (h *Handler) SaveTransaction(ctx context.Context, in *proto.SaveTransaction
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if err := h.UseCase.CreateTransaction(ctx, tid, entries); err != nil {
+	if err := h.UseCase.CreateTransaction(ctx, tid, domainEntries); err != nil {
 		log.WithError(err).Error("creating transaction")
 		if err == entities.ErrInvalidVersion {
 			return nil, status.Error(codes.Aborted, err.Error())

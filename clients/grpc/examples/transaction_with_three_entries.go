@@ -17,9 +17,9 @@ func defineTransactionWithThreeEntries(log *logrus.Entry, conn *ledger.Connectio
 	// Define a new transaction with 3 entries
 	t := conn.NewTransaction(uuid.New())
 
-	accountID1 := uuid.New().String()
-	accountID2 := uuid.New().String()
-	accountID3 := uuid.New().String()
+	accountID1 := "liability:clients:available:" + uuid.New().String()
+	accountID2 := "liability:clients:available:" + uuid.New().String()
+	accountID3 := "liability:clients:available:" + uuid.New().String()
 
 	t.AddEntry(uuid.New(), accountID1, entities.NewAccountVersion, entities.DebitOperation, 15000)
 	t.AddEntry(uuid.New(), accountID2, entities.NewAccountVersion, entities.CreditOperation, 10000)

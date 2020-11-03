@@ -36,19 +36,29 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	entries := []entities.Entry{}
+	domainEntries := []entities.Entry{}
 	for _, entry := range input.Entries {
-		entries = append(entries, entities.Entry{
-			ID:        entry.ID,
-			Operation: entities.OperationTypeFromString(entry.Operation),
-			AccountID: entry.AccountID,
-			Version:   entities.Version(entry.ExpectedVersion),
-			Amount:    entry.Amount,
-		})
+		domainEntry, err := entities.NewEntry(
+			entry.ID,
+			entities.OperationTypeFromString(entry.Operation),
+			entry.AccountID,
+			entities.Version(entry.ExpectedVersion),
+			entry.Amount,
+		)
+		if err != nil {
+			log.WithError(err).Error("invalid entry data")
+			w.WriteHeader(http.StatusBadRequest)
+			_, err = w.Write([]byte(err.Error()))
+			if err != nil {
+				log.WithError(err).Error("can't write response")
+			}
+			return
+		}
+		domainEntries = append(domainEntries, *domainEntry)
 	}
 
-	if err := h.UseCase.CreateTransaction(r.Context(), input.ID, entries); err != nil {
-		log.WithError(err).Error("error creating transaction")
+	if err := h.UseCase.CreateTransaction(r.Context(), input.ID, domainEntries); err != nil {
+		log.WithError(err).Error("creating transaction")
 		w.WriteHeader(http.StatusBadRequest)
 		_, err = w.Write([]byte(err.Error()))
 		if err != nil {

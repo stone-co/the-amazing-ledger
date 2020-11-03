@@ -21,7 +21,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, err := h.UseCase.CreateAccount(input); err != nil {
-		log.WithError(err).Error("error creating account")
+		log.WithError(err).Error("creating account")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
