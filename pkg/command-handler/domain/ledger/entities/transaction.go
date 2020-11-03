@@ -6,7 +6,7 @@ import (
 
 type Transaction struct {
 	ID      uuid.UUID
-	Entries []Entry // TODO: pointer?
+	Entries []Entry
 }
 
 func NewTransaction(id uuid.UUID, entries ...Entry) (*Transaction, error) {

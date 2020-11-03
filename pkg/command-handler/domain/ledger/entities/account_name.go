@@ -3,7 +3,10 @@ package entities
 import "strings"
 
 var (
-	classTypes = "|liability|assets|income|expense|equity|"
+	classTypes     = "|liability|assets|income|expense|equity|"
+	structureSep   = ":"
+	minLevels      = 4
+	classTypeLevel = 0
 )
 
 // AccountName contains exactly 4 levels in her structure: "class:group:subgroup:id", where:
@@ -18,8 +21,8 @@ type AccountName struct { // TODO: could be just "Account", but already exists t
 func NewAccountName(name string) (*AccountName, error) {
 	name = strings.ToLower(name)
 
-	levels := strings.Split(name, ":")
-	if len(levels) < 4 {
+	levels := strings.Split(name, structureSep)
+	if len(levels) < minLevels {
 		return nil, ErrInvalidAccountStructure
 	}
 
@@ -29,7 +32,7 @@ func NewAccountName(name string) (*AccountName, error) {
 		}
 	}
 
-	if !strings.Contains(classTypes, levels[0]) {
+	if !strings.Contains(classTypes, levels[classTypeLevel]) {
 		return nil, ErrInvalidAccountStructure
 	}
 

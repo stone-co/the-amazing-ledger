@@ -7,7 +7,6 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
-// TODO: entries ...Entry?
 func (l *LedgerUseCase) CreateTransaction(ctx context.Context, id uuid.UUID, entries []entities.Entry) error {
 	transaction, err := entities.NewTransaction(id, entries...)
 	if err != nil {

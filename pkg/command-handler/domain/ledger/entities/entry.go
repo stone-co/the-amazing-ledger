@@ -13,7 +13,6 @@ type Entry struct {
 }
 
 func NewEntry(id uuid.UUID, operation OperationType, accountID string, version Version, amount int) (*Entry, error) {
-
 	if id == uuid.Nil {
 		return nil, ErrInvalidData
 	}
