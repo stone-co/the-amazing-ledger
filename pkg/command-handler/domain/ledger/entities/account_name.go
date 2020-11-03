@@ -9,7 +9,7 @@ var (
 	classTypeLevel = 0
 )
 
-// AccountName contains exactly 4 levels in her structure: "class:group:subgroup:id", where:
+// AccountName must contain at least 4 levels in her structure: "class:group:subgroup:id", where:
 //   - class could be liability, assets, income, expense or equity;
 //   - group, subgroup and id are "free text".
 //
