@@ -1,4 +1,4 @@
-package grpc
+package rpc
 
 import (
 	"log"
@@ -10,8 +10,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/transactions"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc/proto"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc/transactions"
 )
 
 type API struct {

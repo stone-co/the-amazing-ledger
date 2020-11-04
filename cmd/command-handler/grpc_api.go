@@ -5,8 +5,8 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
-	rpc "github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/transactions"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc/transactions"
 )
 
 func NewGRPCServer(log *logrus.Logger, useCase *usecase.LedgerUseCase) *grpc.Server {

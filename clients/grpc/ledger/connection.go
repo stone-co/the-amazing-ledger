@@ -5,7 +5,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc/proto"
 )
 
 type Connection struct {

@@ -2,16 +2,19 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/db/postgres"
+	"golang.org/x/sync/errgroup"
 )
 
 func main() {
@@ -50,7 +53,7 @@ func main() {
 	serverErrors := make(chan error, 1)
 
 	// NewServer HTTP Server listening for requests.
-	httpServer := httpAPIStart(cfg.API, log, ledgerUseCase)
+	httpServer := NewHttpServer(cfg.API, log, ledgerUseCase)
 	go func() {
 		log.Infof("starting http api at %s", httpServer.Addr)
 		serverErrors <- httpServer.ListenAndServe()
@@ -82,17 +85,40 @@ func main() {
 		// Give outstanding requests a deadline for completion.
 		ctx, cancel := context.WithTimeout(context.Background(), cfg.GRPC.ShutdownTimeout)
 		defer cancel()
+		group := &errgroup.Group{}
 
-		// Asking listener to shutdown and shed load.
-		log.Printf("Stopping HTTP Server %v\n", sig)
-		if err := httpServer.Shutdown(ctx); err != nil {
-			_ = httpServer.Close()
-			log.Fatal(fmt.Errorf("could not stop server gracefully: %w", err))
+		group.Go(func() error {
+			log.Printf("Stopping HTTP Server %v\n", sig)
+			defer log.Printf("HTTP Server Stopped %v\n", sig)
+			// Asking listener to shutdown and shed load.
+			if err := httpServer.Shutdown(ctx); err != nil {
+				_ = httpServer.Close()
+				return fmt.Errorf("could not stop server gracefully: %w", err)
+			}
+			return nil
+		})
+		group.Go(func() error {
+			log.Printf("Stopping GRCP Server %v\n", sig)
+			defer log.Printf("GRCP Server Stopped %v\n", sig)
+			stopped := make(chan struct{})
+			go func() {
+				grpcServer.GracefulStop()
+				close(stopped)
+			}()
+
+			t := time.NewTimer(cfg.GRPC.ShutdownTimeout)
+			select {
+			case <-t.C:
+				grpcServer.Stop()
+				return errors.New("could not stop grpc server gracefully")
+			case <-stopped:
+				t.Stop()
+			}
+			return nil
+		})
+
+		if err := group.Wait(); err != nil {
+			log.Fatal(fmt.Errorf("server error: %w", err))
 		}
-		log.Printf("HTTP Server Stopped %v\n", sig)
-
-		log.Printf("Stopping GRCP Server %v\n", sig)
-		grpcServer.GracefulStop()
-		log.Printf("GRCP Server Stopped %v\n", sig)
 	}
 }

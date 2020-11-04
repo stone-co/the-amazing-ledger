@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/grpc/status"
 
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc/proto"
 )
 
 type Transaction struct {

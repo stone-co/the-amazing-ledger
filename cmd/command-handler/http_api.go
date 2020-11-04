@@ -12,7 +12,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/transactions"
 )
 
-func httpAPIStart(config configuration.HTTPConfig, log *logrus.Logger, useCase *usecase.LedgerUseCase) *http.Server {
+func NewHttpServer(config configuration.HTTPConfig, log *logrus.Logger, useCase *usecase.LedgerUseCase) *http.Server {
 	accountsHandler := accounts.NewAccountsHandler(log, useCase)
 	transactionsHandler := transactions.NewHandler(log, useCase)
 	api := httpApi.NewApi(log, accountsHandler, transactionsHandler)

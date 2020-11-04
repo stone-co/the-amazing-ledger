@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc/proto"
 )
 
 func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion entities.Version, operation entities.OperationType, amount int) {
