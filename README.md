@@ -77,6 +77,7 @@ curl -i -X POST localhost:3000/transactions -d \
 - [x] HTTP API
 - [x] Save transactions
 - [x] gRPC API
+- [ ] Linter for the system architecture https://github.com/resotto/gochk
 - [ ] Get information about an account (balance and current version)
 - [ ] Get the history of an account (operations)
 - [ ] Accounting reports
