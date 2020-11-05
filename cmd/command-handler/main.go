@@ -83,7 +83,7 @@ func main() {
 		log.Printf("NewServer shutdown %v\n", sig)
 
 		// Give outstanding requests a deadline for completion.
-		ctx, cancel := context.WithTimeout(context.Background(), cfg.GRPC.ShutdownTimeout)
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
 		defer cancel()
 		group := &errgroup.Group{}
 
@@ -106,7 +106,7 @@ func main() {
 				close(stopped)
 			}()
 
-			t := time.NewTimer(cfg.GRPC.ShutdownTimeout)
+			t := time.NewTimer(cfg.ShutdownTimeout)
 			select {
 			case <-t.C:
 				grpcServer.Stop()
