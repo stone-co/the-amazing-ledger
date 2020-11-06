@@ -32,7 +32,7 @@ func NewApi(log *logrus.Logger, accounts *accounts.Handler, transactions *transa
 
 func (a *Api) NewServer(host string, cfg configuration.HTTPConfig) *http.Server {
 	// Router
-	r := mux.NewRouter()
+	r := mux.NewRouter().UseEncodedPath()
 
 	// Handlers
 	r.HandleFunc("/health", a.Healthcheck.Get).Methods("GET")
@@ -40,6 +40,7 @@ func (a *Api) NewServer(host string, cfg configuration.HTTPConfig) *http.Server 
 
 	//Accounts
 	r.HandleFunc("/accounts", a.Accounts.Create).Methods("POST")
+	r.HandleFunc("/accounts/{account_id}/balance", a.Transactions.GetAccountBalance).Methods("GET")
 
 	//Entries
 	r.HandleFunc("/transactions", a.Transactions.Create).Methods("POST")
