@@ -10,4 +10,5 @@ var (
 	ErrInvalidVersion          = errors.New("invalid version")
 	ErrInvalidAccountStructure = errors.New("invalid account structure")
 	ErrInvalidClassName        = errors.New("invalid class name")
+	ErrNotFound                = errors.New("object not found")
 )
