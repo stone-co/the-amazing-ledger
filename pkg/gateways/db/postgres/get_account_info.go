@@ -7,15 +7,6 @@ import (
 )
 
 func (r *LedgerRepository) GetAccountInfo(ctx context.Context, accountID string) (*entities.AccountInfo, error) {
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return &entities.AccountInfo{}, err
-	}
-
-	defer func() {
-		_ = tx.Rollback(ctx)
-	}()
-
 	query := `
 		SELECT
 		account_id,
@@ -32,25 +23,31 @@ func (r *LedgerRepository) GetAccountInfo(ctx context.Context, accountID string)
 		WHERE account_id = $3
 		GROUP BY account_id
 	`
-
 	creditOperation := entities.CreditOperation.String()
 	debitOperation := entities.DebitOperation.String()
 
-	row := r.db.QueryRow(context.Background(), query, creditOperation, debitOperation, accountID)
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
+
+	row := tx.QueryRow(context.Background(), query, creditOperation, debitOperation, accountID)
 
 	var version uint64
 	var totalCredit int
 	var totalDebit int
-	var b string
 
 	err = row.Scan(
-		&b,
+		&accountID,
 		&version,
 		&totalCredit,
 		&totalDebit,
 	)
 	if err != nil {
-		return &entities.AccountInfo{}, err
+		return nil, err
 	}
 
 	accountInfo := entities.NewAccountInfo(accountID, entities.Version(version), totalCredit, totalDebit)
