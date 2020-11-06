@@ -1,5 +1,5 @@
 NAME=ledger
-NAME_COMMAND_HANDLER=command-handler
+NAME_COMMAND_HANDLER=server
 VERSION=dev
 OS ?= linux
 PROJECT_PATH ?= github.com/stone-co/the-amazing-ledger
