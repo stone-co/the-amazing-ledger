@@ -114,8 +114,66 @@ func TestNewAccountName(t *testing.T) {
 			got, err := NewAccountName(tt.args.name)
 			assert.Equal(t, tt.err, err)
 			if err == nil {
-				assert.Equal(t, &AccountName{tt.args.name}, got)
+				assert.Equal(t, tt.args.name, got.Name())
 			}
+		})
+	}
+}
+
+func TestNewAccountNameIsSplitted(t *testing.T) {
+	newUUID := uuid.New().String()
+
+	tests := []struct {
+		test        string
+		account     string
+		expClass    string
+		expGroup    string
+		expSubgroup string
+		expID       string
+	}{
+		{
+			test:        "Successfully get data from a valid account",
+			account:     "assets:bacen:conta_liquidacao:tesouraria",
+			expClass:    "assets",
+			expGroup:    "bacen",
+			expSubgroup: "conta_liquidacao",
+			expID:       "tesouraria",
+		},
+		{
+			test:        "Successfully get data from a valid account",
+			account:     "liability:clients:available:" + newUUID,
+			expClass:    "liability",
+			expGroup:    "clients",
+			expSubgroup: "available",
+			expID:       newUUID,
+		},
+		{
+			test:        "Successfully get data from a valid account",
+			account:     "liability:clients:available:" + newUUID + "/mydetail",
+			expClass:    "liability",
+			expGroup:    "clients",
+			expSubgroup: "available",
+			expID:       newUUID + "/mydetail",
+		},
+		{
+			test:        "Successfully get data from a valid account",
+			account:     "liability:clients:available:" + newUUID + "/mydetail1/mydetail2/mydetail3",
+			expClass:    "liability",
+			expGroup:    "clients",
+			expSubgroup: "available",
+			expID:       newUUID + "/mydetail1/mydetail2/mydetail3",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.test, func(t *testing.T) {
+			got, err := NewAccountName(tt.account)
+			assert.Equal(t, nil, err)
+			assert.Equal(t, tt.account, got.Name())
+			assert.Equal(t, tt.expClass, got.Class)
+			assert.Equal(t, tt.expGroup, got.Group)
+			assert.Equal(t, tt.expSubgroup, got.Subgroup)
+			assert.Equal(t, tt.expID, got.ID)
 		})
 	}
 }

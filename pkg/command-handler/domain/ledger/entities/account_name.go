@@ -1,12 +1,21 @@
 package entities
 
-import "strings"
+import (
+	"strings"
+)
 
 var (
-	classTypes      = "|liability|assets|income|expense|equity|"
-	structureSep    = ":"
-	structureLevels = 4
-	classTypeLevel  = 0
+	AccountStructureSep = ":"
+	classTypes          = "|liability|assets|income|expense|equity|"
+	structureLevels     = 4
+	classTypeLevel      = 0
+)
+
+const (
+	classLevel int = iota
+	groupLevel
+	subgroupLevel
+	idLevel
 )
 
 // AccountName must have 4 levels in her structure: "class:group:subgroup:id", where:
@@ -20,13 +29,16 @@ var (
 //   - "liability:clients:available:96a131a8-c4ac-495e-8971-fcecdbdd003a/somedetail"
 //   - "liability:clients:available:96a131a8-c4ac-495e-8971-fcecdbdd003a/detail1/detail2"
 type AccountName struct { // TODO: could be just "Account", but already exists the type "Account"
-	name string
+	Class    string
+	Group    string
+	Subgroup string
+	ID       string
 }
 
 func NewAccountName(name string) (*AccountName, error) {
 	name = strings.ToLower(name)
 
-	levels := strings.Split(name, structureSep)
+	levels := strings.Split(name, AccountStructureSep)
 	if len(levels) != structureLevels {
 		return nil, ErrInvalidAccountStructure
 	}
@@ -41,9 +53,18 @@ func NewAccountName(name string) (*AccountName, error) {
 		return nil, ErrInvalidAccountStructure
 	}
 
-	return &AccountName{name}, nil
+	return &AccountName{
+		Class:    levels[classLevel],
+		Group:    levels[groupLevel],
+		Subgroup: levels[subgroupLevel],
+		ID:       levels[idLevel],
+	}, nil
 }
 
 func (a AccountName) Name() string {
-	return a.name
+	return FormatAccount(a.Class, a.Group, a.Subgroup, a.ID)
+}
+
+func FormatAccount(class, group, subgroup, id string) string {
+	return class + AccountStructureSep + group + AccountStructureSep + subgroup + AccountStructureSep + id
 }
