@@ -19,7 +19,3 @@ func NewAccountInfo(accountID string, version Version, totalCredit, totalDebit i
 func (a AccountInfo) Balance() int {
 	return a.TotalCredit - a.TotalDebit
 }
-
-func (a AccountInfo) InvertedBalance() int {
-	return a.TotalDebit - a.TotalCredit
-}
