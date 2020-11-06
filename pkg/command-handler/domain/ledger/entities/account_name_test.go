@@ -24,9 +24,23 @@ func TestNewAccountName(t *testing.T) {
 			err: nil,
 		},
 		{
-			name: "Successfully creates an account name with more than 4 leves",
+			name: "Successfully creates an account name with 4 levels",
 			args: args{
-				name: "liability:clients:available:" + uuid.New().String() + ":detail",
+				name: "liability:clients:available:" + uuid.New().String(),
+			},
+			err: nil,
+		},
+		{
+			name: "Successfully creates an account name with 4 levels and one detail",
+			args: args{
+				name: "liability:clients:available:" + uuid.New().String() + "/mydetail",
+			},
+			err: nil,
+		},
+		{
+			name: "Successfully creates an account name with 4 levels and a lot of details",
+			args: args{
+				name: "liability:clients:available:" + uuid.New().String() + "/mydetail1/mydetail2/mydetail3",
 			},
 			err: nil,
 		},
@@ -38,7 +52,7 @@ func TestNewAccountName(t *testing.T) {
 			err: ErrInvalidAccountStructure,
 		},
 		{
-			name: "Error when account has only 2 leves",
+			name: "Error when account has only 2 levels",
 			args: args{
 				name: "assets:bacen",
 			},
@@ -48,6 +62,13 @@ func TestNewAccountName(t *testing.T) {
 			name: "Error when account has only 3 levels",
 			args: args{
 				name: "assets:bacen:conta_liquidacao",
+			},
+			err: ErrInvalidAccountStructure,
+		},
+		{
+			name: "Error when account has more than 4 levels",
+			args: args{
+				name: "liability:clients:available:" + uuid.New().String() + ":invalid",
 			},
 			err: ErrInvalidAccountStructure,
 		},
