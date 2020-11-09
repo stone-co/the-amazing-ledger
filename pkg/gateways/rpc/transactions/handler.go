@@ -4,7 +4,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc/proto"
 )
 
 var _ proto.LedgerServiceServer = &Handler{}

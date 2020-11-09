@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	API      HTTPConfig
-	GRPC     GRPCConfig
-	Postgres PostgresConfig
+	ShutdownTimeout time.Duration `envconfig:"APP_SHUTDOWN_TIMEOUT" default:"5s"`
+	API             HTTPConfig
+	GRPC            GRPCConfig
+	Postgres        PostgresConfig
 }
 
 func LoadConfig() (*Config, error) {
@@ -24,13 +25,11 @@ func LoadConfig() (*Config, error) {
 }
 
 type HTTPConfig struct {
-	Port            int           `envconfig:"HTTP_PORT" default:"3000"`
-	ShutdownTimeout time.Duration `envconfig:"HTTP_SHUTDOWN_TIMEOUT" default:"5s"`
+	Port int `envconfig:"HTTP_PORT" default:"3000"`
 }
 
 type GRPCConfig struct {
-	Port            int           `envconfig:"GRPC_PORT" default:"50051"`
-	ShutdownTimeout time.Duration `envconfig:"GRPC_SHUTDOWN_TIMEOUT" default:"5s"`
+	Port int `envconfig:"GRPC_PORT" default:"50051"`
 }
 
 type PostgresConfig struct {

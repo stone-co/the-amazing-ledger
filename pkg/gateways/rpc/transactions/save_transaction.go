@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/grpc/proto"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc/proto"
 )
 
 func (h *Handler) SaveTransaction(ctx context.Context, in *proto.SaveTransactionRequest) (*empty.Empty, error) {
