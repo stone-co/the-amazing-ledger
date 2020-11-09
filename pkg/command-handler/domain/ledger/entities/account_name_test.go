@@ -170,7 +170,7 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			got, err := NewAccountName(tt.account)
 			assert.Equal(t, nil, err)
 			assert.Equal(t, tt.account, got.Name())
-			assert.Equal(t, tt.expClass, got.Class)
+			assert.Equal(t, tt.expClass, got.Class.String())
 			assert.Equal(t, tt.expGroup, got.Group)
 			assert.Equal(t, tt.expSubgroup, got.Subgroup)
 			assert.Equal(t, tt.expID, got.ID)

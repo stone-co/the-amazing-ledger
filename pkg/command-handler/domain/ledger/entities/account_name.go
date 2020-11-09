@@ -28,7 +28,7 @@ const (
 //   - "liability:clients:available:96a131a8-c4ac-495e-8971-fcecdbdd003a/somedetail"
 //   - "liability:clients:available:96a131a8-c4ac-495e-8971-fcecdbdd003a/detail1/detail2"
 type AccountName struct { // TODO: could be just "Account", but already exists the type "Account"
-	Class    string
+	Class    *AccountClass
 	Group    string
 	Subgroup string
 	ID       string
@@ -48,12 +48,13 @@ func NewAccountName(name string) (*AccountName, error) {
 		}
 	}
 
-	if !ClassTypes.Has(levels[classTypeLevel]) {
+	accountClass, err := NewAccountClassFromString(levels[classTypeLevel])
+	if err != nil {
 		return nil, ErrInvalidAccountStructure
 	}
 
 	return &AccountName{
-		Class:    levels[classLevel],
+		Class:    accountClass,
 		Group:    levels[groupLevel],
 		Subgroup: levels[subgroupLevel],
 		ID:       levels[idLevel],
@@ -61,7 +62,7 @@ func NewAccountName(name string) (*AccountName, error) {
 }
 
 func (a AccountName) Name() string {
-	return FormatAccount(a.Class, a.Group, a.Subgroup, a.ID)
+	return FormatAccount(a.Class.String(), a.Group, a.Subgroup, a.ID)
 }
 
 func FormatAccount(class, group, subgroup, id string) string {
