@@ -7,7 +7,6 @@ import (
 const (
 	AccountStructureSep = ":"
 	structureLevels     = 4
-	classTypeLevel      = 0
 )
 
 const (
@@ -48,7 +47,7 @@ func NewAccountName(name string) (*AccountName, error) {
 		}
 	}
 
-	accountClass, err := NewAccountClassFromString(levels[classTypeLevel])
+	accountClass, err := NewAccountClassFromString(levels[classLevel])
 	if err != nil {
 		return nil, ErrInvalidAccountStructure
 	}
