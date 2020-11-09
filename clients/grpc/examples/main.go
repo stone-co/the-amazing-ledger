@@ -25,4 +25,7 @@ func main() {
 
 	defineTransactionWithThreeEntries(log, conn)
 	invalidTransactionsTests(log, conn)
+
+	getAccountBalance(log, conn)
+	getAccountBalanceNotFoundAccount(log, conn)
 }
