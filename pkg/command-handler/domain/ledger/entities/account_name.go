@@ -4,9 +4,8 @@ import (
 	"strings"
 )
 
-var (
+const (
 	AccountStructureSep = ":"
-	classTypes          = "|liability|assets|income|expense|equity|"
 	structureLevels     = 4
 	classTypeLevel      = 0
 )
@@ -49,7 +48,7 @@ func NewAccountName(name string) (*AccountName, error) {
 		}
 	}
 
-	if !strings.Contains(classTypes, levels[classTypeLevel]) {
+	if !ClassTypes.Has(levels[classTypeLevel]) {
 		return nil, ErrInvalidAccountStructure
 	}
 
