@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/stone-co/the-amazing-ledger/pkg/grpc/proto";
+option go_package = "github.com/stone-co/the-amazing-ledger/pkg/rpc/proto";
 
 package proto;
 
@@ -8,6 +8,7 @@ import "google/protobuf/empty.proto";
 
 service LedgerService {
   rpc SaveTransaction(SaveTransactionRequest) returns (google.protobuf.Empty);
+  rpc GetAccountBalance(GetAccountInfoRequest) returns (GetAccountInfoResponse);
 }
 
 // SaveTransactionRequest represents a transaction to be saved. A transaction must
@@ -33,3 +34,15 @@ enum Operation {
   OPERATION_DEBIT = 1;       // Debit operation.
   OPERATION_CREDIT = 2;      // Credit operation.
 };
+
+// Input account id used like a key
+message GetAccountInfoRequest {
+  string account_id = 1; // Represents an account.
+}
+
+// Output used to represnet version and balance from an account.
+message GetAccountInfoResponse {
+  string account_id = 1; // Represents an account.
+  int64 current_version = 2; // To deal with optimistic lock.
+  int32 balance = 3; // Amount (in cents).
+}
