@@ -9,4 +9,5 @@ var (
 	ErrIdempotencyKey          = errors.New("idempotency key violation")
 	ErrInvalidVersion          = errors.New("invalid version")
 	ErrInvalidAccountStructure = errors.New("invalid account structure")
+	ErrInvalidClassName        = errors.New("invalid class name")
 )

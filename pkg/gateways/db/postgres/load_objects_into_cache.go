@@ -8,10 +8,10 @@ import (
 
 func (r *LedgerRepository) LoadObjectsIntoCache(ctx context.Context, cachedAccounts *entities.CachedAccounts) (entities.Version, error) {
 	query := `
-		SELECT account_id, MAX(version) As version
-			FROM entries
-			GROUP BY account_id
-			ORDER BY version desc
+		SELECT account_class, account_group, account_subgroup, account_id, MAX(version) As version
+		FROM entries
+		GROUP BY account_class, account_group, account_subgroup, account_id
+		ORDER BY version desc
 	`
 
 	rows, err := r.db.Query(ctx, query)
@@ -23,18 +23,25 @@ func (r *LedgerRepository) LoadObjectsIntoCache(ctx context.Context, cachedAccou
 	var maxVersion entities.Version
 
 	for rows.Next() {
-		var accountID string
+		var accClass string
+		var accGroup string
+		var accSubgroup string
+		var accID string
 		var version entities.Version
 
 		if err := rows.Scan(
-			&accountID,
+			&accClass,
+			&accGroup,
+			&accSubgroup,
+			&accID,
 			&version,
 		); err != nil {
 			return 0, err
 		}
 
 		// TODO: check for duplicated?
-		cachedAccounts.Store(accountID, version)
+		account := entities.FormatAccount(accClass, accGroup, accSubgroup, accID)
+		cachedAccounts.Store(account, version)
 
 		if version > maxVersion {
 			maxVersion = version
