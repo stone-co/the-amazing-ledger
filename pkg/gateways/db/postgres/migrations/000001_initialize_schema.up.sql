@@ -44,9 +44,4 @@ CREATE TABLE entries (
 	created_at       TIMESTAMPTZ not null default CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_entries_account_class ON entries(account_class);
-CREATE INDEX idx_entries_account_group ON entries(account_group);
-CREATE INDEX idx_entries_account_subgroup ON entries(account_subgroup);
-CREATE INDEX idx_entries_account_id ON entries(account_id);
-
 COMMIT;
