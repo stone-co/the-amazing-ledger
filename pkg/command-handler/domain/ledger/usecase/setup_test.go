@@ -36,7 +36,7 @@ func newFakeGetAccountInfo(accountInfo *entities.AccountInfo, result error) *Led
 	log := logrus.New()
 
 	mockRepository := &ledger.RepositoryMock{
-		OnGetAccountInfo: func(ctx context.Context, accountID string) (*entities.AccountInfo, error) {
+		OnGetAccountInfo: func(ctx context.Context, accountName *entities.AccountName) (*entities.AccountInfo, error) {
 			return accountInfo, result
 		},
 	}

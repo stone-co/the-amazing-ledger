@@ -40,7 +40,7 @@ func (a *Api) NewServer(host string, cfg configuration.HTTPConfig) *http.Server 
 
 	//Accounts
 	r.HandleFunc("/accounts", a.Accounts.Create).Methods("POST")
-	r.HandleFunc("/accounts/{account_id}/balance", a.Transactions.GetAccountBalance).Methods("GET")
+	r.HandleFunc("/accounts/{account_path}/balance", a.Transactions.GetAccountBalance).Methods("GET")
 
 	//Entries
 	r.HandleFunc("/transactions", a.Transactions.Create).Methods("POST")

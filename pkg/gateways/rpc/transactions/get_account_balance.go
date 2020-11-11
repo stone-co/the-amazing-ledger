@@ -30,7 +30,7 @@ func (h *Handler) GetAccountBalance(ctx context.Context, in *proto.GetAccountInf
 	}
 
 	accountBalance := &proto.GetAccountInfoResponse{
-		AccountId:      accountInfo.AccountID,
+		AccountId:      accountInfo.AccountPath,
 		CurrentVersion: int64(accountInfo.CurrentVersion.Current()),
 		Balance:        int32(accountInfo.Balance()),
 	}

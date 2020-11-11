@@ -1,15 +1,15 @@
 package entities
 
 type AccountInfo struct {
-	AccountID      string
+	AccountPath    string
 	CurrentVersion Version
 	TotalCredit    int
 	TotalDebit     int
 }
 
-func NewAccountInfo(accountID string, version Version, totalCredit, totalDebit int) *AccountInfo {
+func NewAccountInfo(accountPath string, version Version, totalCredit, totalDebit int) *AccountInfo {
 	return &AccountInfo{
-		AccountID:      accountID,
+		AccountPath:    accountPath,
 		CurrentVersion: version,
 		TotalCredit:    totalCredit,
 		TotalDebit:     totalDebit,

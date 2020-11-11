@@ -7,9 +7,15 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
-func (l *LedgerUseCase) GetAccountInfo(ctx context.Context, accountID string) (*entities.AccountInfo, error) {
+func (l *LedgerUseCase) GetAccountInfo(ctx context.Context, accountPath string) (*entities.AccountInfo, error) {
 
-	accountInfo, err := l.repository.GetAccountInfo(ctx, accountID)
+	accountName, err := entities.NewAccountName(accountPath)
+
+	if err != nil {
+		return nil, err
+	}
+
+	accountInfo, err := l.repository.GetAccountInfo(ctx, accountName)
 
 	if err != nil {
 		if err == pgx.ErrNoRows {

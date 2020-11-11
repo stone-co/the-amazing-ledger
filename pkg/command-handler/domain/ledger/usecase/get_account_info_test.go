@@ -17,7 +17,7 @@ func TestLedgerUseCase_GetAccountInfo(t *testing.T) {
 		accountInfo := entities.NewAccountInfo("liability:stone:clients:user-1", 3, totalCredit, totalDebit)
 
 		useCase := newFakeGetAccountInfo(accountInfo, nil)
-		a, err := useCase.GetAccountInfo(context.Background(), accountInfo.AccountID)
+		a, err := useCase.GetAccountInfo(context.Background(), accountInfo.AccountPath)
 		assert.Nil(t, err)
 		assert.Equal(t, a.TotalCredit, accountInfo.TotalCredit)
 		assert.Equal(t, a.TotalDebit, accountInfo.TotalDebit)
@@ -30,7 +30,7 @@ func TestLedgerUseCase_GetAccountInfo(t *testing.T) {
 		accountInfo := entities.NewAccountInfo("liability:stone:clients:user-1", expectedVersion, 0, 0)
 
 		useCase := newFakeGetAccountInfo(accountInfo, nil)
-		a, err := useCase.GetAccountInfo(context.Background(), accountInfo.AccountID)
+		a, err := useCase.GetAccountInfo(context.Background(), accountInfo.AccountPath)
 
 		assert.Nil(t, err)
 		assert.Equal(t, a.CurrentVersion, expectedVersion)

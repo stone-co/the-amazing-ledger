@@ -9,8 +9,8 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
-var accountID1 = "liability:stone:clients:" + uuid.New().String()
-var accountIDNotFound = "liability:stone:clients:" + uuid.New().String()
+var accountPathOne = "liability:stone:clients:" + uuid.New().String()
+var accountPathNotFound = "liability:stone:clients:" + uuid.New().String()
 
 func saveTransactionToGetAccountTest(log *logrus.Entry, conn *ledger.Connection) {
 	log.Println("starting saveTransactionToGetAccountTest")
@@ -19,9 +19,9 @@ func saveTransactionToGetAccountTest(log *logrus.Entry, conn *ledger.Connection)
 	// Define a new transaction with 3 entries
 	t := conn.NewTransaction(uuid.New())
 
-	accountID2 := "liability:stone:clients:" + uuid.New().String()
-	t.AddEntry(uuid.New(), accountID1, entities.NewAccountVersion, entities.CreditOperation, 1000)
-	t.AddEntry(uuid.New(), accountID2, entities.NewAccountVersion, entities.DebitOperation, 1000)
+	accountPathTwo := "liability:stone:clients:" + uuid.New().String()
+	t.AddEntry(uuid.New(), accountPathOne, entities.NewAccountVersion, entities.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathTwo, entities.NewAccountVersion, entities.DebitOperation, 1000)
 
 	err := conn.SaveTransaction(context.Background(), t)
 
@@ -34,7 +34,7 @@ func getAccountBalance(log *logrus.Entry, conn *ledger.Connection) {
 
 	saveTransactionToGetAccountTest(log, conn)
 
-	a := conn.NewAccountID(accountID1)
+	a := conn.NewAccountRequest(accountPathOne)
 
 	accountBalance, err := conn.GetAccountBalance(context.Background(), a)
 
@@ -46,7 +46,7 @@ func getAccountBalanceNotFoundAccount(log *logrus.Entry, conn *ledger.Connection
 	log.Println("starting getAccountBalanceNotFoundAccount")
 	defer log.Println("finishing getAccountBalanceNotFoundAccount")
 
-	a := conn.NewAccountID(accountIDNotFound)
+	a := conn.NewAccountRequest(accountPathNotFound)
 
 	_, err := conn.GetAccountBalance(context.Background(), a)
 

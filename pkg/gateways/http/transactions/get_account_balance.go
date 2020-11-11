@@ -10,8 +10,8 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
-type AccountInfoVersionAndBalance struct {
-	AccountID      string `json:"account_id"`
+type AccountBalanceResponse struct {
+	AccountPath    string `json:"account_path"`
 	CurrentVersion uint64 `json:"current_version"`
 	Balance        int    `json:"balance"`
 }
@@ -28,14 +28,14 @@ func (h Handler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
-	accountID := vars["account_id"]
-	decodedAccountID, err := url.QueryUnescape(accountID)
+	accountPath := vars["account_path"]
+	decodedAccountPath, err := url.QueryUnescape(accountPath)
 	if err != nil {
 		log.WithError(err).Error("Query Unescape error")
 		return
 	}
 
-	accountInfo, err := h.UseCase.GetAccountInfo(r.Context(), decodedAccountID)
+	accountInfo, err := h.UseCase.GetAccountInfo(r.Context(), decodedAccountPath)
 	if err != nil {
 		var messageJSON []byte
 
@@ -57,20 +57,20 @@ func (h Handler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accountInfoVersionAndBalance := AccountInfoVersionAndBalance{
-		AccountID:      accountInfo.AccountID,
+	accountBalanceResponse := AccountBalanceResponse{
+		AccountPath:    accountInfo.AccountPath,
 		CurrentVersion: uint64(accountInfo.CurrentVersion.Current()),
 		Balance:        accountInfo.Balance(),
 	}
 
-	accountInfoJSON, err := json.Marshal(accountInfoVersionAndBalance)
+	accountBalanceJSON, err := json.Marshal(accountBalanceResponse)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(accountInfoJSON)
+	_, err = w.Write(accountBalanceJSON)
 	if err != nil {
 		log.WithError(err).Error("can't write response")
 	}

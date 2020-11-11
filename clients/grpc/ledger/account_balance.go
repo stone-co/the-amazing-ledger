@@ -11,26 +11,26 @@ import (
 )
 
 type AccountBalance struct {
-	AccountID      string
+	AccountPath    string
 	CurrentVersion entities.Version
 	Balance        int
 }
 
-type AccountID struct {
+type AccountRequest struct {
 	Message *proto.GetAccountInfoRequest
 }
 
-func (c *Connection) NewAccountID(id string) *AccountID {
-	accountID := &AccountID{}
-	accountID.Message = &proto.GetAccountInfoRequest{
+func (c *Connection) NewAccountRequest(id string) *AccountRequest {
+	accountRequest := &AccountRequest{}
+	accountRequest.Message = &proto.GetAccountInfoRequest{
 		AccountId: id,
 	}
 
-	return accountID
+	return accountRequest
 }
 
-func (c *Connection) GetAccountBalance(ctx context.Context, accountID *AccountID) (*AccountBalance, error) {
-	accountBalanceProto, err := c.client.GetAccountBalance(ctx, accountID.Message)
+func (c *Connection) GetAccountBalance(ctx context.Context, accountRequest *AccountRequest) (*AccountBalance, error) {
+	accountBalanceProto, err := c.client.GetAccountBalance(ctx, accountRequest.Message)
 	if err != nil {
 		if e, ok := status.FromError(err); ok {
 			return nil, fmt.Errorf(e.Message())
@@ -40,7 +40,7 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountID *AccountID
 	}
 
 	accountBalance := &AccountBalance{
-		AccountID:      accountBalanceProto.AccountId,
+		AccountPath:    accountBalanceProto.AccountId,
 		CurrentVersion: entities.Version(accountBalanceProto.CurrentVersion),
 		Balance:        int(accountBalanceProto.Balance),
 	}

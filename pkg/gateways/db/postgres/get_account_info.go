@@ -6,10 +6,13 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
-func (r *LedgerRepository) GetAccountInfo(ctx context.Context, accountID string) (*entities.AccountInfo, error) {
+func (r *LedgerRepository) GetAccountInfo(ctx context.Context, accountName *entities.AccountName) (*entities.AccountInfo, error) {
 	query := `
 		SELECT
-		account_id,
+			account_class,
+			account_group,
+			account_subgroup,
+			account_id,
 		MAX(version) as version,
 		SUM(CASE operation
 		    WHEN $1 THEN amount
@@ -20,8 +23,8 @@ func (r *LedgerRepository) GetAccountInfo(ctx context.Context, accountID string)
 		    ELSE 0
 		    END) AS total_debit
 		FROM entries
-		WHERE account_id = $3
-		GROUP BY account_id
+		WHERE account_class = $3 AND account_group = $4 AND account_subgroup = $5 AND account_id = $6
+		GROUP BY account_class, account_group, account_subgroup, account_id
 	`
 	creditOperation := entities.CreditOperation.String()
 	debitOperation := entities.DebitOperation.String()
@@ -34,14 +37,26 @@ func (r *LedgerRepository) GetAccountInfo(ctx context.Context, accountID string)
 		_ = tx.Rollback(ctx)
 	}()
 
-	row := tx.QueryRow(context.Background(), query, creditOperation, debitOperation, accountID)
-
+	row := tx.QueryRow(
+		context.Background(),
+		query,
+		creditOperation,
+		debitOperation,
+		accountName.Class.String(),
+		accountName.Group,
+		accountName.Subgroup,
+		accountName.ID,
+	)
+	var empty string
 	var version uint64
 	var totalCredit int
 	var totalDebit int
 
 	err = row.Scan(
-		&accountID,
+		&empty,
+		&empty,
+		&empty,
+		&empty,
 		&version,
 		&totalCredit,
 		&totalDebit,
@@ -50,7 +65,8 @@ func (r *LedgerRepository) GetAccountInfo(ctx context.Context, accountID string)
 		return nil, err
 	}
 
-	accountInfo := entities.NewAccountInfo(accountID, entities.Version(version), totalCredit, totalDebit)
+	accountPath := accountName.Name()
+	accountInfo := entities.NewAccountInfo(accountPath, entities.Version(version), totalCredit, totalDebit)
 	return accountInfo, nil
 
 }
