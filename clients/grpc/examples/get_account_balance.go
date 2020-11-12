@@ -24,11 +24,10 @@ func getAccountBalance(log *logrus.Entry, conn *ledger.Connection) {
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
-	a := conn.NewAccountRequest(accountPathOne)
+	accountBalance, err := conn.GetAccountBalance(context.Background(), accountPathOne)
 
-	accountBalance, err := conn.GetAccountBalance(context.Background(), a)
-
-	AssertEqual(accountBalance.Balance, 1000)
+	AssertEqual(accountBalance.AccountName().Name(), accountPathOne)
+	AssertEqual(accountBalance.Balance(), 1000)
 	AssertEqual(nil, err)
 }
 
@@ -38,9 +37,7 @@ func getAccountBalanceNotFoundAccount(log *logrus.Entry, conn *ledger.Connection
 
 	accountPathNotFound := "liability:stone:clients:" + uuid.New().String()
 
-	a := conn.NewAccountRequest(accountPathNotFound)
-
-	_, err := conn.GetAccountBalance(context.Background(), a)
+	_, err := conn.GetAccountBalance(context.Background(), accountPathNotFound)
 
 	AssertEqual(entities.ErrNotFound, err)
 }

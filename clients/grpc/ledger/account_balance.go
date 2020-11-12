@@ -11,26 +11,30 @@ import (
 )
 
 type AccountBalance struct {
-	AccountPath    string
-	CurrentVersion entities.Version
-	Balance        int
+	accountName    entities.AccountName
+	currentVersion entities.Version
+	balance        int
 }
 
-type AccountRequest struct {
-	Message *proto.GetAccountInfoRequest
+func (a AccountBalance) AccountName() entities.AccountName {
+	return a.accountName
 }
 
-func (c *Connection) NewAccountRequest(id string) *AccountRequest {
-	accountRequest := &AccountRequest{}
-	accountRequest.Message = &proto.GetAccountInfoRequest{
-		AccountId: id,
+func (a AccountBalance) CurrentVersion() entities.Version {
+	return a.currentVersion
+}
+
+func (a AccountBalance) Balance() int {
+	return a.balance
+}
+
+func (c *Connection) GetAccountBalance(ctx context.Context, accountName string) (*AccountBalance, error) {
+
+	accountRequest := &proto.GetAccountInfoRequest{
+		AccountId: accountName,
 	}
 
-	return accountRequest
-}
-
-func (c *Connection) GetAccountBalance(ctx context.Context, accountRequest *AccountRequest) (*AccountBalance, error) {
-	accountBalanceProto, err := c.client.GetAccountBalance(ctx, accountRequest.Message)
+	response, err := c.client.GetAccountBalance(ctx, accountRequest)
 	if err != nil {
 		if e, ok := status.FromError(err); ok {
 			return nil, fmt.Errorf(e.Message())
@@ -39,10 +43,15 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountRequest *Acco
 		return nil, fmt.Errorf("not able to parse error returned %v", err)
 	}
 
+	accName, err := entities.NewAccountName(response.AccountId)
+	if err != nil {
+		return nil, fmt.Errorf("error: %v", err)
+	}
+
 	accountBalance := &AccountBalance{
-		AccountPath:    accountBalanceProto.AccountId,
-		CurrentVersion: entities.Version(accountBalanceProto.CurrentVersion),
-		Balance:        int(accountBalanceProto.Balance),
+		accountName:    *accName,
+		currentVersion: entities.Version(response.CurrentVersion),
+		balance:        int(response.Balance),
 	}
 
 	return accountBalance, nil
