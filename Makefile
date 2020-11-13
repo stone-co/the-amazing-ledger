@@ -13,7 +13,14 @@ RICHGO_FORCE_COLOR=1
 setup:
 	@echo "==> Setup: Getting tools"
 	go mod tidy
-	go install ./...
+	GO111MODULE=on go install \
+	github.com/bufbuild/buf/cmd/buf \
+	github.com/bufbuild/buf/cmd/protoc-gen-buf-check-breaking \
+	github.com/bufbuild/buf/cmd/protoc-gen-buf-check-lint \
+	github.com/golang/protobuf/protoc-gen-go \
+	github.com/golangci/golangci-lint/cmd/golangci-lint \
+	github.com/kevinburke/go-bindata \
+	google.golang.org/grpc/cmd/protoc-gen-go-grpc \
 
 .PHONY: test
 test:
