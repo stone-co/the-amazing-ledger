@@ -21,12 +21,15 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 		INSERT INTO
 			entries (
 				id,
+				account_class,
+				account_group,
+				account_subgroup,
 				account_id,
 	  			operation,
 				amount,
 				version,
 				transaction_id
-			) VALUES ($1, $2, $3, $4, $5, $6)
+			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 	`
 
 	var batch pgx.Batch
@@ -35,7 +38,10 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 		batch.Queue(
 			query,
 			entry.ID,
-			entry.Account.Name(),
+			entry.Account.Class.String(),
+			entry.Account.Group,
+			entry.Account.Subgroup,
+			entry.Account.ID,
 			entry.Operation.String(),
 			entry.Amount,
 			entry.Version,
