@@ -4,18 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 
 	"github.com/sirupsen/logrus"
-	"golang.org/x/sync/errgroup"
 
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/db/postgres"
+
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/prometheus"
 )
 
 func main() {
@@ -44,82 +45,56 @@ func main() {
 		log.WithError(err).Fatal("failed to populate cache")
 	}
 
-	// Make a channel to listen for an interrupt or terminate signal from the OS.
-	// Use a buffered channel because the signal package requires it.
-	shutdown := make(chan os.Signal, 1)
-	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+	metricsServer := prometheus.NewInternal(cfg.Metrics.Prometheus)
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.Metrics.Prometheus.ShutdownTimeout)
+		defer cancel()
+		if er := metricsServer.Shutdown(ctx); er != nil {
+			_ = metricsServer.Close()
+			log.WithError(er).Fatal("server error:could not stop server gracefully")
+		}
+	}()
 
+	// Initialize the server (grpc-gateway)
+	server, _ := NewGRPCServer(ledgerUseCase, cfg.Server, log)
+	if err != nil {
+		log.WithError(err).Fatal("failed to initialize the server")
+	}
 	// Make a channel to listen for errors coming from the listener. Use a
 	// buffered channel so the goroutine can exit if we don't collect this error.
 	serverErrors := make(chan error, 1)
-
-	// NewServer HTTP Server listening for requests.
-	httpServer := NewHttpServer(cfg.API, log, ledgerUseCase)
+	// NewServer Server listening for requests.
 	go func() {
-		log.Infof("starting http api at %s", httpServer.Addr)
-		serverErrors <- httpServer.ListenAndServe()
-	}()
-
-	// NewServer GRPC Server listening for requests.
-	grpcServer := NewGRPCServer(log, ledgerUseCase)
-	go func() {
-		endpoint := fmt.Sprintf(":%d", cfg.GRPC.Port)
-		log.Infof("starting grpc api at %s", endpoint)
-		lis, err := net.Listen("tcp", endpoint)
-		if err != nil {
-			serverErrors <- err
-		}
-		serverErrors <- grpcServer.Serve(lis)
+		log.Infof("ready to accept connections at: %s", server.Addr)
+		serverErrors <- fmt.Errorf("server's ListenAndServe failed. %w", server.ListenAndServe())
 	}()
 
 	// =================
 	// Shutdown
 
-	// Blocking main and waiting for shutdown.
-	select {
-	case err := <-serverErrors:
-		log.Fatal(fmt.Errorf("server error: %w", err))
+	//Handle OS signals
+	go handleInterrupt(cfg, log, server)
 
-	case sig := <-shutdown:
-		log.Printf("NewServer shutdown %v\n", sig)
+	// Blocking main and waiting for server error.
+	err = <-serverErrors
+	if !errors.Is(err, http.ErrServerClosed) {
+		log.WithError(fmt.Errorf("server error: %w", err)).Fatal()
+	}
+}
 
-		// Give outstanding requests a deadline for completion.
-		ctx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
-		defer cancel()
-		group := &errgroup.Group{}
-
-		group.Go(func() error {
-			log.Printf("Stopping HTTP Server %v\n", sig)
-			defer log.Printf("HTTP Server Stopped %v\n", sig)
-			// Asking listener to shutdown and shed load.
-			if err := httpServer.Shutdown(ctx); err != nil {
-				_ = httpServer.Close()
-				return fmt.Errorf("could not stop server gracefully: %w", err)
-			}
-			return nil
-		})
-		group.Go(func() error {
-			log.Printf("Stopping GRCP Server %v\n", sig)
-			defer log.Printf("GRCP Server Stopped %v\n", sig)
-			stopped := make(chan struct{})
-			go func() {
-				grpcServer.GracefulStop()
-				close(stopped)
-			}()
-
-			t := time.NewTimer(cfg.ShutdownTimeout)
-			select {
-			case <-t.C:
-				grpcServer.Stop()
-				return errors.New("could not stop grpc server gracefully")
-			case <-stopped:
-				t.Stop()
-			}
-			return nil
-		})
-
-		if err := group.Wait(); err != nil {
-			log.Fatal(fmt.Errorf("server error: %w", err))
-		}
+func handleInterrupt(cfg *configuration.Config, log *logrus.Logger, sv *http.Server) {
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+	sig := <-signals
+	log.Infof("captured signal: %v - server shutdown\n", sig)
+	signal.Stop(signals)
+	// Make a channel to listen for an interrupt or terminate signal from the OS.
+	// Use a buffered channel because the signal package requires it.
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.Server.ShutdownTimeout)
+	defer cancel()
+	// Asking listener to shutdown and shed load.
+	if err := sv.Shutdown(ctx); err != nil {
+		_ = sv.Close()
+		log.WithError(err).Fatal("server error:could not stop server gracefully")
 	}
 }

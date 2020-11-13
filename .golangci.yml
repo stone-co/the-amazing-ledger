@@ -30,3 +30,9 @@ output:
   format: 'colored-line-number'
   print-issued-lines: true
   print-linter-name: true
+
+skip-dirs:
+  - gen/*
+  - docs/*
+skip-files:
+  - ".*\\.pb\\.go$"

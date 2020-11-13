@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+option go_package = "github.com/stone-co/the-amazing-ledger/pkg/rpc/proto";
+
+package ledger;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+service LedgerService {
+  rpc CreateTransaction(CreateTransactionRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/api/v1/transactions"
+      body: "*"
+    };
+  };
+  rpc CreateAccount(CreateAccountRequest) returns (Account){
+    option (google.api.http) = {
+      post: "/api/v1/accounts"
+      body: "*"
+    };
+  };
+  rpc GetAccountBalance(GetAccountBalanceRequest) returns (GetAccountBalanceResponse){
+    option (google.api.http) = {
+      get: "/api/v1/accounts/{account_path}/balance"
+    };
+  };
+
+
+}
+
+// SaveTransactionRequest represents a transaction to be saved. A transaction must
+// have at least two entries, with a valid balance. More info here:
+// https://en.wikipedia.org/wiki/Double-entry_bookkeeping
+message CreateTransactionRequest {
+  // ID (UUID) to link the entries to a transaction.
+  string id = 1;
+  // The list of entries, where len(entries) must be >= 2.
+  repeated Entry entries = 2;
+}
+
+// Entry represents a new entry on the Ledger.
+message Entry  {
+  // It's the idempotency key, and must be unique (UUID).
+  string id = 1;
+  // Account involved in the operation.
+  string account_id = 2;
+  // To deal with optimistic lock.
+  uint64 expected_version = 3;
+  // Operation: debit or credit.
+  Operation operation = 4;
+  // Amount (in cents).
+  int32 amount = 5;
+}
+
+// Operation has the possible operations to be used in Entry.
+enum Operation {
+  // Don't use. It's just the default value.
+  OPERATION_UNSPECIFIED = 0;
+  // Debit operation.
+  OPERATION_DEBIT = 1;
+  // Credit operation.
+  OPERATION_CREDIT = 2;
+};
+
+// CreateAccountRequest represents a transaction to be saved.
+message CreateAccountRequest {
+  // Type of Account
+  string   type = 1;
+  // Owner ID identifies the account owner by id
+  string   owner_id = 2;
+  // Owner identifies the account owner by description
+  string   owner = 3;
+  // The account name
+  string   name = 4;
+  // Account metadata
+  repeated string metadata = 5;
+}
+
+// Account
+message Account {
+  // ID
+  string   id = 1;
+  // type (asset, liability, equity, expense, income)
+  string   type = 2;
+  // Owner ID identifies the account owner by id
+  string   owner_id = 3;
+  // Owner identifies the account owner by description
+  string   owner = 4;
+  // The account name
+  string   name = 5;
+  // Account metadata
+  repeated string metadata = 6;
+  // The account balance in cents
+  int64      balance = 7;
+}
+
+// GetAccountBalance Request
+message GetAccountBalanceRequest {
+  // The account name
+  string account_path = 1;
+}
+
+// GetAccountBalance Response
+message GetAccountBalanceResponse {
+  // The account name
+  string account_path = 1;
+  // The account version
+  uint64 current_version = 2;
+  // All credit accumulated
+  int64 total_credit = 3;
+  // All debit accumulated
+  int64 total_debit = 4;
+  // The Account balance
+  int64 balance = 5;
+}
+
+//https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+// HealthCheckResponse is the health check status
+message HealthCheckResponse {
+  // ServingStatus is the enum of the possible health check status
+  enum ServingStatus {
+    // Don't use. It's just the default value.
+    SERVING_STATUS_UNKNOWN_UNSPECIFIED = 0;
+    // Healthy
+    SERVING_STATUS_SERVING = 1;
+    // Unhealthy
+    SERVING_STATUS_NOT_SERVING = 2;
+    // Used only when streaming
+    SERVING_STATUS_SERVICE_UNKNOWN = 3;
+  }
+  // Server status.
+  ServingStatus status = 1;
+}
+
+// Health Check service.
+service Health {
+  // Check - checks the system health.
+  rpc Check(google.protobuf.Empty) returns (HealthCheckResponse){
+    option (google.api.http) = {
+      get: "/api/v1/health"
+    };
+  };
+}

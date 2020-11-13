@@ -85,7 +85,7 @@ func _000001_initialize_schemaDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000001_initialize_schema.down.sql", size: 110, mode: os.FileMode(0644), modTime: time.Unix(1603896993, 0)}
+	info := bindataFileInfo{name: "000001_initialize_schema.down.sql", size: 110, mode: os.FileMode(0644), modTime: time.Unix(1605272208, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x11, 0x4a, 0x6d, 0xf3, 0xd4, 0x4f, 0x9f, 0xb1, 0xe, 0xa5, 0x3d, 0x3d, 0x9, 0xf9, 0x9c, 0x77, 0x57, 0x4c, 0x8f, 0xbb, 0x2c, 0x8e, 0xcc, 0x64, 0x72, 0x6f, 0xd2, 0x6a, 0x64, 0x5a, 0x1d, 0xed}}
 	return a, nil
 }
@@ -105,7 +105,7 @@ func _000001_initialize_schemaUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "000001_initialize_schema.up.sql", size: 943, mode: os.FileMode(0644), modTime: time.Unix(1605019281, 0)}
+	info := bindataFileInfo{name: "000001_initialize_schema.up.sql", size: 943, mode: os.FileMode(0644), modTime: time.Unix(1605272208, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x30, 0xb5, 0xe3, 0xd8, 0xdb, 0x44, 0x63, 0xc5, 0xd6, 0x89, 0x69, 0x1, 0xf2, 0xb3, 0x76, 0x4b, 0xa, 0x78, 0x52, 0x62, 0xfc, 0x8d, 0x2c, 0x3c, 0xdd, 0x92, 0x3b, 0x39, 0xbf, 0x5a, 0x5d, 0x6c}}
 	return a, nil
 }

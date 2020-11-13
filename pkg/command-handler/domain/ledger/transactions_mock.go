@@ -24,3 +24,22 @@ func (m TransactionsMock) LoadObjectsIntoCache(ctx context.Context) error {
 func (m TransactionsMock) GetAccountBalance(ctx context.Context, accountName entities.AccountName) (*entities.AccountBalance, error) {
 	return m.OnGetAccountBalance(ctx, accountName)
 }
+
+func SuccessfulTransactionMock() TransactionsMock {
+	return TransactionsMock{
+		OnCreateTransaction: func(ctx context.Context, id uuid.UUID, entries []entities.Entry) error {
+			return nil
+		},
+		OnLoadObjectsIntoCache: func(ctx context.Context) error {
+			return nil
+		},
+		OnGetAccountBalance: func(ctx context.Context, accountName entities.AccountName) (*entities.AccountBalance, error) {
+			return &entities.AccountBalance{
+				AccountName:    entities.AccountName{},
+				CurrentVersion: 0,
+				TotalCredit:    0,
+				TotalDebit:     0,
+			}, nil
+		},
+	}
+}
