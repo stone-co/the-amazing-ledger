@@ -13,6 +13,8 @@ import (
 type AccountBalanceResponse struct {
 	AccountPath    string `json:"account_path"`
 	CurrentVersion uint64 `json:"current_version"`
+	TotalCredit    int    `json:"total_credit"`
+	TotalDebit     int    `json:"total_debit"`
 	Balance        int    `json:"balance"`
 }
 
@@ -22,20 +24,22 @@ type AccountNotFoundRequest struct {
 
 func (h Handler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	log := h.log.WithFields(logrus.Fields{
-		"handler": "Get Account Balance",
+		"handler": "GetAccountBalance",
 	})
 
 	w.Header().Set("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
-	accountPath := vars["account_path"]
-	decodedAccountPath, err := url.QueryUnescape(accountPath)
+	encodedAccountPath := vars["account_path"]
+	decodedAccountPath, err := url.QueryUnescape(encodedAccountPath)
 	if err != nil {
 		log.WithError(err).Error("Query Unescape error")
 		return
 	}
 
-	accountInfo, err := h.UseCase.GetAccountInfo(r.Context(), decodedAccountPath)
+	accountName, err := entities.NewAccountName(decodedAccountPath)
+
+	accountBalance, err := h.UseCase.GetAccountBalance(r.Context(), *accountName)
 	if err != nil {
 		var messageJSON []byte
 
@@ -58,19 +62,21 @@ func (h Handler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	}
 
 	accountBalanceResponse := AccountBalanceResponse{
-		AccountPath:    accountInfo.AccountPath,
-		CurrentVersion: uint64(accountInfo.CurrentVersion.Current()),
-		Balance:        accountInfo.Balance(),
+		AccountPath:    accountBalance.AccountName.Name(),
+		CurrentVersion: uint64(accountBalance.CurrentVersion.Current()),
+		TotalCredit:    accountBalance.TotalCredit,
+		TotalDebit:     accountBalance.TotalDebit,
+		Balance:        accountBalance.Balance(),
 	}
 
-	accountBalanceJSON, err := json.Marshal(accountBalanceResponse)
+	response, err := json.Marshal(accountBalanceResponse)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(accountBalanceJSON)
+	_, err = w.Write(response)
 	if err != nil {
 		log.WithError(err).Error("can't write response")
 	}

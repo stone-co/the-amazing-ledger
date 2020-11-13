@@ -8,29 +8,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLedgerUseCase_GetAccountInfo(t *testing.T) {
+func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 	t.Run("The Balance is totalCredit subtract by totalDebit", func(t *testing.T) {
 		totalCredit := 150
 		totalDebit := 130
 		expectedBalance := totalCredit - totalDebit
 
-		accountInfo := entities.NewAccountInfo("liability:stone:clients:user-1", 3, totalCredit, totalDebit)
-
-		useCase := newFakeGetAccountInfo(accountInfo, nil)
-		a, err := useCase.GetAccountInfo(context.Background(), accountInfo.AccountPath)
+		accountName, err := entities.NewAccountName("liability:stone:clients:user-1")
 		assert.Nil(t, err)
-		assert.Equal(t, a.TotalCredit, accountInfo.TotalCredit)
-		assert.Equal(t, a.TotalDebit, accountInfo.TotalDebit)
+
+		accountBalance := entities.NewAccountBalance(*accountName, 3, totalCredit, totalDebit)
+
+		useCase := newFakeGetAccountBalance(accountBalance, nil)
+		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.AccountName)
+		assert.Nil(t, err)
+		assert.Equal(t, a.TotalCredit, accountBalance.TotalCredit)
+		assert.Equal(t, a.TotalDebit, accountBalance.TotalDebit)
 		assert.Equal(t, a.Balance(), expectedBalance)
 	})
 
 	t.Run("The max version for account id shoud be version in account info", func(t *testing.T) {
 		expectedVersion := entities.Version(5)
 
-		accountInfo := entities.NewAccountInfo("liability:stone:clients:user-1", expectedVersion, 0, 0)
+		accountName, err := entities.NewAccountName("liability:stone:clients:user-1")
+		assert.Nil(t, err)
 
-		useCase := newFakeGetAccountInfo(accountInfo, nil)
-		a, err := useCase.GetAccountInfo(context.Background(), accountInfo.AccountPath)
+		accountBalance := entities.NewAccountBalance(*accountName, expectedVersion, 0, 0)
+
+		useCase := newFakeGetAccountBalance(accountBalance, nil)
+		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.AccountName)
 
 		assert.Nil(t, err)
 		assert.Equal(t, a.CurrentVersion, expectedVersion)

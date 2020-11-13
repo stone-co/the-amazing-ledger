@@ -32,12 +32,12 @@ func newFakeLoadObjectsIntoCacheUseCase(maxVersion entities.Version, result erro
 	return NewLedgerUseCase(log, mockRepository)
 }
 
-func newFakeGetAccountInfo(accountInfo *entities.AccountInfo, result error) *LedgerUseCase {
+func newFakeGetAccountBalance(accountBalance *entities.AccountBalance, result error) *LedgerUseCase {
 	log := logrus.New()
 
 	mockRepository := &ledger.RepositoryMock{
-		OnGetAccountInfo: func(ctx context.Context, accountName *entities.AccountName) (*entities.AccountInfo, error) {
-			return accountInfo, result
+		OnGetAccountBalance: func(ctx context.Context, accountName entities.AccountName) (*entities.AccountBalance, error) {
+			return accountBalance, result
 		},
 	}
 

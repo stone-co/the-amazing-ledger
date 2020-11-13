@@ -8,7 +8,7 @@ import "google/protobuf/empty.proto";
 
 service LedgerService {
   rpc SaveTransaction(SaveTransactionRequest) returns (google.protobuf.Empty);
-  rpc GetAccountBalance(GetAccountInfoRequest) returns (GetAccountInfoResponse);
+  rpc GetAccountBalance(GetAccountBalanceRequest) returns (GetAccountBalanceResponse);
 }
 
 // SaveTransactionRequest represents a transaction to be saved. A transaction must
@@ -36,13 +36,15 @@ enum Operation {
 };
 
 // Input account id used like a key
-message GetAccountInfoRequest {
-  string account_id = 1; // Represents an account.
+message GetAccountBalanceRequest {
+  string account_name = 1; // Represents an account.
 }
 
 // Output used to represnet version and balance from an account.
-message GetAccountInfoResponse {
-  string account_id = 1; // Represents an account.
-  int64 current_version = 2; // To deal with optimistic lock.
-  int32 balance = 3; // Amount (in cents).
+message GetAccountBalanceResponse {
+  string account_name = 1; // Represents an account.
+  uint64 current_version = 2; // To deal with optimistic lock.
+  int32 total_credit = 3; // Total credit in cents
+  int32 total_debit = 4; // Total debit in cents
+  int32 balance = 5; // Difference between total_credit and total_debit
 }

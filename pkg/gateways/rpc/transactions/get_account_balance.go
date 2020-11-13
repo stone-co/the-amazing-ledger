@@ -15,9 +15,11 @@ func (h *Handler) GetAccountBalance(ctx context.Context, in *proto.GetAccountInf
 		"handler": "GetAccountBalance",
 	})
 
-	accountID := in.AccountId
+	accountPath := in.AccountId
 
-	accountInfo, err := h.UseCase.GetAccountInfo(ctx, accountID)
+	accountName, err := entities.NewAccountName(accountPath)
+
+	accountBalance, err := h.UseCase.GetAccountBalance(ctx, *accountName)
 
 	if err != nil {
 		if err == entities.ErrNotFound {
@@ -29,11 +31,11 @@ func (h *Handler) GetAccountBalance(ctx context.Context, in *proto.GetAccountInf
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	accountBalance := &proto.GetAccountInfoResponse{
-		AccountId:      accountInfo.AccountPath,
-		CurrentVersion: int64(accountInfo.CurrentVersion.Current()),
-		Balance:        int32(accountInfo.Balance()),
+	response := &proto.GetAccountInfoResponse{
+		AccountId:      accountBalance.AccountName.Name(),
+		CurrentVersion: int64(accountBalance.CurrentVersion.Current()),
+		Balance:        int32(accountBalance.Balance()),
 	}
 
-	return accountBalance, nil
+	return response, nil
 }

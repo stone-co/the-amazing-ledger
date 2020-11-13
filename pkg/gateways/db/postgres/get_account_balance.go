@@ -6,7 +6,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
-func (r *LedgerRepository) GetAccountInfo(ctx context.Context, accountName *entities.AccountName) (*entities.AccountInfo, error) {
+func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName entities.AccountName) (*entities.AccountBalance, error) {
 	query := `
 		SELECT
 			account_class,
@@ -47,16 +47,15 @@ func (r *LedgerRepository) GetAccountInfo(ctx context.Context, accountName *enti
 		accountName.Subgroup,
 		accountName.ID,
 	)
-	var empty string
 	var version uint64
 	var totalCredit int
 	var totalDebit int
 
 	err = row.Scan(
-		&empty,
-		&empty,
-		&empty,
-		&empty,
+		nil,
+		nil,
+		nil,
+		nil,
 		&version,
 		&totalCredit,
 		&totalDebit,
@@ -65,8 +64,7 @@ func (r *LedgerRepository) GetAccountInfo(ctx context.Context, accountName *enti
 		return nil, err
 	}
 
-	accountPath := accountName.Name()
-	accountInfo := entities.NewAccountInfo(accountPath, entities.Version(version), totalCredit, totalDebit)
-	return accountInfo, nil
+	accountBalance := entities.NewAccountBalance(accountName, entities.Version(version), totalCredit, totalDebit)
+	return accountBalance, nil
 
 }

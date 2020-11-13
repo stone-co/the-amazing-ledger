@@ -10,5 +10,5 @@ import (
 type TransactionsUseCase interface {
 	CreateTransaction(ctx context.Context, id uuid.UUID, entries []entities.Entry) error
 	LoadObjectsIntoCache(ctx context.Context) error
-	GetAccountInfo(ctx context.Context, accountPath string) (*entities.AccountInfo, error)
+	GetAccountBalance(ctx context.Context, accountName entities.AccountName) (*entities.AccountBalance, error)
 }
