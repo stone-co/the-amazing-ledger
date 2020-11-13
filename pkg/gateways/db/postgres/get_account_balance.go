@@ -13,15 +13,15 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName en
 			account_group,
 			account_subgroup,
 			account_id,
-		MAX(version) as version,
-		SUM(CASE operation
-		    WHEN $1 THEN amount
-		    ELSE 0
-		    END) AS total_credit,
-		SUM(CASE operation
-		    WHEN $2 THEN amount
-		    ELSE 0
-		    END) AS total_debit
+			MAX(version) as version,
+			SUM(CASE operation
+				WHEN $1 THEN amount
+				ELSE 0
+				END) AS total_credit,
+			SUM(CASE operation
+				WHEN $2 THEN amount
+				ELSE 0
+				END) AS total_debit
 		FROM entries
 		WHERE account_class = $3 AND account_group = $4 AND account_subgroup = $5 AND account_id = $6
 		GROUP BY account_class, account_group, account_subgroup, account_id
