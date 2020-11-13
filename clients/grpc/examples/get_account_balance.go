@@ -37,7 +37,8 @@ func getAccountBalanceNotFoundAccount(log *logrus.Entry, conn *ledger.Connection
 
 	accountPathNotFound := "liability:stone:clients:" + uuid.New().String()
 
-	_, err := conn.GetAccountBalance(context.Background(), accountPathNotFound)
+	accountBalance, err := conn.GetAccountBalance(context.Background(), accountPathNotFound)
 
+	AssertNil(accountBalance)
 	AssertEqual(entities.ErrNotFound, err)
 }
