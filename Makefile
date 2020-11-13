@@ -12,10 +12,8 @@ RICHGO_FORCE_COLOR=1
 .PHONY: setup
 setup:
 	@echo "==> Setup: Getting tools"
-	@go get -u github.com/golang/protobuf/protoc-gen-go
-	@go get github.com/kevinburke/go-bindata/...
-	@curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin
-	@go install ./...
+	go mod tidy
+	go install ./...
 
 .PHONY: test
 test:
@@ -45,9 +43,10 @@ clean:
 
 .PHONY: metalint
 metalint:
-	@echo "==> Running golangci-lint"
+	@echo "==> Running Linters"
 	go test -i ./...
-	$$(go env GOPATH)/bin/golangci-lint run -c ./.golangci.yml ./...
+	golangci-lint run -c ./.golangci.yml ./...
+	buf check lint
 
 .PHONY: test-coverage
 test-coverage:
@@ -58,5 +57,5 @@ test-coverage:
 .PHONY: generate
 generate:
 	@echo "Go Generating"
-	@protoc --go_out=plugins=grpc:. pkg/gateways/rpc/proto/ledger.proto --go_opt=paths=source_relative
-	go generate ./...
+	@buf generate
+	@go generate ./...
