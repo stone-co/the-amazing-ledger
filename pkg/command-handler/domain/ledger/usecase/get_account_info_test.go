@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
 func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
