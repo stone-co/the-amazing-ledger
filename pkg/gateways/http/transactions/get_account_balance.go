@@ -43,20 +43,20 @@ func (h Handler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var messageJSON []byte
 
-		if err == entities.ErrNotFound {
+		if err == entities.ErrAccountNotFound {
 			messageJSON, _ = json.Marshal(AccountNotFoundRequest{Message: err.Error()})
 			w.WriteHeader(http.StatusNotFound)
-			log.WithError(err).Error("error getting account and balance")
+			log.WithError(err).Error("account name does not exist")
 		} else {
 			messageJSON, _ = json.Marshal(AccountNotFoundRequest{Message: err.Error()})
 			w.WriteHeader(http.StatusBadRequest)
-			log.WithError(err).Error("error getting account and balance")
+			log.WithError(err).Error("can't get account")
 		}
 
 		_, err = w.Write(messageJSON)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			log.WithError(err).Error("can't write response")
+			log.WithError(err).Error("can't write http body response")
 		}
 		return
 	}
@@ -78,6 +78,6 @@ func (h Handler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(response)
 	if err != nil {
-		log.WithError(err).Error("can't write response")
+		log.WithError(err).Error("can't write http body response")
 	}
 }

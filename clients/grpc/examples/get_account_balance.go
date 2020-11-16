@@ -40,5 +40,5 @@ func getAccountBalanceNotFoundAccount(log *logrus.Entry, conn *ledger.Connection
 	accountBalance, err := conn.GetAccountBalance(context.Background(), accountPathNotFound)
 
 	AssertNil(accountBalance)
-	AssertEqual(entities.ErrNotFound, err)
+	AssertEqual(entities.ErrAccountNotFound, err)
 }

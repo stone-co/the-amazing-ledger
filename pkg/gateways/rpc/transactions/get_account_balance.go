@@ -22,12 +22,12 @@ func (h *Handler) GetAccountBalance(ctx context.Context, in *proto.GetAccountInf
 	accountBalance, err := h.UseCase.GetAccountBalance(ctx, *accountName)
 
 	if err != nil {
-		if err == entities.ErrNotFound {
-			log.WithError(err).Error("object not found")
+		if err == entities.ErrAccountNotFound {
+			log.WithError(err).Error("account name does not exist")
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 
-		log.WithError(err).Error(" error getting account info")
+		log.WithError(err).Error("can't get account")
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 

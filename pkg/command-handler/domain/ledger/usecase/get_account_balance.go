@@ -14,7 +14,7 @@ func (l *LedgerUseCase) GetAccountBalance(ctx context.Context, accountName entit
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, entities.ErrNotFound
+			return nil, entities.ErrAccountNotFound
 		}
 		return nil, err
 	}
