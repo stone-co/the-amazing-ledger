@@ -29,15 +29,7 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName en
 	creditOperation := entities.CreditOperation.String()
 	debitOperation := entities.DebitOperation.String()
 
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		_ = tx.Rollback(ctx)
-	}()
-
-	row := tx.QueryRow(
+	row := r.db.QueryRow(
 		context.Background(),
 		query,
 		creditOperation,
@@ -51,7 +43,7 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName en
 	var totalCredit int
 	var totalDebit int
 
-	err = row.Scan(
+	err := row.Scan(
 		nil,
 		nil,
 		nil,
