@@ -13,7 +13,7 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName en
 			account_group,
 			account_subgroup,
 			account_id,
-			MAX(version) as version,
+			MAX(version) as current_version,
 			SUM(CASE operation
 				WHEN $1 THEN amount
 				ELSE 0
@@ -47,7 +47,7 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName en
 		accountName.Subgroup,
 		accountName.ID,
 	)
-	var version uint64
+	var currentVersion uint64
 	var totalCredit int
 	var totalDebit int
 
@@ -56,7 +56,7 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName en
 		nil,
 		nil,
 		nil,
-		&version,
+		&currentVersion,
 		&totalCredit,
 		&totalDebit,
 	)
@@ -64,7 +64,7 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName en
 		return nil, err
 	}
 
-	accountBalance := entities.NewAccountBalance(accountName, entities.Version(version), totalCredit, totalDebit)
+	accountBalance := entities.NewAccountBalance(accountName, entities.Version(currentVersion), totalCredit, totalDebit)
 	return accountBalance, nil
 
 }
