@@ -27,5 +27,6 @@ func main() {
 	invalidTransactionsTests(log, conn)
 
 	getAccountBalance(log, conn)
+	getAccountBalanceWithMoreEntries(log, conn)
 	getAccountBalanceNotFoundAccount(log, conn)
 }
