@@ -1,13 +1,13 @@
 package transactions
 
 import (
-	"encoding/json"
 	"net/http"
 	"net/url"
 
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
+	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/responses"
 )
 
 type AccountBalanceResponse struct {
@@ -18,51 +18,37 @@ type AccountBalanceResponse struct {
 	Balance        int    `json:"balance"`
 }
 
-type AccountNotFoundRequest struct {
-	Message string `json:"message"`
-}
-
 func (h Handler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	log := h.log.WithFields(logrus.Fields{
 		"handler": "GetAccountBalance",
 	})
 
-	w.Header().Set("Content-Type", "application/json")
-
 	vars := mux.Vars(r)
 	encodedAccountPath := vars["account_path"]
 	decodedAccountPath, err := url.QueryUnescape(encodedAccountPath)
 	if err != nil {
-		log.WithError(err).Error("Query Unescape error")
+		log.WithError(err).Error("query unescape error")
+		responses.SendError(w, log, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	accountName, err := entities.NewAccountName(decodedAccountPath)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		log.WithError(err).Error("can't create account name")
+		responses.SendError(w, log, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	accountBalance, err := h.UseCase.GetAccountBalance(r.Context(), *accountName)
 	if err != nil {
-		var messageJSON []byte
-
 		if err == entities.ErrAccountNotFound {
-			messageJSON, _ = json.Marshal(AccountNotFoundRequest{Message: err.Error()})
-			w.WriteHeader(http.StatusNotFound)
 			log.WithError(err).Error("account name does not exist")
-		} else {
-			messageJSON, _ = json.Marshal(AccountNotFoundRequest{Message: err.Error()})
-			w.WriteHeader(http.StatusBadRequest)
-			log.WithError(err).Error("can't get account")
+			responses.SendError(w, log, err.Error(), http.StatusNotFound)
+			return
 		}
 
-		_, err = w.Write(messageJSON)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			log.WithError(err).Error("can't write http body response")
-		}
+		log.WithError(err).Error("can't get account")
+		responses.SendError(w, log, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -74,15 +60,5 @@ func (h Handler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 		Balance:        accountBalance.Balance(),
 	}
 
-	response, err := json.Marshal(accountBalanceResponse)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(response)
-	if err != nil {
-		log.WithError(err).Error("can't write http body response")
-	}
+	responses.Send(w, log, accountBalanceResponse, http.StatusOK)
 }
