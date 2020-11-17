@@ -13,6 +13,10 @@ func (v Version) Current() Version {
 	return v
 }
 
+func (v Version) ToUInt64() uint64 {
+	return uint64(v)
+}
+
 func (v *Version) Next() Version {
 	return Version(atomic.AddUint64((*uint64)(v), 1))
 }

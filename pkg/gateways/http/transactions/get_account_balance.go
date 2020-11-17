@@ -68,7 +68,7 @@ func (h Handler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 
 	accountBalanceResponse := AccountBalanceResponse{
 		AccountPath:    accountBalance.AccountName.Name(),
-		CurrentVersion: uint64(accountBalance.CurrentVersion.Current()),
+		CurrentVersion: accountBalance.CurrentVersion.ToUInt64(),
 		TotalCredit:    accountBalance.TotalCredit,
 		TotalDebit:     accountBalance.TotalDebit,
 		Balance:        accountBalance.Balance(),

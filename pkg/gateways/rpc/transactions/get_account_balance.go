@@ -37,7 +37,7 @@ func (h *Handler) GetAccountBalance(ctx context.Context, in *proto.GetAccountBal
 
 	response := &proto.GetAccountBalanceResponse{
 		AccountName:    accountBalance.AccountName.Name(),
-		CurrentVersion: uint64(accountBalance.CurrentVersion.Current()),
+		CurrentVersion: accountBalance.CurrentVersion.ToUInt64(),
 		TotalCredit:    int32(accountBalance.TotalCredit),
 		TotalDebit:     int32(accountBalance.TotalDebit),
 		Balance:        int32(accountBalance.Balance()),
