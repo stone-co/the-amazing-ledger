@@ -55,7 +55,7 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountName string) 
 
 	accName, err := entities.NewAccountName(response.AccountName)
 	if err != nil {
-		return nil, fmt.Errorf("error: %v", err)
+		return nil, err
 	}
 
 	accountBalance := &AccountBalance{
