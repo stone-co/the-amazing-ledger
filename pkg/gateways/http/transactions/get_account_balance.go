@@ -38,6 +38,11 @@ func (h Handler) GetAccountBalance(w http.ResponseWriter, r *http.Request) {
 	}
 
 	accountName, err := entities.NewAccountName(decodedAccountPath)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		log.WithError(err).Error("can't create account name")
+		return
+	}
 
 	accountBalance, err := h.UseCase.GetAccountBalance(r.Context(), *accountName)
 	if err != nil {

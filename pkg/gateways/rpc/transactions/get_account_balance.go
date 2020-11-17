@@ -18,6 +18,10 @@ func (h *Handler) GetAccountBalance(ctx context.Context, in *proto.GetAccountBal
 	accountPath := in.AccountName
 
 	accountName, err := entities.NewAccountName(accountPath)
+	if err != nil {
+		log.WithError(err).Error("can't create account name")
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
 
 	accountBalance, err := h.UseCase.GetAccountBalance(ctx, *accountName)
 
