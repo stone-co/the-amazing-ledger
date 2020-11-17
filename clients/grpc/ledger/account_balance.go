@@ -13,6 +13,8 @@ import (
 type AccountBalance struct {
 	accountName    entities.AccountName
 	currentVersion entities.Version
+	totalCredit    int
+	totalDebit     int
 	balance        int
 }
 
@@ -20,8 +22,16 @@ func (a AccountBalance) AccountName() entities.AccountName {
 	return a.accountName
 }
 
+func (a AccountBalance) TotalCredit() int {
+	return a.totalCredit
+}
+
 func (a AccountBalance) CurrentVersion() entities.Version {
 	return a.currentVersion
+}
+
+func (a AccountBalance) TotalDebit() int {
+	return a.totalDebit
 }
 
 func (a AccountBalance) Balance() int {
@@ -30,8 +40,8 @@ func (a AccountBalance) Balance() int {
 
 func (c *Connection) GetAccountBalance(ctx context.Context, accountName string) (*AccountBalance, error) {
 
-	accountRequest := &proto.GetAccountInfoRequest{
-		AccountId: accountName,
+	accountRequest := &proto.GetAccountBalanceRequest{
+		AccountName: accountName,
 	}
 
 	response, err := c.client.GetAccountBalance(ctx, accountRequest)
@@ -43,7 +53,7 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountName string) 
 		return nil, fmt.Errorf("not able to parse error returned %v", err)
 	}
 
-	accName, err := entities.NewAccountName(response.AccountId)
+	accName, err := entities.NewAccountName(response.AccountName)
 	if err != nil {
 		return nil, fmt.Errorf("error: %v", err)
 	}
@@ -51,6 +61,8 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountName string) 
 	accountBalance := &AccountBalance{
 		accountName:    *accName,
 		currentVersion: entities.Version(response.CurrentVersion),
+		totalCredit:    int(response.TotalCredit),
+		totalDebit:     int(response.TotalDebit),
 		balance:        int(response.Balance),
 	}
 

@@ -10,12 +10,12 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (h *Handler) GetAccountBalance(ctx context.Context, in *proto.GetAccountInfoRequest) (*proto.GetAccountInfoResponse, error) {
+func (h *Handler) GetAccountBalance(ctx context.Context, in *proto.GetAccountBalanceRequest) (*proto.GetAccountBalanceResponse, error) {
 	log := h.log.WithFields(logrus.Fields{
 		"handler": "GetAccountBalance",
 	})
 
-	accountPath := in.AccountId
+	accountPath := in.AccountName
 
 	accountName, err := entities.NewAccountName(accountPath)
 
@@ -31,9 +31,11 @@ func (h *Handler) GetAccountBalance(ctx context.Context, in *proto.GetAccountInf
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	response := &proto.GetAccountInfoResponse{
-		AccountId:      accountBalance.AccountName.Name(),
-		CurrentVersion: int64(accountBalance.CurrentVersion.Current()),
+	response := &proto.GetAccountBalanceResponse{
+		AccountName:    accountBalance.AccountName.Name(),
+		CurrentVersion: uint64(accountBalance.CurrentVersion.Current()),
+		TotalCredit:    int32(accountBalance.TotalCredit),
+		TotalDebit:     int32(accountBalance.TotalDebit),
 		Balance:        int32(accountBalance.Balance()),
 	}
 
