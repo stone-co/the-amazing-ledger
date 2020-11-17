@@ -11,5 +11,5 @@ func TestAccountBalance(t *testing.T) {
 
 	accountBalance := NewAccountBalance(*accountName, Version(3), 100, 50)
 
-	assert.Equal(t, accountBalance.Balance(), 50)
+	assert.Equal(t, 50, accountBalance.Balance())
 }
