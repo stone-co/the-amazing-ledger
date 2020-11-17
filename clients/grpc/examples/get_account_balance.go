@@ -46,11 +46,10 @@ func getAccountBalanceWithMoreEntries(log *logrus.Entry, conn *ledger.Connection
 	AssertEqual(nil, err)
 
 	accountOne, err := conn.GetAccountBalance(context.Background(), accountPathOne)
-	accountTwo, err := conn.GetAccountBalance(context.Background(), accountPathTwo)
 
 	t = conn.NewTransaction(uuid.New())
 	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), entities.DebitOperation, 250)
-	t.AddEntry(uuid.New(), accountPathTwo, accountTwo.CurrentVersion(), entities.CreditOperation, 250)
+	t.AddEntry(uuid.New(), accountPathTwo, entities.AnyAccountVersion, entities.CreditOperation, 250)
 	err = conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
