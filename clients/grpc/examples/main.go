@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/sirupsen/logrus"
+
 	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
 )
 
@@ -24,4 +25,8 @@ func main() {
 
 	defineTransactionWithThreeEntries(log, conn)
 	invalidTransactionsTests(log, conn)
+
+	getAccountBalance(log, conn)
+	getAccountBalanceWithMoreEntries(log, conn)
+	getAccountBalanceNotFoundAccount(log, conn)
 }

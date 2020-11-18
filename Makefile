@@ -1,5 +1,5 @@
 NAME=ledger
-NAME_COMMAND_HANDLER=command-handler
+NAME_COMMAND_HANDLER=server
 VERSION=dev
 OS ?= linux
 PROJECT_PATH ?= github.com/stone-co/the-amazing-ledger
@@ -21,6 +21,7 @@ setup:
 	github.com/golangci/golangci-lint/cmd/golangci-lint \
 	github.com/kevinburke/go-bindata \
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc \
+	github.com/kyoh86/richgo
 
 .PHONY: test
 test:

@@ -10,3 +10,9 @@ func AssertEqual(expected, actual interface{}) {
 		log.Fatalf("Expected: %v Actual: %v\n", expected, actual)
 	}
 }
+
+func AssertNil(object interface{}) {
+	if !reflect.ValueOf(object).IsNil() {
+		log.Fatalf("%v must be nil.\n", object)
+	}
+}

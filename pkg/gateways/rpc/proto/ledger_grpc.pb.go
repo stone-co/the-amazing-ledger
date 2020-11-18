@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LedgerServiceClient interface {
 	SaveTransaction(ctx context.Context, in *SaveTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	GetAccountBalance(ctx context.Context, in *GetAccountBalanceRequest, opts ...grpc.CallOption) (*GetAccountBalanceResponse, error)
 }
 
 type ledgerServiceClient struct {
@@ -38,11 +39,21 @@ func (c *ledgerServiceClient) SaveTransaction(ctx context.Context, in *SaveTrans
 	return out, nil
 }
 
+func (c *ledgerServiceClient) GetAccountBalance(ctx context.Context, in *GetAccountBalanceRequest, opts ...grpc.CallOption) (*GetAccountBalanceResponse, error) {
+	out := new(GetAccountBalanceResponse)
+	err := c.cc.Invoke(ctx, "/proto.LedgerService/GetAccountBalance", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LedgerServiceServer is the server API for LedgerService service.
 // All implementations should embed UnimplementedLedgerServiceServer
 // for forward compatibility
 type LedgerServiceServer interface {
 	SaveTransaction(context.Context, *SaveTransactionRequest) (*empty.Empty, error)
+	GetAccountBalance(context.Context, *GetAccountBalanceRequest) (*GetAccountBalanceResponse, error)
 }
 
 // UnimplementedLedgerServiceServer should be embedded to have forward compatible implementations.
@@ -51,6 +62,9 @@ type UnimplementedLedgerServiceServer struct {
 
 func (UnimplementedLedgerServiceServer) SaveTransaction(context.Context, *SaveTransactionRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveTransaction not implemented")
+}
+func (UnimplementedLedgerServiceServer) GetAccountBalance(context.Context, *GetAccountBalanceRequest) (*GetAccountBalanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountBalance not implemented")
 }
 
 // UnsafeLedgerServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -82,6 +96,24 @@ func _LedgerService_SaveTransaction_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LedgerService_GetAccountBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccountBalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LedgerServiceServer).GetAccountBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.LedgerService/GetAccountBalance",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LedgerServiceServer).GetAccountBalance(ctx, req.(*GetAccountBalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _LedgerService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.LedgerService",
 	HandlerType: (*LedgerServiceServer)(nil),
@@ -89,6 +121,10 @@ var _LedgerService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveTransaction",
 			Handler:    _LedgerService_SaveTransaction_Handler,
+		},
+		{
+			MethodName: "GetAccountBalance",
+			Handler:    _LedgerService_GetAccountBalance_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

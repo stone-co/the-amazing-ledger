@@ -10,6 +10,7 @@ import (
 type TransactionsMock struct {
 	OnCreateTransaction    func(ctx context.Context, id uuid.UUID, entries []entities.Entry) error
 	OnLoadObjectsIntoCache func(ctx context.Context) error
+	OnGetAccountBalance    func(ctx context.Context, accountName entities.AccountName) (*entities.AccountBalance, error)
 }
 
 func (m TransactionsMock) CreateTransaction(ctx context.Context, id uuid.UUID, entries []entities.Entry) error {
@@ -18,4 +19,8 @@ func (m TransactionsMock) CreateTransaction(ctx context.Context, id uuid.UUID, e
 
 func (m TransactionsMock) LoadObjectsIntoCache(ctx context.Context) error {
 	return m.OnLoadObjectsIntoCache(ctx)
+}
+
+func (m TransactionsMock) GetAccountBalance(ctx context.Context, accountName entities.AccountName) (*entities.AccountBalance, error) {
+	return m.OnGetAccountBalance(ctx, accountName)
 }

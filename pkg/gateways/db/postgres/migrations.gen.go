@@ -249,8 +249,8 @@ type bintree struct {
 }
 
 var _bintree = &bintree{nil, map[string]*bintree{
-	"000001_initialize_schema.down.sql": &bintree{_000001_initialize_schemaDownSql, map[string]*bintree{}},
-	"000001_initialize_schema.up.sql":   &bintree{_000001_initialize_schemaUpSql, map[string]*bintree{}},
+	"000001_initialize_schema.down.sql": {_000001_initialize_schemaDownSql, map[string]*bintree{}},
+	"000001_initialize_schema.up.sql":   {_000001_initialize_schemaUpSql, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory.

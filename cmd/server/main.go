@@ -11,10 +11,11 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
+	"golang.org/x/sync/errgroup"
+
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
 	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
 	"github.com/stone-co/the-amazing-ledger/pkg/gateways/db/postgres"
-	"golang.org/x/sync/errgroup"
 )
 
 func main() {

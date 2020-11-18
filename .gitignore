@@ -1,1 +1,3 @@
-build/command-handler
+build/
+coverage.html
+coverage.out
