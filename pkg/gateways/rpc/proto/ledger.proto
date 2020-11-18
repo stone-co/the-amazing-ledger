@@ -44,13 +44,13 @@ enum Operation {
   OPERATION_CREDIT = 2;
 };
 
-// GetAccountBalanceRequest used in GetAccountBalance like a search key.
+// GetAccountBalanceRequest is used in GetAccountBalance like a search key.
 message GetAccountBalanceRequest {
   // Represents an account name.
   string account_path = 1;
 }
 
-// GetAccountBalanceResponse used to represents version and balance from an account.
+// GetAccountBalanceResponse is used to represent the version and balance from an account.
 message GetAccountBalanceResponse {
   // Represents an account name.
   string account_path = 1;
