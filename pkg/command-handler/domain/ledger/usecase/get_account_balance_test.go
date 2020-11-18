@@ -28,7 +28,7 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 		assert.Equal(t, a.Balance(), expectedBalance)
 	})
 
-	t.Run("The max version for account id shoud be version in account info", func(t *testing.T) {
+	t.Run("The max version for account path must be version in account balance", func(t *testing.T) {
 		expectedVersion := entities.Version(5)
 
 		accountName, err := entities.NewAccountName("liability:stone:clients:user-1")
@@ -42,5 +42,4 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, a.CurrentVersion, expectedVersion)
 	})
-
 }
