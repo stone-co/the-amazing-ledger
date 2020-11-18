@@ -21,6 +21,7 @@ setup:
 	github.com/golangci/golangci-lint/cmd/golangci-lint \
 	github.com/kevinburke/go-bindata \
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc \
+	github.com/kyoh86/richgo
 
 .PHONY: test
 test:
