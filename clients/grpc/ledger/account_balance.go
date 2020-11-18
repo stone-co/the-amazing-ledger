@@ -41,7 +41,7 @@ func (a AccountBalance) Balance() int {
 func (c *Connection) GetAccountBalance(ctx context.Context, accountName string) (*AccountBalance, error) {
 
 	accountRequest := &proto.GetAccountBalanceRequest{
-		AccountName: accountName,
+		AccountPath: accountName,
 	}
 
 	response, err := c.client.GetAccountBalance(ctx, accountRequest)
@@ -53,7 +53,7 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountName string) 
 		return nil, fmt.Errorf("not able to parse error returned %v", err)
 	}
 
-	accName, err := entities.NewAccountName(response.AccountName)
+	accName, err := entities.NewAccountName(response.AccountPath)
 	if err != nil {
 		return nil, err
 	}

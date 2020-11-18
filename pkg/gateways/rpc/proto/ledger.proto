@@ -3,7 +3,6 @@ syntax = "proto3";
 option go_package = "github.com/stone-co/the-amazing-ledger/pkg/rpc/proto";
 
 package proto;
-
 import "google/protobuf/empty.proto";
 
 service LedgerService {
@@ -37,12 +36,12 @@ enum Operation {
 
 // Input account id used like a key
 message GetAccountBalanceRequest {
-  string account_name = 1; // Represents an account.
+  string account_path = 1; // Represents an account.
 }
 
 // Output used to represnet version and balance from an account.
 message GetAccountBalanceResponse {
-  string account_name = 1; // Represents an account.
+  string account_path = 1; // Represents an account.
   uint64 current_version = 2; // To deal with optimistic lock.
   int32 total_credit = 3; // Total credit in cents
   int32 total_debit = 4; // Total debit in cents

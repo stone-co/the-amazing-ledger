@@ -15,7 +15,7 @@ func (h *Handler) GetAccountBalance(ctx context.Context, in *proto.GetAccountBal
 		"handler": "GetAccountBalance",
 	})
 
-	accountPath := in.AccountName
+	accountPath := in.AccountPath
 
 	accountName, err := entities.NewAccountName(accountPath)
 	if err != nil {
@@ -36,7 +36,7 @@ func (h *Handler) GetAccountBalance(ctx context.Context, in *proto.GetAccountBal
 	}
 
 	response := &proto.GetAccountBalanceResponse{
-		AccountName:    accountBalance.AccountName.Name(),
+		AccountPath:    accountBalance.AccountName.Name(),
 		CurrentVersion: accountBalance.CurrentVersion.ToUInt64(),
 		TotalCredit:    int32(accountBalance.TotalCredit),
 		TotalDebit:     int32(accountBalance.TotalDebit),
