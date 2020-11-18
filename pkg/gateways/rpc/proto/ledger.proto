@@ -44,15 +44,15 @@ enum Operation {
   OPERATION_CREDIT = 2;
 };
 
-// Input account id used like a key
+// GetAccountBalanceRequest used in GetAccountBalance like a search key.
 message GetAccountBalanceRequest {
-  // Represents an account.
+  // Represents an account name.
   string account_path = 1;
 }
 
-// Output used to represnet version and balance from an account.
+// GetAccountBalanceResponse used to represents version and balance from an account.
 message GetAccountBalanceResponse {
-  // Represents an account.
+  // Represents an account name.
   string account_path = 1;
   // To deal with optimistic lock.
   uint64 current_version = 2;
@@ -60,6 +60,6 @@ message GetAccountBalanceResponse {
   int32 total_credit = 3;
   // Total debit in cents.
   int32 total_debit = 4;
-  // Difference between total_credit and total_debit.
+  // Difference between total_credit and total_debit in cents.
   int32 balance = 5;
 }
