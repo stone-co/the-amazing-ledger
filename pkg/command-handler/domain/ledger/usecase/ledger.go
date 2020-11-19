@@ -7,7 +7,6 @@ import (
 )
 
 var _ ledger.TransactionsUseCase = &LedgerUseCase{}
-var _ ledger.AccountsUseCase = &LedgerUseCase{}
 
 type LedgerUseCase struct {
 	log            *logrus.Logger
