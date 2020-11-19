@@ -71,22 +71,3 @@ func (r *LedgerRepository) CreateAccount(a *entities.Account) (entities.Account,
 
 	return *a, nil
 }
-
-func (r *LedgerRepository) GetAccount(id string) (entities.Account, error) {
-	var account = entities.Account{}
-	row := r.db.QueryRow(context.Background(),
-		`SELECT
-			id, owner, name, owner_id, type, metadata, balance
-		FROM accounts where id = $1`, id)
-
-	err := row.Scan(
-		&account.ID,
-		&account.Owner,
-		&account.Name,
-		&account.OwnerID,
-		&account.Type,
-		&account.Metadata,
-		&account.Balance,
-	)
-	return account, err
-}

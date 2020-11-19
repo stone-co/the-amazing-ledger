@@ -3,7 +3,6 @@ package usecase
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -115,43 +114,4 @@ func TestAccountsUseCase_Create(t *testing.T) {
 		assert.Error(t, err, fmt.Sprintf("unknown account type '%s'", input.Type))
 	})
 
-}
-
-func TestAccountsUseCase_Get(t *testing.T) {
-
-	log := logrus.New()
-	mockRepository := &ledger.RepositoryMock{}
-
-	useCase := NewLedgerUseCase(log, mockRepository)
-
-	t.Run("Successfully returns an account by id", func(t *testing.T) {
-		id := uuid.New().String()
-		now := time.Now()
-		accountOutput := entities.Account{
-			ID:        id,
-			OwnerID:   "owner_id",
-			Type:      entities.AccountType("asset"),
-			Balance:   0,
-			Owner:     "owner",
-			Name:      "name",
-			Metadata:  []string{"teste"},
-			CreatedAt: now,
-			UpdatedAt: nil,
-		}
-
-		mockRepository.OnGetAccount = func(id string) (entities.Account, error) {
-			return accountOutput, nil
-		}
-
-		account, err := useCase.GetAccount(id)
-
-		assert.Equal(t, nil, err)
-		assert.Equal(t, accountOutput.ID, account.ID)
-		assert.Equal(t, accountOutput.OwnerID, account.OwnerID)
-		assert.Equal(t, string(accountOutput.Type), account.Type)
-		assert.Equal(t, accountOutput.Balance, account.Balance)
-		assert.Equal(t, accountOutput.Name, account.Name)
-		assert.Equal(t, accountOutput.Owner, account.Owner)
-		assert.Equal(t, accountOutput.Metadata[0], account.Metadata[0])
-	})
 }

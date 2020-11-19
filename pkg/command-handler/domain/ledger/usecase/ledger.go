@@ -88,25 +88,6 @@ func (l LedgerUseCase) doCreateAccount(account entities.Account) (ledger.Account
 	return newAccount, err
 }
 
-func (l LedgerUseCase) GetAccount(id string) (ledger.Account, error) {
-	account, err := l.repository.GetAccount(id)
-	if err != nil {
-		var account = ledger.Account{}
-		return account, fmt.Errorf("Can't get account of id %s: %s", id, err.Error())
-	}
-
-	newAccount := ledger.Account{
-		ID:       account.ID,
-		OwnerID:  account.OwnerID,
-		Type:     string(account.Type),
-		Balance:  account.Balance,
-		Owner:    account.Owner,
-		Name:     account.Name,
-		Metadata: account.Metadata,
-	}
-	return newAccount, err
-}
-
 func (l LedgerUseCase) GetLastVersion() entities.Version {
 	return l.lastVersion
 }
