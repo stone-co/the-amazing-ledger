@@ -3,7 +3,6 @@ package ledger
 type AccountsUseCase interface {
 	CreateAccount(AccountInput) (Account, error)
 	GetAccount(string) (Account, error)
-	UpdateBalance(string, int) error
 }
 
 type AccountInput struct {

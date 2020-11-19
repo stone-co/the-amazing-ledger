@@ -36,7 +36,7 @@ func (r *LedgerRepository) CreateAccount(a *entities.Account) (entities.Account,
 			metadata,
 			balance
 		) VALUES ($1, $2, $3, $4, $5, $6, $7)
-		returning 
+		returning
 		id,
 		type,
 		owner_id,
@@ -95,8 +95,8 @@ func (r *LedgerRepository) SearchAccount(a *entities.Account) (entities.Account,
 	row := r.db.QueryRow(context.Background(),
 		`select
 			id, owner, name, owner_id, type, metadata, balance
-		from accounts 
-		where 
+		from accounts
+		where
 		type = $1
 		and owner_id = $2
 		and owner = $3
@@ -119,13 +119,4 @@ func (r *LedgerRepository) SearchAccount(a *entities.Account) (entities.Account,
 		&a.Balance,
 	)
 	return *a, err
-}
-
-func (r *LedgerRepository) UpdateBalance(id string, balance int) error {
-	if _, err := r.db.Exec(context.Background(),
-		`UPDATE accounts set balance = $1 where id = $2`, balance, id); err != nil {
-		return err
-	}
-
-	return nil
 }

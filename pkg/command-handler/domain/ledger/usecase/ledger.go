@@ -147,14 +147,6 @@ func (l LedgerUseCase) SearchOrCreateAccount(input ledger.AccountInput) (ledger.
 	return acc, err
 }
 
-func (l LedgerUseCase) UpdateBalance(id string, balance int) error {
-	if err := l.repository.UpdateBalance(id, balance); err != nil {
-		return fmt.Errorf("can't update balance: %s", err.Error())
-	}
-
-	return nil
-}
-
 func (l LedgerUseCase) GetLastVersion() entities.Version {
 	return l.lastVersion
 }
