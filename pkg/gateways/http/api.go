@@ -39,7 +39,6 @@ func (a *Api) NewServer(host string, cfg configuration.HTTPConfig) *http.Server 
 	r.HandleFunc("/metrics", promhttp.Handler().ServeHTTP).Methods("GET")
 
 	//Accounts
-	r.HandleFunc("/accounts", a.Accounts.Create).Methods("POST")
 	r.HandleFunc("/accounts/{account_path}/balance", a.Transactions.GetAccountBalance).Methods("GET")
 
 	//Entries

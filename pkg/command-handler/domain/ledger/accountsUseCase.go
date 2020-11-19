@@ -1,7 +1,6 @@
 package ledger
 
 type AccountsUseCase interface {
-	CreateAccount(AccountInput) (Account, error)
 }
 
 type AccountInput struct {
