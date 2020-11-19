@@ -107,46 +107,6 @@ func (l LedgerUseCase) GetAccount(id string) (ledger.Account, error) {
 	return newAccount, err
 }
 
-func (l LedgerUseCase) SearchAccount(input ledger.AccountInput) (ledger.Account, error) {
-	account, err := newAccount(input)
-
-	if err != nil {
-		return ledger.Account{}, err
-	}
-
-	account, err = l.repository.SearchAccount(&account)
-	if err != nil {
-		return ledger.Account{}, fmt.Errorf("Can't get account: %s", err.Error())
-	}
-
-	newAccount := ledger.Account{
-		ID:       account.ID,
-		OwnerID:  account.OwnerID,
-		Type:     string(account.Type),
-		Balance:  account.Balance,
-		Owner:    account.Owner,
-		Name:     account.Name,
-		Metadata: account.Metadata,
-	}
-	return newAccount, err
-}
-
-func (l LedgerUseCase) SearchOrCreateAccount(input ledger.AccountInput) (ledger.Account, error) {
-	acc, err := l.SearchAccount(input)
-
-	if err == nil {
-		return acc, err
-	}
-
-	if acc.ID == "" {
-		if acc, err = l.CreateAccount(input); err != nil {
-			return acc, err
-		}
-	}
-
-	return acc, err
-}
-
 func (l LedgerUseCase) GetLastVersion() entities.Version {
 	return l.lastVersion
 }

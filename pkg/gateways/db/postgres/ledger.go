@@ -90,33 +90,3 @@ func (r *LedgerRepository) GetAccount(id string) (entities.Account, error) {
 	)
 	return account, err
 }
-
-func (r *LedgerRepository) SearchAccount(a *entities.Account) (entities.Account, error) {
-	row := r.db.QueryRow(context.Background(),
-		`select
-			id, owner, name, owner_id, type, metadata, balance
-		from accounts
-		where
-		type = $1
-		and owner_id = $2
-		and owner = $3
-		and name = $4
-		and metadata = $5
-		limit 1`,
-		a.Type,
-		a.OwnerID,
-		a.Owner,
-		a.Name,
-		a.Metadata)
-
-	err := row.Scan(
-		&a.ID,
-		&a.Owner,
-		&a.Name,
-		&a.OwnerID,
-		&a.Type,
-		&a.Metadata,
-		&a.Balance,
-	)
-	return *a, err
-}
