@@ -1,23 +1,5 @@
 BEGIN;
 
-CREATE TYPE account_type AS ENUM (
-	'asset',
-	'liability',
-	'income',
-	'expense',
-	'equity'
-);
-
-CREATE TABLE accounts (
-	id         UUID PRIMARY KEY,
-	type       ACCOUNT_TYPE NOT NULL,
-	owner_id   TEXT NOT NULL,
-	owner      TEXT NOT NULL,
-	name       TEXT NOT NULL,
-	metadata   TEXT NOT NULL,
-	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TYPE account_class AS ENUM (
 	'liability',
 	'assets',
