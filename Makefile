@@ -80,3 +80,6 @@ goimports:
 	@goimports -w $(shell \
                   	find . -not \( \( -name .git -o -name .go -o -name vendor \) -prune \) \
                   	-name '*.go')
+
+.PHONY: pre/push
+pre/push: goimports metalint test
