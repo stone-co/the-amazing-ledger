@@ -56,7 +56,7 @@ func main() {
 	}()
 
 	// Initialize the server (grpc-gateway)
-	server, _ := NewGRPCServer(ledgerUseCase, cfg.Server, log)
+	server, err := NewGRPCServer(ledgerUseCase, cfg.Server, log)
 	if err != nil {
 		log.WithError(err).Fatal("failed to initialize the server")
 	}
