@@ -39,7 +39,7 @@ Wait for database setup and run in another shell this commands.
 
 ```bash
 $ make compile
-$ ./build/command-handler
+$ ./build/server
 ```
 
 ## Setup
