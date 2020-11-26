@@ -1,8 +1,13 @@
 version: v1beta1
 plugins:
   - name: go
-    out: .
+    out: gen
     opt: paths=source_relative
   - name: go-grpc
-    out: .
+    out: gen
     opt: paths=source_relative,require_unimplemented_servers=false
+  - name: grpc-gateway
+    out: gen
+    opt: paths=source_relative,generate_unbound_methods=true,logtostderr=true
+  - name: openapiv2
+    out: docs/openapi

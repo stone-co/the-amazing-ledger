@@ -10,8 +10,8 @@ func main() {
 	logrus := logrus.New()
 	log := logrus.WithField("ClientSDK", "Test")
 
-	log.Println("GRPC example starting...")
-	defer log.Println("GRPC example finishing...")
+	log.Println("Server example starting...")
+	defer log.Println("Server example finishing...")
 
 	// Connect to the Ledger gRPC server
 	host := "localhost"

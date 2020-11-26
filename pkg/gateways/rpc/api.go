@@ -6,23 +6,26 @@ import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/sirupsen/logrus"
+	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
+	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc/proto"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc/transactions"
 )
 
+var _ proto.LedgerServiceServer = &API{}
+
 type API struct {
-	log     *logrus.Logger
-	handler *transactions.Handler
+	log                *logrus.Logger
+	TransactionUseCase ledger.TransactionsUseCase
+	AccountsUseCase    ledger.AccountsUseCase
 }
 
-func NewAPI(log *logrus.Logger, handler *transactions.Handler) *API {
+func NewAPI(log *logrus.Logger, transactionsUC ledger.TransactionsUseCase, accountsUC ledger.AccountsUseCase) *API {
 	return &API{
-		log:     log,
-		handler: handler,
+		log:                log,
+		TransactionUseCase: transactionsUC,
+		AccountsUseCase:    accountsUC,
 	}
 }
 
@@ -46,7 +49,8 @@ func (a *API) NewServer() *grpc.Server {
 		),
 	)
 
-	proto.RegisterLedgerServiceServer(srv, a.handler)
+	proto.RegisterLedgerServiceServer(srv, a)
+	proto.RegisterHealthServer(srv, a)
 
 	return srv
 }

@@ -8,10 +8,9 @@ import (
 )
 
 type Config struct {
-	ShutdownTimeout time.Duration `envconfig:"APP_SHUTDOWN_TIMEOUT" default:"5s"`
-	API             HTTPConfig
-	GRPC            GRPCConfig
-	Postgres        PostgresConfig
+	Server   ServerConfig
+	Metrics  MetricsConfig
+	Postgres PostgresConfig
 }
 
 func LoadConfig() (*Config, error) {
@@ -24,12 +23,22 @@ func LoadConfig() (*Config, error) {
 	return &config, nil
 }
 
-type HTTPConfig struct {
-	Port int `envconfig:"HTTP_PORT" default:"3000"`
+type ServerConfig struct {
+	Port            int           `envconfig:"GRPC_PORT" default:"3000"`
+	ShutdownTimeout time.Duration `envconfig:"APP_SHUTDOWN_TIMEOUT" default:"5s"`
+	ReadTimeout     time.Duration `envconfig:"GRPC_READ_TIMEOUT" default:"30s"`
+	WriteTimeout    time.Duration `envconfig:"GRPC_WRITE_TIMEOUT" default:"10s"`
 }
 
-type GRPCConfig struct {
-	Port int `envconfig:"GRPC_PORT" default:"50051"`
+type MetricsConfig struct {
+	Prometheus PrometheusServerConfig
+}
+
+type PrometheusServerConfig struct {
+	Port            int           `envconfig:"PROM_PORT" default:"3001"`
+	ShutdownTimeout time.Duration `envconfig:"PROM_SHUTDOWN_TIMEOUT" default:"1s"`
+	ReadTimeout     time.Duration `envconfig:"PROM_READ_TIMEOUT" default:"30s"`
+	WriteTimeout    time.Duration `envconfig:"PROM_WRITE_TIMEOUT" default:"10s"`
 }
 
 type PostgresConfig struct {
