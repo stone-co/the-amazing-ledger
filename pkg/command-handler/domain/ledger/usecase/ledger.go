@@ -23,7 +23,3 @@ func NewLedgerUseCase(log *logrus.Logger, repository ledger.Repository) *LedgerU
 		lastVersion:    1,
 	}
 }
-
-func (l LedgerUseCase) GetLastVersion() entities.Version {
-	return l.lastVersion
-}
