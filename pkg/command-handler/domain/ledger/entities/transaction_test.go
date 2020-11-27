@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,13 +21,13 @@ func TestNewTransaction(t *testing.T) {
 
 	t.Run("Invalid entries number when the transaction has no entries", func(t *testing.T) {
 		got, err := NewTransaction(id)
-		assert.True(t, errors.Is(err, ErrInvalidEntriesNumber))
+		assert.True(t, ErrInvalidEntriesNumber.Is(err))
 		assert.Nil(t, got)
 	})
 
 	t.Run("Invalid entries number when the transaction has 1 entry", func(t *testing.T) {
 		got, err := NewTransaction(id, *e11)
-		assert.True(t, errors.Is(err, ErrInvalidEntriesNumber))
+		assert.True(t, ErrInvalidEntriesNumber.Is(err))
 		assert.Nil(t, got)
 	})
 
@@ -54,7 +53,7 @@ func TestNewTransaction(t *testing.T) {
 		e1, _ := NewEntry(uuid.New(), DebitOperation, "liability:clients:available:111", AnyAccountVersion, 123)
 		e2, _ := NewEntry(uuid.New(), CreditOperation, "liability:clients:available:222", AnyAccountVersion, 234)
 		got, err := NewTransaction(id, *e1, *e2)
-		assert.True(t, errors.Is(err, ErrInvalidBalance))
+		assert.True(t, ErrInvalidBalance.Is(err))
 		assert.Nil(t, got)
 	})
 
@@ -63,13 +62,13 @@ func TestNewTransaction(t *testing.T) {
 		e2, _ := NewEntry(uuid.New(), CreditOperation, "liability:clients:available:222", AnyAccountVersion, 200)
 		e3, _ := NewEntry(uuid.New(), CreditOperation, "liability:clients:available:333", AnyAccountVersion, 100)
 		got, err := NewTransaction(id, *e1, *e2, *e3)
-		assert.True(t, errors.Is(err, ErrInvalidBalance))
+		assert.True(t, ErrInvalidBalance.Is(err))
 		assert.Nil(t, got)
 	})
 
 	t.Run("Invalid transaction with empty ID", func(t *testing.T) {
 		got, err := NewTransaction(uuid.Nil, validTwoEntries...)
-		assert.True(t, errors.Is(err, ErrInvalidData))
+		assert.True(t, ErrInvalidData.Is(err))
 		assert.Nil(t, got)
 	})
 }

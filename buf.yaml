@@ -17,10 +17,16 @@ lint:
     - COMMENT_ONEOF
     - RPC_PASCAL_CASE
     - SERVICE_PASCAL_CASE
+  ignore:
+    - google
   ignore_only:
     PACKAGE_DIRECTORY_MATCH:
-      - pkg/gateways/rpc/proto/ledger.proto
-
+      - proto/ledger.proto
 breaking:
   use:
     - WIRE_JSON
+
+build:
+  roots:
+    - proto
+    - third_party/googleapis

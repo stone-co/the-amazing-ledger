@@ -1,0 +1,339 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "ledger/ledger.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/accounts": {
+      "post": {
+        "operationId": "LedgerService_CreateAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ledgerAccount"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ledgerCreateAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
+    "/api/v1/accounts/{accountPath}/balance": {
+      "get": {
+        "operationId": "LedgerService_GetAccountBalance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ledgerGetAccountBalanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountPath",
+            "description": "The account name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "summary": "Check - checks the system health.",
+        "operationId": "Health_Check",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ledgerHealthCheckResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/api/v1/transactions": {
+      "post": {
+        "operationId": "LedgerService_CreateTransaction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ledgerCreateTransactionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "HealthCheckResponseServingStatus": {
+      "type": "string",
+      "enum": [
+        "SERVING_STATUS_UNKNOWN_UNSPECIFIED",
+        "SERVING_STATUS_SERVING",
+        "SERVING_STATUS_NOT_SERVING",
+        "SERVING_STATUS_SERVICE_UNKNOWN"
+      ],
+      "default": "SERVING_STATUS_UNKNOWN_UNSPECIFIED",
+      "description": "- SERVING_STATUS_UNKNOWN_UNSPECIFIED: Don't use. It's just the default value.\n - SERVING_STATUS_SERVING: Healthy\n - SERVING_STATUS_NOT_SERVING: Unhealthy\n - SERVING_STATUS_SERVICE_UNKNOWN: Used only when streaming",
+      "title": "ServingStatus is the enum of the possible health check status"
+    },
+    "ledgerAccount": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "ID"
+        },
+        "type": {
+          "type": "string",
+          "title": "type (asset, liability, equity, expense, income)"
+        },
+        "ownerId": {
+          "type": "string",
+          "title": "Owner ID identifies the account owner by id"
+        },
+        "owner": {
+          "type": "string",
+          "title": "Owner identifies the account owner by description"
+        },
+        "name": {
+          "type": "string",
+          "title": "The account name"
+        },
+        "metadata": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Account metadata"
+        },
+        "balance": {
+          "type": "string",
+          "format": "int64",
+          "title": "The account balance in cents"
+        }
+      },
+      "title": "Account"
+    },
+    "ledgerCreateAccountRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "title": "Type of Account"
+        },
+        "ownerId": {
+          "type": "string",
+          "title": "Owner ID identifies the account owner by id"
+        },
+        "owner": {
+          "type": "string",
+          "title": "Owner identifies the account owner by description"
+        },
+        "name": {
+          "type": "string",
+          "title": "The account name"
+        },
+        "metadata": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Account metadata"
+        }
+      },
+      "description": "CreateAccountRequest represents a transaction to be saved."
+    },
+    "ledgerCreateTransactionRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID (UUID) to link the entries to a transaction."
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ledgerEntry"
+          },
+          "description": "The list of entries, where len(entries) must be \u003e= 2."
+        }
+      },
+      "title": "SaveTransactionRequest represents a transaction to be saved. A transaction must\nhave at least two entries, with a valid balance. More info here:\nhttps://en.wikipedia.org/wiki/Double-entry_bookkeeping"
+    },
+    "ledgerEntry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "It's the idempotency key, and must be unique (UUID)."
+        },
+        "accountId": {
+          "type": "string",
+          "description": "Account involved in the operation."
+        },
+        "expectedVersion": {
+          "type": "string",
+          "format": "uint64",
+          "description": "To deal with optimistic lock."
+        },
+        "operation": {
+          "$ref": "#/definitions/ledgerOperation",
+          "description": "Operation: debit or credit."
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Amount (in cents)."
+        }
+      },
+      "description": "Entry represents a new entry on the Ledger."
+    },
+    "ledgerGetAccountBalanceResponse": {
+      "type": "object",
+      "properties": {
+        "AccountPath": {
+          "type": "string",
+          "title": "The account name"
+        },
+        "CurrentVersion": {
+          "type": "string",
+          "format": "uint64",
+          "title": "The account version"
+        },
+        "TotalCredit": {
+          "type": "string",
+          "format": "int64",
+          "title": "All credit accumulated"
+        },
+        "TotalDebit": {
+          "type": "string",
+          "format": "int64",
+          "title": "All debit accumulated"
+        },
+        "Balance": {
+          "type": "string",
+          "format": "int64",
+          "title": "The Account balance"
+        }
+      },
+      "title": "GetAccountBalance Response"
+    },
+    "ledgerHealthCheckResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/HealthCheckResponseServingStatus",
+          "description": "Server status."
+        }
+      },
+      "title": "https://github.com/grpc/grpc/blob/master/doc/health-checking.md\nHealthCheckResponse is the health check status"
+    },
+    "ledgerOperation": {
+      "type": "string",
+      "enum": [
+        "OPERATION_UNSPECIFIED",
+        "OPERATION_DEBIT",
+        "OPERATION_CREDIT"
+      ],
+      "default": "OPERATION_UNSPECIFIED",
+      "description": "Operation has the possible operations to be used in Entry.\n\n - OPERATION_UNSPECIFIED: Don't use. It's just the default value.\n - OPERATION_DEBIT: Debit operation.\n - OPERATION_CREDIT: Credit operation."
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

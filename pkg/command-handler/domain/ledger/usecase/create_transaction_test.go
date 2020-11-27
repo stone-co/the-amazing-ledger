@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	"github.com/google/uuid"
@@ -71,7 +70,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		entries = []entities.Entry{*e1, *e2}
 
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
-		assert.True(t, errors.Is(err, entities.ErrInvalidVersion))
+		assert.True(t, entities.ErrInvalidVersion.Is(err))
 	})
 
 	t.Run("When transaction fail, the counter isn't incremented", func(t *testing.T) {
@@ -92,7 +91,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		entries = []entities.Entry{*e1, *e2}
 
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
-		assert.True(t, errors.Is(err, entities.ErrInvalidVersion))
+		assert.True(t, entities.ErrInvalidVersion.Is(err))
 
 		assert.Equal(t, lastVersion, useCase.GetLastVersion())
 	})
@@ -121,7 +120,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e2, _ = entities.NewEntry(uuid.New(), entities.CreditOperation, accountID2, 3, 123)
 		entries = []entities.Entry{*e1, *e2}
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
-		assert.True(t, errors.Is(err, entities.ErrInvalidVersion))
+		assert.True(t, entities.ErrInvalidVersion.Is(err))
 		assert.Equal(t, lastVersion, useCase.GetLastVersion())
 
 		lastVersion = useCase.GetLastVersion()
@@ -159,7 +158,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 			},
 		}
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
-		assert.True(t, errors.Is(err, entities.ErrIdempotencyKey))
+		assert.True(t, entities.ErrIdempotencyKey.Is(err))
 		assert.NotEqual(t, lastVersion, useCase.GetLastVersion())
 
 		e1, _ = entities.NewEntry(uuid.New(), entities.DebitOperation, accountID1, 4, 123)

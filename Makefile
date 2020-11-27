@@ -21,7 +21,12 @@ setup:
 	github.com/golangci/golangci-lint/cmd/golangci-lint \
 	github.com/kevinburke/go-bindata \
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc \
-	github.com/kyoh86/richgo
+	github.com/kyoh86/richgo \
+	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+    golang.org/x/tools/cmd/goimports \
+    github.com/kyoh86/richgo
+
 
 .PHONY: test
 test:
@@ -65,5 +70,16 @@ test-coverage:
 .PHONY: generate
 generate:
 	@echo "Go Generating"
-	@buf generate
+	@rm -rf gen/*
+	@buf generate --file ./proto/ledger/ledger.proto
 	@go generate ./...
+
+.PHONY: goimports
+goimports:
+	@echo "Go imports"
+	@goimports -w $(shell \
+                  	find . -not \( \( -name .git -o -name .go -o -name vendor \) -prune \) \
+                  	-name '*.go')
+
+.PHONY: pre/push
+pre/push: goimports metalint test
