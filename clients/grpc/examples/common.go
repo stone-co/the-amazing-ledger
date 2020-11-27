@@ -21,5 +21,4 @@ func AssertTrue(actual interface{}) {
 	if actual == false {
 		log.Fatalf("must be true.\n")
 	}
-
 }
