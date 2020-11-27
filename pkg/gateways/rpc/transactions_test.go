@@ -39,8 +39,8 @@ func TestAPI_CreateTransaction_Success(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := &API{
-				log:                logger,
-				TransactionUseCase: ledger.SuccessfulTransactionMock(),
+				log:     logger,
+				UseCase: ledger.SuccessfulTransactionMock(),
 			}
 			actual, err := a.CreateTransaction(ctx, &tt.request)
 			require.NoError(t, err)
@@ -121,8 +121,8 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := &API{
-				log:                logger,
-				TransactionUseCase: ledger.SuccessfulTransactionMock(),
+				log:     logger,
+				UseCase: ledger.SuccessfulTransactionMock(),
 			}
 			_, err := a.CreateTransaction(ctx, &tt.request)
 			respStatus, ok := status.FromError(err)

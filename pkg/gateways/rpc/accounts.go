@@ -21,7 +21,7 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	accountBalance, err := a.TransactionUseCase.GetAccountBalance(ctx, *accountName)
+	accountBalance, err := a.UseCase.GetAccountBalance(ctx, *accountName)
 	if err != nil {
 		if err == entities.ErrAccountNotFound {
 			log.WithError(err).Error("account name does not exist")

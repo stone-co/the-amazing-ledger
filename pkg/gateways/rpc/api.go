@@ -16,14 +16,14 @@ import (
 var _ proto.LedgerServiceServer = &API{}
 
 type API struct {
-	log                *logrus.Logger
-	TransactionUseCase ledger.TransactionsUseCase
+	log     *logrus.Logger
+	UseCase ledger.UseCase
 }
 
-func NewAPI(log *logrus.Logger, transactionsUC ledger.TransactionsUseCase) *API {
+func NewAPI(log *logrus.Logger, useCase ledger.UseCase) *API {
 	return &API{
-		log:                log,
-		TransactionUseCase: transactionsUC,
+		log:     log,
+		UseCase: useCase,
 	}
 }
 
