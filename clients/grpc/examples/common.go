@@ -17,7 +17,7 @@ func AssertNil(object interface{}) {
 	}
 }
 
-func AssertTrue(actual interface{}) {
+func AssertTrue(actual bool) {
 	if actual == false {
 		log.Fatalf("must be true.\n")
 	}
