@@ -5,41 +5,10 @@ import (
 
 	"github.com/sirupsen/logrus"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger"
 	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-func (a *API) CreateAccount(_ context.Context, req *proto.CreateAccountRequest) (*proto.Account, error) {
-
-	log := a.log.WithFields(logrus.Fields{
-		"handler": "CreateAccount",
-	})
-
-	accountInput := ledger.AccountInput{
-		Type:     req.Type,
-		OwnerID:  req.OwnerId,
-		Owner:    req.Owner,
-		Name:     req.Name,
-		Metadata: req.Metadata,
-	}
-	acc, err := a.AccountsUseCase.CreateAccount(accountInput)
-
-	if err != nil {
-		log.WithError(err).Error("creating transaction")
-		if err == entities.ErrInvalidVersion {
-			return nil, status.Error(codes.Aborted, err.Error())
-		}
-
-		return nil, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	return &proto.Account{
-		Id: acc.ID,
-	}, nil
-
-}
 
 func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBalanceRequest) (*proto.GetAccountBalanceResponse, error) {
 	log := a.log.WithFields(logrus.Fields{

@@ -18,7 +18,7 @@ import (
 )
 
 func NewGRPCServer(useCase *usecase.LedgerUseCase, cfg configuration.ServerConfig, log *logrus.Logger) (*http.Server, error) {
-	api := rpc.NewAPI(log, useCase, useCase)
+	api := rpc.NewAPI(log, useCase)
 	grpcServer := api.NewServer()
 	server, err := NewServer(grpcServer, cfg)
 	if err != nil {

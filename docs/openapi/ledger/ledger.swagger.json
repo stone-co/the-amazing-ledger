@@ -11,38 +11,6 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/accounts": {
-      "post": {
-        "operationId": "LedgerService_CreateAccount",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/ledgerAccount"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ledgerCreateAccountRequest"
-            }
-          }
-        ],
-        "tags": [
-          "LedgerService"
-        ]
-      }
-    },
     "/api/v1/accounts/{accountPath}/balance": {
       "get": {
         "operationId": "LedgerService_GetAccountBalance",
@@ -143,73 +111,6 @@
       "description": "- SERVING_STATUS_UNKNOWN_UNSPECIFIED: Don't use. It's just the default value.\n - SERVING_STATUS_SERVING: Healthy\n - SERVING_STATUS_NOT_SERVING: Unhealthy\n - SERVING_STATUS_SERVICE_UNKNOWN: Used only when streaming",
       "title": "ServingStatus is the enum of the possible health check status"
     },
-    "ledgerAccount": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "title": "ID"
-        },
-        "type": {
-          "type": "string",
-          "title": "type (asset, liability, equity, expense, income)"
-        },
-        "ownerId": {
-          "type": "string",
-          "title": "Owner ID identifies the account owner by id"
-        },
-        "owner": {
-          "type": "string",
-          "title": "Owner identifies the account owner by description"
-        },
-        "name": {
-          "type": "string",
-          "title": "The account name"
-        },
-        "metadata": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "title": "Account metadata"
-        },
-        "balance": {
-          "type": "string",
-          "format": "int64",
-          "title": "The account balance in cents"
-        }
-      },
-      "title": "Account"
-    },
-    "ledgerCreateAccountRequest": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "title": "Type of Account"
-        },
-        "ownerId": {
-          "type": "string",
-          "title": "Owner ID identifies the account owner by id"
-        },
-        "owner": {
-          "type": "string",
-          "title": "Owner identifies the account owner by description"
-        },
-        "name": {
-          "type": "string",
-          "title": "The account name"
-        },
-        "metadata": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "title": "Account metadata"
-        }
-      },
-      "description": "CreateAccountRequest represents a transaction to be saved."
-    },
     "ledgerCreateTransactionRequest": {
       "type": "object",
       "properties": {
@@ -258,26 +159,26 @@
     "ledgerGetAccountBalanceResponse": {
       "type": "object",
       "properties": {
-        "AccountPath": {
+        "accountPath": {
           "type": "string",
           "title": "The account name"
         },
-        "CurrentVersion": {
+        "currentVersion": {
           "type": "string",
           "format": "uint64",
           "title": "The account version"
         },
-        "TotalCredit": {
+        "totalCredit": {
           "type": "string",
           "format": "int64",
           "title": "All credit accumulated"
         },
-        "TotalDebit": {
+        "totalDebit": {
           "type": "string",
           "format": "int64",
           "title": "All debit accumulated"
         },
-        "Balance": {
+        "balance": {
           "type": "string",
           "format": "int64",
           "title": "The Account balance"
