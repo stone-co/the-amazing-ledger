@@ -16,3 +16,9 @@ func AssertNil(object interface{}) {
 		log.Fatalf("%v must be nil.\n", object)
 	}
 }
+
+func AssertTrue(actual bool) {
+	if actual == false {
+		log.Fatalf("must be true.\n")
+	}
+}

@@ -49,7 +49,7 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 		domainEntries[i] = *domainEntry
 	}
 
-	if err := a.TransactionUseCase.CreateTransaction(ctx, tid, domainEntries); err != nil {
+	if err := a.UseCase.CreateTransaction(ctx, tid, domainEntries); err != nil {
 		log.WithError(err).Error("creating transaction")
 		if err == entities.ErrInvalidVersion {
 			return nil, status.Error(codes.Aborted, err.Error())

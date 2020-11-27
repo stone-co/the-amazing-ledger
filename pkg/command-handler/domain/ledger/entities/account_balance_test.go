@@ -3,7 +3,7 @@ package entities
 import (
 	"testing"
 
-	"gotest.tools/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAccountBalance(t *testing.T) {

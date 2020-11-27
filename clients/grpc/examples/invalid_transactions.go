@@ -30,7 +30,7 @@ func transactionWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.
 	t.AddEntry(uuid.New(), accountID2, entities.NewAccountVersion, entities.CreditOperation, 15000)
 
 	err := conn.SaveTransaction(context.Background(), t)
-	AssertEqual(entities.ErrInvalidData, err)
+	AssertTrue(entities.ErrInvalidData.Is(err))
 }
 
 func entryWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.Connection) {
@@ -47,7 +47,7 @@ func entryWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.Connec
 	t.AddEntry(invalidUUID, accountID2, entities.NewAccountVersion, entities.CreditOperation, 15000)
 
 	err := conn.SaveTransaction(context.Background(), t)
-	AssertEqual(entities.ErrInvalidData, err)
+	AssertTrue(entities.ErrInvalidData.Is(err))
 }
 
 func withoutEntriesReturnsInvalidEntriesNumber(log *logrus.Entry, conn *ledger.Connection) {
@@ -57,5 +57,5 @@ func withoutEntriesReturnsInvalidEntriesNumber(log *logrus.Entry, conn *ledger.C
 	t := conn.NewTransaction(uuid.New())
 
 	err := conn.SaveTransaction(context.Background(), t)
-	AssertEqual(entities.ErrInvalidEntriesNumber, err)
+	AssertTrue(entities.ErrInvalidEntriesNumber.Is(err))
 }
