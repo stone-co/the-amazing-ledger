@@ -25,7 +25,8 @@ setup:
 	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
     github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
     golang.org/x/tools/cmd/goimports \
-    github.com/kyoh86/richgo
+    github.com/kyoh86/richgo \
+    github.com/resotto/gochk
 
 
 .PHONY: test
@@ -60,6 +61,11 @@ metalint:
 	go test -i ./...
 	golangci-lint run -c ./.golangci.yml ./...
 	buf check lint
+
+.PHONY: archlint
+archlint:
+	@echo "==> Running architecture linter(gochk)"
+	gochk -c ./gochk-arch-linter.json
 
 .PHONY: test-coverage
 test-coverage:
