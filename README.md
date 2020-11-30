@@ -5,6 +5,8 @@
 
 The Amazing Ledger is a double-entry accounting system used to record transactions. The entries are processed, validated and persisted to a database and their original data is **never** modified.
 
+Talk to us on Gitter: https://gitter.im/the-amazing-ledger/community
+
 # Concepts
 
 The Amazing Ledger records a journal that keeps track of all credits and debits to and from accounts (an account being anywhere money can go, not necessarily a bank account).
