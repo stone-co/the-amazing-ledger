@@ -1,5 +1,5 @@
 {
-  "dependencyOrders": ["external", "adapter", "application", "domain"],
+  "dependencyOrders": ["clients", "gateways", "domain"],
   "ignore": ["test", ".git"],
   "printViolationsAtTheBottom": false
 }
