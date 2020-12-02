@@ -88,4 +88,4 @@ goimports:
                   	-name '*.go')
 
 .PHONY: pre/push
-pre/push: goimports metalint test
+pre/push: goimports metalint archlint test
