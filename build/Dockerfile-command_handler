@@ -1,5 +1,5 @@
 FROM golang:latest
 
-ADD command-handler /bin
+ADD server /bin
 
-ENTRYPOINT ["/bin/command-handler"]
+ENTRYPOINT ["/bin/server"]

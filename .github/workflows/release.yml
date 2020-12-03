@@ -11,10 +11,10 @@ jobs:
     name: Build Job
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Go 1.14
+      - name: Set up Go 1.15
         uses: actions/setup-go@v1
         with:
-          go-version: 1.14
+          go-version: 1.15
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -24,18 +24,21 @@ jobs:
 
       - name: Set env for tags
         if: github.ref != 'refs/heads/main'
-        run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF:10}
+        run: echo "RELEASE_VERSION=${GITHUB_REF:10}" >> $GITHUB_ENV
 
       - name: Set env for main
         if: github.ref == 'refs/heads/main'
-        run: echo ::set-env name=RELEASE_VERSION::"latest"
+        run: echo "RELEASE_VERSION=main" >> $GITHUB_ENV
 
       - name: Compile and Build Docker Image
-        run: make REGISTRY=stone-co VERSION=$RELEASE_VERSION build
+        run: make REGISTRY=amazingledger VERSION=$RELEASE_VERSION build
 
       - name: Publish
-        uses: azure/docker-login@v1
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.REGISTRY_USER }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-      - run: make REGISTRY=stone-co VERSION=$RELEASE_VERSION push
+      - run: make REGISTRY=amazingledger VERSION=$RELEASE_VERSION push
+
+
+
