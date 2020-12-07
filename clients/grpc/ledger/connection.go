@@ -1,8 +1,6 @@
 package ledger
 
 import (
-	"fmt"
-
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 
 	"google.golang.org/grpc"
@@ -16,7 +14,7 @@ type Connection struct {
 func Connect(host string, port int) (*Connection, error) {
 	conn, err := grpc.Dial(":3000", grpc.WithInsecure())
 	if err != nil {
-		return nil, fmt.Errorf("did not connect: %s", err)
+		return nil, ErrConnectionFailed.cause(err)
 	}
 
 	client := proto.NewLedgerServiceClient(conn)
