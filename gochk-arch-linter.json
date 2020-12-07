@@ -1,0 +1,5 @@
+{
+  "dependencyOrders": ["clients", "gateways", "domain"],
+  "ignore": ["test", ".git"],
+  "printViolationsAtTheBottom": false
+}
