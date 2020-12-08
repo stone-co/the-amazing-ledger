@@ -6,30 +6,28 @@ import (
 )
 
 const (
-	ErrInvalidData             = EntityError("invalid data")
-	ErrInvalidEntriesNumber    = EntityError("invalid entries number")
-	ErrInvalidBalance          = EntityError("invalid balance")
-	ErrIdempotencyKey          = EntityError("idempotency key violation")
-	ErrInvalidVersion          = EntityError("invalid version")
-	ErrInvalidAccountStructure = EntityError("invalid account structure")
-	ErrInvalidClassName        = EntityError("invalid class name")
-	ErrAccountNotFound         = EntityError("account not found")
-	ErrConnectionFailed        = EntityError("rpc client connection failed")
+	ErrInvalidData             = ClientError("invalid data")
+	ErrInvalidEntriesNumber    = ClientError("invalid entries number")
+	ErrInvalidVersion          = ClientError("invalid version")
+	ErrInvalidAccountStructure = ClientError("invalid account structure")
+	ErrAccountNotFound         = ClientError("account not found")
+	ErrConnectionFailed        = ClientError("connection failed")
+	ErrUnmapped                = ClientError("unmapped")
 )
 
-type EntityError string
+type ClientError string
 
-func (err EntityError) Error() string {
+func (err ClientError) Error() string {
 	return string(err)
 }
 
-func (err EntityError) Is(target error) bool {
+func (err ClientError) Is(target error) bool {
 	ts := target.Error()
 	es := string(err)
 	return ts == es || strings.HasPrefix(ts, es+": ")
 }
 
-func (err EntityError) cause(inner error) error {
+func (err ClientError) cause(inner error) error {
 	return wrapCause{msg: string(err), err: inner}
 }
 
@@ -48,5 +46,5 @@ func (err wrapCause) Unwrap() error {
 	return err.err
 }
 func (err wrapCause) Is(target error) bool {
-	return EntityError(err.msg).Is(target)
+	return ClientError(err.msg).Is(target)
 }
