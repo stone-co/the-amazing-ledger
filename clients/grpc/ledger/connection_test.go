@@ -1,6 +1,7 @@
 package ledger
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -8,10 +9,11 @@ import (
 )
 
 func TestConnectFailed(t *testing.T) {
+	ctx := context.Background()
 	host := "localhost"
 	port := 4000
 
-	_, err := Connect(host, port)
+	_, err := Connect(ctx, host, port)
 	fmt.Println(err)
 
 	assert.True(t, ErrConnectionFailed.Is(err))
