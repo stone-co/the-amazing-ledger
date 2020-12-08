@@ -31,7 +31,7 @@ func NewServer(grpcServer *grpc.Server, cfg configuration.ServerConfig) (*http.S
 	// gwMux is the grpc-gateway ServeMux, used to serve HTTP/REST requests.
 	gwMux := runtime.NewServeMux()
 	// Always use localhost for gateway
-	gwEndpoint := fmt.Sprintf("localhost:%d", cfg.Port)
+	gwEndpoint := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	if err := proto.RegisterLedgerServiceHandlerFromEndpoint(context.Background(), gwMux, gwEndpoint, opts); err != nil {
