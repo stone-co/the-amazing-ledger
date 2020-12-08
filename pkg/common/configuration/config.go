@@ -24,6 +24,7 @@ func LoadConfig() (*Config, error) {
 }
 
 type ServerConfig struct {
+	Host            string        `envconfig:"GRPC_HOST" default:"0.0.0.0"`
 	Port            int           `envconfig:"GRPC_PORT" default:"3000"`
 	ShutdownTimeout time.Duration `envconfig:"APP_SHUTDOWN_TIMEOUT" default:"5s"`
 	ReadTimeout     time.Duration `envconfig:"GRPC_READ_TIMEOUT" default:"30s"`
