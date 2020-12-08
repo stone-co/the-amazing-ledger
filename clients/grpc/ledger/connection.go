@@ -1,6 +1,9 @@
 package ledger
 
 import (
+	"fmt"
+	"time"
+
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 
 	"google.golang.org/grpc"
@@ -12,7 +15,11 @@ type Connection struct {
 }
 
 func Connect(host string, port int) (*Connection, error) {
-	conn, err := grpc.Dial(":3000", grpc.WithInsecure())
+
+	target := fmt.Sprintf("%s:%d", host, port)
+
+	// TODO: uses DialContext instead Dial
+	conn, err := grpc.Dial(target, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(time.Second*5))
 	if err != nil {
 		return nil, ErrConnectionFailed.cause(err)
 	}

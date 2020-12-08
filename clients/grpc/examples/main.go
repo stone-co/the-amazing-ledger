@@ -15,8 +15,9 @@ func main() {
 
 	// Connect to the Ledger gRPC server
 	host := "localhost"
-	port := 50051
+	port := 3000
 	conn, err := ledger.Connect(host, port)
+
 	if err != nil {
 		log.Fatal(err)
 	}
