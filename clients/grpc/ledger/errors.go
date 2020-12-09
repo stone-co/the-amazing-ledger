@@ -13,7 +13,6 @@ const (
 	ErrAccountNotFound         = ClientError("account not found")
 	ErrConnectionFailed        = ClientError("connection failed")
 	ErrUndefined               = ClientError("undefined")
-	ErrUnmaped                 = ClientError("unmaped")
 )
 
 type ClientError string
