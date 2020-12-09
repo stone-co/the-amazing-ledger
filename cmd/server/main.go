@@ -4,26 +4,23 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
-	"github.com/sirupsen/logrus"
-
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
-	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/db/postgres"
-
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/http/prometheus"
+	"github.com/sirupsen/logrus"
+	"github.com/stone-co/the-amazing-ledger/app"
+	"github.com/stone-co/the-amazing-ledger/app/domain/usecase"
+	"github.com/stone-co/the-amazing-ledger/app/gateways/db/postgres"
+	"github.com/stone-co/the-amazing-ledger/app/gateways/http/prometheus"
 )
 
 func main() {
 	log := logrus.New()
 	log.Infoln("Starting Ledger process...")
 
-	cfg, err := configuration.LoadConfig()
+	cfg, err := app.LoadConfig()
 	if err != nil {
 		log.WithError(err).Fatal("unable to load app configuration")
 	}
@@ -82,7 +79,7 @@ func main() {
 	}
 }
 
-func handleInterrupt(cfg *configuration.Config, log *logrus.Logger, sv *http.Server) {
+func handleInterrupt(cfg *app.Config, log *logrus.Logger, sv *http.Server) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 	sig := <-signals

@@ -23,11 +23,9 @@ setup:
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc \
 	github.com/kyoh86/richgo \
 	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
-  github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
-  golang.org/x/tools/cmd/goimports \
-  github.com/kyoh86/richgo \
+	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+	golang.org/x/tools/cmd/goimports \
 	github.com/resotto/gochk/cmd/gochk
-
 
 .PHONY: test
 test:

@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 
+	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
 	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
 func defineTransactionWithThreeEntries(log *logrus.Entry, conn *ledger.Connection) {
@@ -21,9 +21,9 @@ func defineTransactionWithThreeEntries(log *logrus.Entry, conn *ledger.Connectio
 	accountID2 := "liability:clients:available:" + uuid.New().String()
 	accountID3 := "liability:clients:available:" + uuid.New().String()
 
-	t.AddEntry(uuid.New(), accountID1, entities.NewAccountVersion, entities.DebitOperation, 15000)
-	t.AddEntry(uuid.New(), accountID2, entities.NewAccountVersion, entities.CreditOperation, 10000)
-	t.AddEntry(uuid.New(), accountID3, entities.NewAccountVersion, entities.CreditOperation, 5000)
+	t.AddEntry(uuid.New(), accountID1, vo.NewAccountVersion, vo.DebitOperation, 15000)
+	t.AddEntry(uuid.New(), accountID2, vo.NewAccountVersion, vo.CreditOperation, 10000)
+	t.AddEntry(uuid.New(), accountID3, vo.NewAccountVersion, vo.CreditOperation, 5000)
 
 	// Save transaction
 	err := conn.SaveTransaction(context.Background(), t)
