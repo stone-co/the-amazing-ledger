@@ -22,7 +22,6 @@ func Connect(ctx context.Context, host string, port int) (*Connection, error) {
 
 	target := fmt.Sprintf("%s:%d", host, port)
 
-	// TODO: uses DialContext instead Dial
 	conn, err := grpc.DialContext(ctx, target, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		return nil, ErrConnectionFailed.cause(err)
