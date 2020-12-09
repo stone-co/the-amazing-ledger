@@ -78,7 +78,7 @@ func entryWithInvalidVersion(log *logrus.Entry, conn *ledger.Connection) {
 	t2 := conn.NewTransaction(uuid.New())
 	invalidVersion := entities.NewAccountVersion
 	t2.AddEntry(uuid.New(), accountID1, invalidVersion, entities.DebitOperation, 7500)
-	t2.AddEntry(uuid.New(), accountID2, entities.NewAccountVersion, entities.CreditOperation, 7500)
+	t2.AddEntry(uuid.New(), accountID2, entities.AnyAccountVersion, entities.CreditOperation, 7500)
 	err = conn.SaveTransaction(context.Background(), t2)
 
 	AssertTrue(ledger.ErrInvalidVersion.Is(err))
