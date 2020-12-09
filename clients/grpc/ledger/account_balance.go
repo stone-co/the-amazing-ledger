@@ -50,7 +50,7 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountPath string) 
 			return nil, fmt.Errorf(e.Message())
 		}
 
-		return nil, fmt.Errorf("not able to parse error returned %v", err)
+		return nil, ErrUndefined.cause(err)
 	}
 
 	accountName, err := entities.NewAccountName(response.AccountPath)
