@@ -42,29 +42,6 @@
         ]
       }
     },
-    "/api/v1/health": {
-      "get": {
-        "summary": "Check - checks the system health.",
-        "operationId": "Health_Check",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/ledgerHealthCheckResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "Health"
-        ]
-      }
-    },
     "/api/v1/transactions": {
       "post": {
         "operationId": "LedgerService_CreateTransaction",
@@ -94,6 +71,29 @@
         ],
         "tags": [
           "LedgerService"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Check - checks the system health.",
+        "operationId": "Health_Check",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ledgerHealthCheckResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Health"
         ]
       }
     }
