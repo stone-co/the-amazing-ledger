@@ -30,7 +30,7 @@ func (c *Connection) SaveTransaction(ctx context.Context, transaction *Transacti
 			return fmt.Errorf(e.Message())
 		}
 
-		return ErrUnmapped.cause(err)
+		return ErrUndefined.cause(err)
 	}
 
 	return nil

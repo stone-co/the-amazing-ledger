@@ -12,7 +12,8 @@ const (
 	ErrInvalidAccountStructure = ClientError("invalid account structure")
 	ErrAccountNotFound         = ClientError("account not found")
 	ErrConnectionFailed        = ClientError("connection failed")
-	ErrUnmapped                = ClientError("unmapped")
+	ErrUndefined               = ClientError("undefined")
+	ErrUnmaped                 = ClientError("unmaped")
 )
 
 type ClientError string

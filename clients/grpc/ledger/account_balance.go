@@ -50,7 +50,7 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountPath string) 
 			return nil, fmt.Errorf(e.Message())
 		}
 
-		return nil, ErrUnmapped.cause(err)
+		return nil, ErrUndefined.cause(err)
 	}
 
 	accountName, err := entities.NewAccountName(response.AccountPath)
