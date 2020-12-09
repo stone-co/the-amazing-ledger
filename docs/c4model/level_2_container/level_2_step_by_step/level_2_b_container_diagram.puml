@@ -1,0 +1,34 @@
+@startuml Basic Sample
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/release/1-0/C4_Container.puml
+
+title Container diagram - Ledger system
+
+System_Ext(transactional_systems, "Transactional systems")
+System_Ext(report_systems, "Report systems")
+System_Ext(external_systems, "External systems")
+
+Container_Boundary(ledger, "Ledger") {
+    Container(ledger_command_api, "Ledger Command API", "Golang exporting RPC and Rest APIs", "Allows systems to save transactions related to accounts")
+    Container(ledger_query_api, "Ledger Query API", "Golang exporting RPC and Rest APIs", "Allows systems to get the balance and load the history of the accounts")
+    ContainerDb(query_database, "Query Database", "Postgres Database", "Reads events related to accounts")
+    ContainerDb(command_database, "Command Database", "Postgres Database", "Stores transaction and operations related to accounts")
+}
+
+Container(message_bus, "Message Bus", "Kafka", "Transport for account events")
+
+Rel_L(ledger_command_api, message_bus, "Sends account update events to")
+
+Rel(ledger_command_api, command_database, "Read and write events related to accounts")
+Rel(ledger_query_api, query_database, "Read and write events related to accounts")
+
+Rel(transactional_systems, ledger_command_api, "Save transactions with events related to accounts", "RPC/HTTPS")
+Rel(transactional_systems, ledger_query_api, "Load balance and events related to accounts", "RPC/HTTPS")
+
+Rel(report_systems, ledger_query_api, "Get summary and analytical data", "RPC/HTTPS")
+Rel_Back(external_systems, message_bus, "Get events related to accounts", "RPC/HTTPS")
+
+Rel_Neighbor(ledger_command_api, ledger_query_api, "Sends events related to accounts")
+
+Lay_R(ledger_command_api, ledger_query_api)
+
+@enduml

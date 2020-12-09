@@ -1,0 +1,26 @@
+@startuml Basic Sample
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/release/1-0/C4_Component.puml
+
+title Component diagram for Command Handler API - Ledger system
+
+System_Ext(transactional_systems, "Transactional systems", "Uses the ledger during transactional operations")
+
+Container(ledger_query_api, "Ledger Query API", "Golang exporting RPC and Rest APIs", "Allows systems to get the balance and load the history of the accounts")
+
+ContainerDb(command_database, "Command Database", "Postgres Database", "Stores transaction and operations related to accounts")
+
+Container_Boundary(ledger, "Ledger command API") {
+    Component(transaction_usecase, "Save transaction", "RPC and Rest interfaces", "Allows systems to send transactions in to the Ledger System deal with the transaction")
+    Component(transaction_controller, "Transaction controller", "Validates a transaction", "Checks for double-entry bookkeeping, caches data version and deals with concurrent access")
+    Component(storage_controller, "Storage controller", "Saves data into the storage")
+    Component(notifier_controller, "Notifier controller", "Sends account events to all registered query handlers")
+    Rel(transaction_usecase, transaction_controller, "Uses")
+    Rel(transaction_controller, storage_controller, "Uses")
+    Rel(storage_controller, notifier_controller, "Uses")
+    Rel(storage_controller, command_database, "Read & write to")
+}
+
+Rel(transactional_systems, transaction_usecase, "Save transactions with operations related to accounts", "RPC/HTTPS")
+Rel(notifier_controller, ledger_query_api, "Sends events related to the accounts", "RPC/HTTPS")
+
+@enduml
