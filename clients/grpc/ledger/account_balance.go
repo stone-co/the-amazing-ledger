@@ -50,7 +50,7 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountPath string) 
 			return nil, fmt.Errorf(e.Message())
 		}
 
-		return nil, ErrUndefined.cause(err)
+		return nil, fmt.Errorf("%w: %s", ErrUndefined, err)
 	}
 
 	accountName, err := vo.NewAccountName(response.AccountPath)

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stone-co/the-amazing-ledger/app/domain/errors"
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,7 +23,7 @@ func TestNewAccountClassFromString(t *testing.T) {
 		invalidClasses := []string{"ASSE1S", "XPTO"}
 		for _, class := range invalidClasses {
 			got, err := NewAccountClassFromString(class)
-			assert.Equal(t, errors.ErrInvalidClassName, err)
+			assert.True(t, app.ErrInvalidClassName.Is(err))
 			assert.Nil(t, got)
 		}
 	})

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/app/domain/errors"
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"google.golang.org/grpc/codes"
@@ -24,7 +24,7 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 
 	accountBalance, err := a.UseCase.GetAccountBalance(ctx, *accountName)
 	if err != nil {
-		if err == errors.ErrAccountNotFound {
+		if err == app.ErrAccountNotFound {
 			log.WithError(err).Error("account name does not exist")
 			return nil, status.Error(codes.NotFound, err.Error())
 		}

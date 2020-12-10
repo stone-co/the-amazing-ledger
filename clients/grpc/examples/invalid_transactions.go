@@ -11,16 +11,16 @@ import (
 )
 
 func invalidTransactionsTests(log *logrus.Entry, conn *ledger.Connection) {
-	transactionWithInvalidIdReturnsInvalidData(log, conn)
-	entryWithInvalidIdReturnsInvalidData(log, conn)
+	transactionWithInvalidIdReturnsInvalidTransactionID(log, conn)
+	entryWithInvalidIdReturnsInvalidEntryID(log, conn)
 	withoutEntriesReturnsInvalidEntriesNumber(log, conn)
 	entryWithInvalidVersion(log, conn)
 	entryWithInvalidAccountStructure(log, conn)
 }
 
-func transactionWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.Connection) {
-	log.Println("starting transactionWithInvalidIdReturnsInvalidData")
-	defer log.Println("finishing transactionWithInvalidIdReturnsInvalidData")
+func transactionWithInvalidIdReturnsInvalidTransactionID(log *logrus.Entry, conn *ledger.Connection) {
+	log.Println("starting transactionWithInvalidIdReturnsInvalidTransactionID")
+	defer log.Println("finishing transactionWithInvalidIdReturnsInvalidTransactionID")
 
 	invalidUUID := uuid.Nil
 	t := conn.NewTransaction(invalidUUID)
@@ -32,12 +32,12 @@ func transactionWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.
 	t.AddEntry(uuid.New(), accountID2, vo.NewAccountVersion, vo.CreditOperation, 15000)
 
 	err := conn.SaveTransaction(context.Background(), t)
-	AssertTrue(ledger.ErrInvalidData.Is(err))
+	AssertTrue(ledger.ErrInvalidTransactionID.Is(err))
 }
 
-func entryWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.Connection) {
-	log.Println("starting entryWithInvalidIdReturnsInvalidData")
-	defer log.Println("finishing entryWithInvalidIdReturnsInvalidData")
+func entryWithInvalidIdReturnsInvalidEntryID(log *logrus.Entry, conn *ledger.Connection) {
+	log.Println("starting entryWithInvalidIdReturnsInvalidEntryID")
+	defer log.Println("finishing entryWithInvalidIdReturnsInvalidEntryID")
 
 	t := conn.NewTransaction(uuid.New())
 
@@ -49,7 +49,7 @@ func entryWithInvalidIdReturnsInvalidData(log *logrus.Entry, conn *ledger.Connec
 	t.AddEntry(invalidUUID, accountID2, vo.NewAccountVersion, vo.CreditOperation, 15000)
 
 	err := conn.SaveTransaction(context.Background(), t)
-	AssertTrue(ledger.ErrInvalidData.Is(err))
+	AssertTrue(ledger.ErrInvalidEntryID.Is(err))
 }
 
 func withoutEntriesReturnsInvalidEntriesNumber(log *logrus.Entry, conn *ledger.Connection) {

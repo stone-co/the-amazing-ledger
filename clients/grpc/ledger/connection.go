@@ -24,7 +24,7 @@ func Connect(ctx context.Context, host string, port int) (*Connection, error) {
 
 	conn, err := grpc.DialContext(ctx, target, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		return nil, ErrConnectionFailed.cause(err)
+		return nil, fmt.Errorf("%w: %s", ErrConnectionFailed, err)
 	}
 
 	client := proto.NewLedgerServiceClient(conn)

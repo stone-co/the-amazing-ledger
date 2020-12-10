@@ -2,7 +2,7 @@ package entities
 
 import (
 	"github.com/google/uuid"
-	"github.com/stone-co/the-amazing-ledger/app/domain/errors"
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
 )
 
@@ -13,11 +13,11 @@ type Transaction struct {
 
 func NewTransaction(id uuid.UUID, entries ...Entry) (*Transaction, error) {
 	if id == uuid.Nil {
-		return nil, errors.ErrInvalidData
+		return nil, app.ErrInvalidTransactionID
 	}
 
 	if len(entries) <= 1 {
-		return nil, errors.ErrInvalidEntriesNumber
+		return nil, app.ErrInvalidEntriesNumber
 	}
 
 	balance := 0
@@ -30,7 +30,7 @@ func NewTransaction(id uuid.UUID, entries ...Entry) (*Transaction, error) {
 	}
 
 	if balance != 0 {
-		return nil, errors.ErrInvalidBalance
+		return nil, app.ErrInvalidBalance
 	}
 
 	t := &Transaction{

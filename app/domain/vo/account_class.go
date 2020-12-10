@@ -3,7 +3,7 @@ package vo
 import (
 	"strings"
 
-	"github.com/stone-co/the-amazing-ledger/app/domain/errors"
+	"github.com/stone-co/the-amazing-ledger/app"
 )
 
 type AccountClass struct {
@@ -25,7 +25,7 @@ func NewAccountClassFromString(class string) (*AccountClass, error) {
 
 	_, ok := accountClasses[class]
 	if !ok {
-		return nil, errors.ErrInvalidClassName
+		return nil, app.ErrInvalidClassName
 	}
 
 	return &AccountClass{class}, nil

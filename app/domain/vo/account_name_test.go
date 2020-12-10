@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/stone-co/the-amazing-ledger/app/domain/errors"
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -50,63 +50,63 @@ func TestNewAccountName(t *testing.T) {
 			args: args{
 				name: "assets",
 			},
-			err: errors.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account has only 2 levels",
 			args: args{
 				name: "assets:bacen",
 			},
-			err: errors.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account has only 3 levels",
 			args: args{
 				name: "assets:bacen:conta_liquidacao",
 			},
-			err: errors.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account has more than 4 levels",
 			args: args{
 				name: "liability:clients:available:" + uuid.New().String() + ":invalid",
 			},
-			err: errors.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account omits level 1",
 			args: args{
 				name: ":bacen:conta_liquidacao:tesouraria",
 			},
-			err: errors.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account omits level 2",
 			args: args{
 				name: "assets::conta_liquidacao:tesouraria",
 			},
-			err: errors.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account omits level 3",
 			args: args{
 				name: "assets:bacen::tesouraria",
 			},
-			err: errors.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account omits level 4",
 			args: args{
 				name: "assets:bacen:conta_liquidacao:",
 			},
-			err: errors.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when level 1 is not one of the predefined values (assets, liability, ...)",
 			args: args{
 				name: "xpto:bacen:conta_liquidacao:tesouraria",
 			},
-			err: errors.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountStructure,
 		},
 	}
 

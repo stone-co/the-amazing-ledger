@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
-	"github.com/stone-co/the-amazing-ledger/app/domain/errors"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
 )
 
@@ -29,7 +29,7 @@ func (l *LedgerUseCase) CreateTransaction(ctx context.Context, id uuid.UUID, ent
 		}
 
 		if entry.Version != account.CurrentVersion {
-			return errors.ErrInvalidVersion
+			return app.ErrInvalidVersion
 		}
 	}
 

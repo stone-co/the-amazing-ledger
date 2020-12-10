@@ -6,13 +6,12 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"github.com/stone-co/the-amazing-ledger/app"
+	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
-	"github.com/stone-co/the-amazing-ledger/app/domain/errors"
-	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
 )
 
 func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactionRequest) (*empty.Empty, error) {
@@ -53,7 +52,7 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 
 	if err := a.UseCase.CreateTransaction(ctx, tid, domainEntries); err != nil {
 		log.WithError(err).Error("creating transaction")
-		if err == errors.ErrInvalidVersion {
+		if err == app.ErrInvalidVersion {
 			return nil, status.Error(codes.Aborted, err.Error())
 		}
 

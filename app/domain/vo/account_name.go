@@ -3,7 +3,7 @@ package vo
 import (
 	"strings"
 
-	"github.com/stone-co/the-amazing-ledger/app/domain/errors"
+	"github.com/stone-co/the-amazing-ledger/app"
 )
 
 const (
@@ -40,18 +40,18 @@ func NewAccountName(name string) (*AccountName, error) {
 
 	levels := strings.Split(name, AccountStructureSep)
 	if len(levels) != structureLevels {
-		return nil, errors.ErrInvalidAccountStructure
+		return nil, app.ErrInvalidAccountStructure
 	}
 
 	for _, v := range levels {
 		if len(v) == 0 {
-			return nil, errors.ErrInvalidAccountStructure
+			return nil, app.ErrInvalidAccountStructure
 		}
 	}
 
 	accountClass, err := NewAccountClassFromString(levels[classLevel])
 	if err != nil {
-		return nil, errors.ErrInvalidAccountStructure
+		return nil, app.ErrInvalidAccountStructure
 	}
 
 	return &AccountName{

@@ -98,7 +98,7 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 				},
 			},
 			expectedCode:    codes.InvalidArgument,
-			expectedMessage: "invalid data: operation",
+			expectedMessage: "invalid operation",
 		},
 		{
 			name: "should not create transaction when invalid amount",
@@ -115,7 +115,7 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 				},
 			},
 			expectedCode:    codes.InvalidArgument,
-			expectedMessage: "invalid data: amount",
+			expectedMessage: "invalid amount",
 		},
 	}
 	for _, tt := range tests {

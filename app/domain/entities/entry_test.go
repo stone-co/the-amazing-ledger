@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/stone-co/the-amazing-ledger/app/domain/errors"
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
 	"github.com/stretchr/testify/assert"
 )
@@ -30,30 +30,30 @@ func TestNewEntry(t *testing.T) {
 	t.Run("Invalid when entry id is invalid", func(t *testing.T) {
 		entry, err := NewEntry(uuid.Nil, vo.CreditOperation, "assets:bacen:conta_liquidacao:tesouraria", vo.AnyAccountVersion, 123)
 		assert.Nil(t, entry)
-		assert.True(t, errors.ErrInvalidData.Is(err))
+		assert.True(t, app.ErrInvalidEntryID.Is(err))
 	})
 
 	t.Run("Invalid when operation is invalid", func(t *testing.T) {
 		entry, err := NewEntry(newUUID, vo.InvalidOperation, "assets:bacen:conta_liquidacao:tesouraria", vo.AnyAccountVersion, 123)
 		assert.Nil(t, entry)
-		assert.True(t, errors.ErrInvalidData.Is(err))
+		assert.True(t, app.ErrInvalidOperation.Is(err))
 	})
 
 	t.Run("Invalid when amount is zero", func(t *testing.T) {
 		entry, err := NewEntry(newUUID, vo.CreditOperation, "assets:bacen:conta_liquidacao:tesouraria", vo.AnyAccountVersion, 0)
 		assert.Nil(t, entry)
-		assert.True(t, errors.ErrInvalidData.Is(err))
+		assert.True(t, app.ErrInvalidAmount.Is(err))
 	})
 
 	t.Run("Invalid when amount < zero", func(t *testing.T) {
 		entry, err := NewEntry(newUUID, vo.CreditOperation, "assets:bacen:conta_liquidacao:tesouraria", vo.AnyAccountVersion, -1)
 		assert.Nil(t, entry)
-		assert.True(t, errors.ErrInvalidData.Is(err))
+		assert.True(t, app.ErrInvalidAmount.Is(err))
 	})
 
 	t.Run("Invalid when account structure has less than 4 levels", func(t *testing.T) {
 		entry, err := NewEntry(newUUID, vo.CreditOperation, "assets:bacen:conta_liquidacao", vo.AnyAccountVersion, 123)
 		assert.Nil(t, entry)
-		assert.True(t, errors.ErrInvalidAccountStructure.Is(err))
+		assert.True(t, app.ErrInvalidAccountStructure.Is(err))
 	})
 }

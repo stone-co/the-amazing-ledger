@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v4"
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
-	"github.com/stone-co/the-amazing-ledger/app/domain/errors"
 )
 
 func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *entities.Transaction) error {
@@ -54,7 +54,7 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 	err = br.Close()
 	if err != nil {
 		// TODO: assuming that is duplicate key.
-		return errors.ErrIdempotencyKey
+		return app.ErrIdempotencyKey
 	}
 
 	err = tx.Commit(ctx)

@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
-	"github.com/stone-co/the-amazing-ledger/app/domain/errors"
 	"github.com/stone-co/the-amazing-ledger/app/domain/mocks"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
 )
@@ -72,7 +72,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		entries = []entities.Entry{*e1, *e2}
 
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
-		assert.True(t, errors.ErrInvalidVersion.Is(err))
+		assert.True(t, app.ErrInvalidVersion.Is(err))
 	})
 
 	t.Run("When transaction fail, the counter isn't incremented", func(t *testing.T) {
@@ -93,7 +93,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		entries = []entities.Entry{*e1, *e2}
 
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
-		assert.True(t, errors.ErrInvalidVersion.Is(err))
+		assert.True(t, app.ErrInvalidVersion.Is(err))
 
 		assert.Equal(t, lastVersion, useCase.GetLastVersion())
 	})
@@ -122,7 +122,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e2, _ = entities.NewEntry(uuid.New(), vo.CreditOperation, accountID2, 3, 123)
 		entries = []entities.Entry{*e1, *e2}
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
-		assert.True(t, errors.ErrInvalidVersion.Is(err))
+		assert.True(t, app.ErrInvalidVersion.Is(err))
 		assert.Equal(t, lastVersion, useCase.GetLastVersion())
 
 		lastVersion = useCase.GetLastVersion()
@@ -156,11 +156,11 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		entries = []entities.Entry{*e1, *e2}
 		useCase.repository = &mocks.Repository{
 			OnCreateTransaction: func(context.Context, *entities.Transaction) error {
-				return errors.ErrIdempotencyKey
+				return app.ErrIdempotencyKey
 			},
 		}
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
-		assert.True(t, errors.ErrIdempotencyKey.Is(err))
+		assert.True(t, app.ErrIdempotencyKey.Is(err))
 		assert.NotEqual(t, lastVersion, useCase.GetLastVersion())
 
 		e1, _ = entities.NewEntry(uuid.New(), vo.DebitOperation, accountID1, 4, 123)
