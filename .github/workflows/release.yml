@@ -31,14 +31,14 @@ jobs:
         run: echo "RELEASE_VERSION=main" >> $GITHUB_ENV
 
       - name: Compile and Build Docker Image
-        run: make REGISTRY=amazingledger VERSION=$RELEASE_VERSION build
+        run: make REGISTRY=stoneopenbank VERSION=$RELEASE_VERSION build
 
       - name: Publish
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.REGISTRY_USER }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-      - run: make REGISTRY=amazingledger VERSION=$RELEASE_VERSION push
+      - run: make REGISTRY=stoneopenbank VERSION=$RELEASE_VERSION push
 
 
 
