@@ -1,4 +1,4 @@
-package usecase
+package usecases
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
-	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
 func (l *LedgerUseCase) CreateTransaction(ctx context.Context, id uuid.UUID, entries []entities.Entry) error {
@@ -24,7 +24,7 @@ func (l *LedgerUseCase) CreateTransaction(ctx context.Context, id uuid.UUID, ent
 		account.Lock()
 		defer account.Unlock()
 
-		if entry.Version == vo.AnyAccountVersion {
+		if entry.Version == vos.AnyAccountVersion {
 			continue
 		}
 

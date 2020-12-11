@@ -1,4 +1,4 @@
-package vo
+package vos
 
 type AccountBalance struct {
 	AccountName    AccountName

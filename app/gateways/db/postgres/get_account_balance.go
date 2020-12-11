@@ -3,10 +3,10 @@ package postgres
 import (
 	"context"
 
-	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
-func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vo.AccountName) (*vo.AccountBalance, error) {
+func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
 	query := `
 		SELECT
 			account_class,
@@ -26,8 +26,8 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vo
 		WHERE account_class = $3 AND account_group = $4 AND account_subgroup = $5 AND account_id = $6
 		GROUP BY account_class, account_group, account_subgroup, account_id
 	`
-	creditOperation := vo.CreditOperation.String()
-	debitOperation := vo.DebitOperation.String()
+	creditOperation := vos.CreditOperation.String()
+	debitOperation := vos.DebitOperation.String()
 
 	row := r.db.QueryRow(
 		context.Background(),
@@ -56,7 +56,7 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vo
 		return nil, err
 	}
 
-	accountBalance := vo.NewAccountBalance(accountName, vo.Version(currentVersion), totalCredit, totalDebit)
+	accountBalance := vos.NewAccountBalance(accountName, vos.Version(currentVersion), totalCredit, totalDebit)
 	return accountBalance, nil
 
 }

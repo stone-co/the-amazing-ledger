@@ -5,20 +5,20 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stone-co/the-amazing-ledger/app"
-	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewTransaction(t *testing.T) {
 	id := uuid.New()
 
-	e11, _ := NewEntry(uuid.New(), vo.DebitOperation, "liability:clients:available:111", vo.AnyAccountVersion, 123)
-	e12, _ := NewEntry(uuid.New(), vo.CreditOperation, "liability:clients:available:222", vo.AnyAccountVersion, 123)
+	e11, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability:clients:available:111", vos.AnyAccountVersion, 123)
+	e12, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability:clients:available:222", vos.AnyAccountVersion, 123)
 	validTwoEntries := []Entry{*e11, *e12}
 
-	e21, _ := NewEntry(uuid.New(), vo.DebitOperation, "liability:clients:available:333", vo.AnyAccountVersion, 400)
-	e22, _ := NewEntry(uuid.New(), vo.CreditOperation, "liability:clients:available:444", vo.AnyAccountVersion, 300)
-	e23, _ := NewEntry(uuid.New(), vo.CreditOperation, "liability:clients:available:555", vo.AnyAccountVersion, 100)
+	e21, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability:clients:available:333", vos.AnyAccountVersion, 400)
+	e22, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability:clients:available:444", vos.AnyAccountVersion, 300)
+	e23, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability:clients:available:555", vos.AnyAccountVersion, 100)
 	validThreeEntries := []Entry{*e21, *e22, *e23}
 
 	t.Run("Invalid entries number when the transaction has no entries", func(t *testing.T) {
@@ -52,17 +52,17 @@ func TestNewTransaction(t *testing.T) {
 	})
 
 	t.Run("Invalid transaction with 2 entries and balance != 0", func(t *testing.T) {
-		e1, _ := NewEntry(uuid.New(), vo.DebitOperation, "liability:clients:available:111", vo.AnyAccountVersion, 123)
-		e2, _ := NewEntry(uuid.New(), vo.CreditOperation, "liability:clients:available:222", vo.AnyAccountVersion, 234)
+		e1, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability:clients:available:111", vos.AnyAccountVersion, 123)
+		e2, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability:clients:available:222", vos.AnyAccountVersion, 234)
 		got, err := NewTransaction(id, *e1, *e2)
 		assert.True(t, app.ErrInvalidBalance.Is(err))
 		assert.Nil(t, got)
 	})
 
 	t.Run("Invalid transaction with 3 entries and balance != 0", func(t *testing.T) {
-		e1, _ := NewEntry(uuid.New(), vo.DebitOperation, "liability:clients:available:111", vo.AnyAccountVersion, 400)
-		e2, _ := NewEntry(uuid.New(), vo.CreditOperation, "liability:clients:available:222", vo.AnyAccountVersion, 200)
-		e3, _ := NewEntry(uuid.New(), vo.CreditOperation, "liability:clients:available:333", vo.AnyAccountVersion, 100)
+		e1, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability:clients:available:111", vos.AnyAccountVersion, 400)
+		e2, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability:clients:available:222", vos.AnyAccountVersion, 200)
+		e3, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability:clients:available:333", vos.AnyAccountVersion, 100)
 		got, err := NewTransaction(id, *e1, *e2, *e3)
 		assert.True(t, app.ErrInvalidBalance.Is(err))
 		assert.Nil(t, got)

@@ -11,7 +11,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/app"
-	"github.com/stone-co/the-amazing-ledger/app/domain/usecase"
+	"github.com/stone-co/the-amazing-ledger/app/domain/usecases"
 	"github.com/stone-co/the-amazing-ledger/app/gateways/db/postgres"
 	"github.com/stone-co/the-amazing-ledger/app/gateways/http/prometheus"
 )
@@ -37,7 +37,7 @@ func main() {
 
 	ledgerRepository := postgres.NewLedgerRepository(conn, log)
 
-	ledgerUseCase := usecase.NewLedgerUseCase(log, ledgerRepository)
+	ledgerUseCase := usecases.NewLedgerUseCase(log, ledgerRepository)
 	if err = ledgerUseCase.LoadObjectsIntoCache(context.Background()); err != nil {
 		log.WithError(err).Fatal("failed to populate cache")
 	}

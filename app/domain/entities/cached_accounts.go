@@ -3,12 +3,12 @@ package entities
 import (
 	"sync"
 
-	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
 type CachedAccountInfo struct {
 	sync.Mutex
-	CurrentVersion vo.Version
+	CurrentVersion vos.Version
 }
 
 type CachedAccounts struct {
@@ -23,14 +23,14 @@ func NewCachedAccounts() *CachedAccounts {
 
 func (c *CachedAccounts) LoadOrStore(accountID string) *CachedAccountInfo {
 	object := &CachedAccountInfo{
-		CurrentVersion: vo.NewAccountVersion,
+		CurrentVersion: vos.NewAccountVersion,
 	}
 
 	objectInMap, _ := c.objects.LoadOrStore(accountID, object)
 	return objectInMap.(*CachedAccountInfo)
 }
 
-func (c *CachedAccounts) Store(accountID string, version vo.Version) {
+func (c *CachedAccounts) Store(accountID string, version vos.Version) {
 	object := &CachedAccountInfo{
 		CurrentVersion: version,
 	}

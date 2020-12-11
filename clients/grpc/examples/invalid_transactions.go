@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 
-	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
 )
 
@@ -28,8 +28,8 @@ func transactionWithInvalidIdReturnsInvalidTransactionID(log *logrus.Entry, conn
 	accountID1 := "liability:clients:available:" + uuid.New().String()
 	accountID2 := "liability:clients:available:" + uuid.New().String()
 
-	t.AddEntry(uuid.New(), accountID1, vo.NewAccountVersion, vo.DebitOperation, 15000)
-	t.AddEntry(uuid.New(), accountID2, vo.NewAccountVersion, vo.CreditOperation, 15000)
+	t.AddEntry(uuid.New(), accountID1, vos.NewAccountVersion, vos.DebitOperation, 15000)
+	t.AddEntry(uuid.New(), accountID2, vos.NewAccountVersion, vos.CreditOperation, 15000)
 
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertTrue(ledger.ErrInvalidTransactionID.Is(err))
@@ -45,8 +45,8 @@ func entryWithInvalidIdReturnsInvalidEntryID(log *logrus.Entry, conn *ledger.Con
 	accountID2 := "liability:clients:available:" + uuid.New().String()
 
 	invalidUUID := uuid.Nil
-	t.AddEntry(uuid.New(), accountID1, vo.NewAccountVersion, vo.DebitOperation, 15000)
-	t.AddEntry(invalidUUID, accountID2, vo.NewAccountVersion, vo.CreditOperation, 15000)
+	t.AddEntry(uuid.New(), accountID1, vos.NewAccountVersion, vos.DebitOperation, 15000)
+	t.AddEntry(invalidUUID, accountID2, vos.NewAccountVersion, vos.CreditOperation, 15000)
 
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertTrue(ledger.ErrInvalidEntryID.Is(err))
@@ -71,14 +71,14 @@ func entryWithInvalidVersion(log *logrus.Entry, conn *ledger.Connection) {
 	accountID1 := "liability:clients:available:" + uuid.New().String()
 	accountID2 := "liability:clients:available:" + uuid.New().String()
 
-	t1.AddEntry(uuid.New(), accountID1, vo.NewAccountVersion, vo.DebitOperation, 15000)
-	t1.AddEntry(uuid.New(), accountID2, vo.NewAccountVersion, vo.CreditOperation, 15000)
+	t1.AddEntry(uuid.New(), accountID1, vos.NewAccountVersion, vos.DebitOperation, 15000)
+	t1.AddEntry(uuid.New(), accountID2, vos.NewAccountVersion, vos.CreditOperation, 15000)
 	err := conn.SaveTransaction(context.Background(), t1)
 
 	t2 := conn.NewTransaction(uuid.New())
-	invalidVersion := vo.NewAccountVersion
-	t2.AddEntry(uuid.New(), accountID1, invalidVersion, vo.DebitOperation, 7500)
-	t2.AddEntry(uuid.New(), accountID2, vo.AnyAccountVersion, vo.CreditOperation, 7500)
+	invalidVersion := vos.NewAccountVersion
+	t2.AddEntry(uuid.New(), accountID1, invalidVersion, vos.DebitOperation, 7500)
+	t2.AddEntry(uuid.New(), accountID2, vos.AnyAccountVersion, vos.CreditOperation, 7500)
 	err = conn.SaveTransaction(context.Background(), t2)
 
 	AssertTrue(ledger.ErrInvalidVersion.Is(err))
@@ -93,8 +93,8 @@ func entryWithInvalidAccountStructure(log *logrus.Entry, conn *ledger.Connection
 	invalidAccountID := "liability/clients/available/" + uuid.New().String()
 	accountID2 := "liability:clients:available:" + uuid.New().String()
 
-	t.AddEntry(uuid.New(), invalidAccountID, vo.NewAccountVersion, vo.DebitOperation, 15000)
-	t.AddEntry(uuid.New(), accountID2, vo.NewAccountVersion, vo.CreditOperation, 15000)
+	t.AddEntry(uuid.New(), invalidAccountID, vos.NewAccountVersion, vos.DebitOperation, 15000)
+	t.AddEntry(uuid.New(), accountID2, vos.NewAccountVersion, vos.CreditOperation, 15000)
 	err := conn.SaveTransaction(context.Background(), t)
 
 	AssertTrue(ledger.ErrInvalidAccountStructure.Is(err))

@@ -9,7 +9,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/app"
-	"github.com/stone-co/the-amazing-ledger/app/domain/usecase"
+	"github.com/stone-co/the-amazing-ledger/app/domain/usecases"
 	"github.com/stone-co/the-amazing-ledger/app/gateways/rpc"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"golang.org/x/net/http2"
@@ -17,7 +17,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewGRPCServer(useCase *usecase.LedgerUseCase, cfg app.ServerConfig, log *logrus.Logger) (*http.Server, error) {
+func NewGRPCServer(useCase *usecases.LedgerUseCase, cfg app.ServerConfig, log *logrus.Logger) (*http.Server, error) {
 	api := rpc.NewAPI(log, useCase)
 	grpcServer := api.NewServer()
 	server, err := NewServer(grpcServer, cfg)

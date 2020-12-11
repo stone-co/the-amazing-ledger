@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
-	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -37,9 +37,9 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 
 		domainEntry, err := entities.NewEntry(
 			entryID,
-			vo.OperationType(proto.Operation_value[entry.Operation.String()]),
+			vos.OperationType(proto.Operation_value[entry.Operation.String()]),
 			entry.AccountId,
-			vo.Version(entry.ExpectedVersion),
+			vos.Version(entry.ExpectedVersion),
 			int(entry.Amount),
 		)
 		if err != nil {

@@ -1,10 +1,10 @@
-package usecase
+package usecases
 
 import (
 	"context"
 	"testing"
 
-	"github.com/stone-co/the-amazing-ledger/app/domain/vo"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,10 +14,10 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 		totalDebit := 130
 		expectedBalance := totalCredit - totalDebit
 
-		accountName, err := vo.NewAccountName("liability:stone:clients:user-1")
+		accountName, err := vos.NewAccountName("liability:stone:clients:user-1")
 		assert.Nil(t, err)
 
-		accountBalance := vo.NewAccountBalance(*accountName, 3, totalCredit, totalDebit)
+		accountBalance := vos.NewAccountBalance(*accountName, 3, totalCredit, totalDebit)
 
 		useCase := newFakeGetAccountBalance(accountBalance, nil)
 		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.AccountName)
@@ -28,12 +28,12 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 	})
 
 	t.Run("The max version for account path must be version in account balance", func(t *testing.T) {
-		expectedVersion := vo.Version(5)
+		expectedVersion := vos.Version(5)
 
-		accountName, err := vo.NewAccountName("liability:stone:clients:user-1")
+		accountName, err := vos.NewAccountName("liability:stone:clients:user-1")
 		assert.Nil(t, err)
 
-		accountBalance := vo.NewAccountBalance(*accountName, expectedVersion, 0, 0)
+		accountBalance := vos.NewAccountBalance(*accountName, expectedVersion, 0, 0)
 
 		useCase := newFakeGetAccountBalance(accountBalance, nil)
 		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.AccountName)
