@@ -2,11 +2,11 @@
 // source: ledger/ledger.proto
 
 /*
-Package proto is a reverse proxy.
+Package ledger is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package proto
+package ledger
 
 import (
 	"context"

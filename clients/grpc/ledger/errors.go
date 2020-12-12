@@ -1,12 +1,10 @@
 package ledger
 
-import (
-	"fmt"
-	"strings"
-)
-
 const (
-	ErrInvalidData             = ClientError("invalid data")
+	ErrInvalidTransactionID    = ClientError("invalid transaction id")
+	ErrInvalidEntryID          = ClientError("invalid entry id")
+	ErrInvalidOperation        = ClientError("invalid operation")
+	ErrInvalidAmount           = ClientError("invalid amount")
 	ErrInvalidEntriesNumber    = ClientError("invalid entries number")
 	ErrInvalidVersion          = ClientError("invalid version")
 	ErrInvalidAccountStructure = ClientError("invalid account structure")
@@ -24,27 +22,5 @@ func (err ClientError) Error() string {
 func (err ClientError) Is(target error) bool {
 	ts := target.Error()
 	es := string(err)
-	return ts == es || strings.HasPrefix(ts, es+": ")
-}
-
-func (err ClientError) cause(inner error) error {
-	return wrapCause{msg: string(err), err: inner}
-}
-
-type wrapCause struct {
-	err error
-	msg string
-}
-
-func (err wrapCause) Error() string {
-	if err.err != nil {
-		return fmt.Sprintf("%s: %v", err.msg, err.err)
-	}
-	return err.msg
-}
-func (err wrapCause) Unwrap() error {
-	return err.err
-}
-func (err wrapCause) Is(target error) bool {
-	return ClientError(err.msg).Is(target)
+	return ts == es
 }

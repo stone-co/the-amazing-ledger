@@ -2,7 +2,7 @@ package ledger
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,7 +14,5 @@ func TestConnectFailed(t *testing.T) {
 	port := 4000
 
 	_, err := Connect(ctx, host, port)
-	fmt.Println(err)
-
-	assert.True(t, ErrConnectionFailed.Is(err))
+	assert.True(t, errors.Is(err, ErrConnectionFailed))
 }

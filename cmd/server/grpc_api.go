@@ -8,16 +8,16 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/sirupsen/logrus"
+	"github.com/stone-co/the-amazing-ledger/app"
+	"github.com/stone-co/the-amazing-ledger/app/domain/usecases"
+	"github.com/stone-co/the-amazing-ledger/app/gateways/rpc"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/usecase"
-	"github.com/stone-co/the-amazing-ledger/pkg/common/configuration"
-	"github.com/stone-co/the-amazing-ledger/pkg/gateways/rpc"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
 )
 
-func NewGRPCServer(useCase *usecase.LedgerUseCase, cfg configuration.ServerConfig, log *logrus.Logger) (*http.Server, error) {
+func NewGRPCServer(useCase *usecases.LedgerUseCase, cfg app.ServerConfig, log *logrus.Logger) (*http.Server, error) {
 	api := rpc.NewAPI(log, useCase)
 	grpcServer := api.NewServer()
 	server, err := NewServer(grpcServer, cfg)
@@ -27,7 +27,7 @@ func NewGRPCServer(useCase *usecase.LedgerUseCase, cfg configuration.ServerConfi
 	return server, nil
 }
 
-func NewServer(grpcServer *grpc.Server, cfg configuration.ServerConfig) (*http.Server, error) {
+func NewServer(grpcServer *grpc.Server, cfg app.ServerConfig) (*http.Server, error) {
 	// gwMux is the grpc-gateway ServeMux, used to serve HTTP/REST requests.
 	gwMux := runtime.NewServeMux()
 	// Always use localhost for gateway

@@ -30,7 +30,7 @@ func (c *Connection) SaveTransaction(ctx context.Context, transaction *Transacti
 			return fmt.Errorf(e.Message())
 		}
 
-		return ErrUndefined.cause(err)
+		return fmt.Errorf("%w: %s", ErrUndefined, err)
 	}
 
 	return nil

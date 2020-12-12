@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
 func getAccountBalance(log *logrus.Entry, conn *ledger.Connection) {
@@ -19,8 +19,8 @@ func getAccountBalance(log *logrus.Entry, conn *ledger.Connection) {
 
 	// Define a new transaction with 2 entries
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), accountPathOne, entities.NewAccountVersion, entities.CreditOperation, 1000)
-	t.AddEntry(uuid.New(), accountPathTwo, entities.NewAccountVersion, entities.DebitOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathOne, vos.NewAccountVersion, vos.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NewAccountVersion, vos.DebitOperation, 1000)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
@@ -40,16 +40,16 @@ func getAccountBalanceWithMoreEntries(log *logrus.Entry, conn *ledger.Connection
 	accountPathTwo := "liability:stone:clients:" + uuid.New().String()
 
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), accountPathOne, entities.NewAccountVersion, entities.CreditOperation, 1000)
-	t.AddEntry(uuid.New(), accountPathTwo, entities.NewAccountVersion, entities.DebitOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathOne, vos.NewAccountVersion, vos.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NewAccountVersion, vos.DebitOperation, 1000)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
 	accountOne, err := conn.GetAccountBalance(context.Background(), accountPathOne)
 
 	t = conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), entities.DebitOperation, 250)
-	t.AddEntry(uuid.New(), accountPathTwo, entities.AnyAccountVersion, entities.CreditOperation, 250)
+	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), vos.DebitOperation, 250)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.AnyAccountVersion, vos.CreditOperation, 250)
 	err = conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 

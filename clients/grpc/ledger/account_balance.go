@@ -4,21 +4,20 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"google.golang.org/grpc/status"
-
-	"github.com/stone-co/the-amazing-ledger/pkg/command-handler/domain/ledger/entities"
 )
 
 type AccountBalance struct {
-	accountName    entities.AccountName
-	currentVersion entities.Version
+	accountName    vos.AccountName
+	currentVersion vos.Version
 	totalCredit    int
 	totalDebit     int
 	balance        int
 }
 
-func (a AccountBalance) AccountName() entities.AccountName {
+func (a AccountBalance) AccountName() vos.AccountName {
 	return a.accountName
 }
 
@@ -26,7 +25,7 @@ func (a AccountBalance) TotalCredit() int {
 	return a.totalCredit
 }
 
-func (a AccountBalance) CurrentVersion() entities.Version {
+func (a AccountBalance) CurrentVersion() vos.Version {
 	return a.currentVersion
 }
 
@@ -50,17 +49,17 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountPath string) 
 			return nil, fmt.Errorf(e.Message())
 		}
 
-		return nil, ErrUndefined.cause(err)
+		return nil, fmt.Errorf("%w: %s", ErrUndefined, err)
 	}
 
-	accountName, err := entities.NewAccountName(response.AccountPath)
+	accountName, err := vos.NewAccountName(response.AccountPath)
 	if err != nil {
 		return nil, err
 	}
 
 	accountBalance := &AccountBalance{
 		accountName:    *accountName,
-		currentVersion: entities.Version(response.CurrentVersion),
+		currentVersion: vos.Version(response.CurrentVersion),
 		totalCredit:    int(response.TotalCredit),
 		totalDebit:     int(response.TotalDebit),
 		balance:        int(response.Balance),
