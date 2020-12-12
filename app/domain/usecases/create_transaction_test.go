@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/mocks"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLedgerUseCase_CreateTransaction(t *testing.T) {
