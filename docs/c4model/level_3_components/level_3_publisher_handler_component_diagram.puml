@@ -1,0 +1,20 @@
+@startuml Basic Sample
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/release/1-0/C4_Component.puml
+
+title Component diagram for Publisher Service - Ledger system
+
+Container(ledger_query_api, "Ledger Query API", "Golang exporting RPC and Rest APIs", "Allows systems to get the balance and load the history of the accounts")
+
+Container_Boundary(ledger, "Ledger Publisher Service") {
+    Component(event_receiver, "Event receiver", "Receive events related to accounts", "Receive account operations")
+    Component(notifier_controller, "Notifier controller", "Sends account events to all registered query handlers")
+    Rel(event_receiver, notifier_controller, "Uses")
+}
+
+Rel(ledger_query_api, event_receiver, "Sends events related to the accounts", "RPC/HTTPS")
+
+Container(message_bus, "Message Bus", "Kafka", "Transport for account events")
+
+Rel(notifier_controller, message_bus, "Sends events related to the accounts")
+
+@enduml

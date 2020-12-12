@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/sirupsen/logrus"
 
 	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
@@ -14,9 +16,11 @@ func main() {
 	defer log.Println("Server example finishing...")
 
 	// Connect to the Ledger gRPC server
+	ctx := context.Background()
 	host := "localhost"
-	port := 50051
-	conn, err := ledger.Connect(host, port)
+	port := 3000
+	conn, err := ledger.Connect(ctx, host, port)
+
 	if err != nil {
 		log.Fatal(err)
 	}

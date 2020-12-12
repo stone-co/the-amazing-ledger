@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/stone-co/the-amazing-ledger/pkg/rpc/proto";
+option go_package = "github.com/stone-co/the-amazing-ledger/proto/ledger";
 
 package ledger;
 
@@ -98,7 +98,7 @@ service Health {
   // Check - checks the system health.
   rpc Check(google.protobuf.Empty) returns (HealthCheckResponse){
     option (google.api.http) = {
-      get: "/api/v1/health"
+      get: "/health"
     };
   };
 }
