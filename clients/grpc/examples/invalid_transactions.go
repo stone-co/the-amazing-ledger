@@ -16,6 +16,7 @@ func invalidTransactionsTests(log *logrus.Entry, conn *ledger.Connection) {
 	withoutEntriesReturnsInvalidEntriesNumber(log, conn)
 	entryWithInvalidVersion(log, conn)
 	entryWithInvalidAccountStructure(log, conn)
+	transactionWithInvalidBalanceReturnsErrInvalidBalance(log, conn)
 }
 
 func transactionWithInvalidIdReturnsInvalidTransactionID(log *logrus.Entry, conn *ledger.Connection) {
@@ -98,4 +99,18 @@ func entryWithInvalidAccountStructure(log *logrus.Entry, conn *ledger.Connection
 	err := conn.SaveTransaction(context.Background(), t)
 
 	AssertTrue(ledger.ErrInvalidAccountStructure.Is(err))
+}
+
+func transactionWithInvalidBalanceReturnsErrInvalidBalance(log *logrus.Entry, conn *ledger.Connection) {
+	log.Println("starting transactionWithInvalidBalance")
+	defer log.Println("finishing transactionWithInvalidBalance")
+
+	accountID1 := "liability:clients:available:" + uuid.New().String()
+	accountID2 := "liability:clients:available:" + uuid.New().String()
+
+	t := conn.NewTransaction(uuid.New())
+	t.AddEntry(uuid.New(), accountID1, vos.NewAccountVersion, vos.DebitOperation, 15000)
+	t.AddEntry(uuid.New(), accountID2, vos.NewAccountVersion, vos.CreditOperation, 25000)
+	err := conn.SaveTransaction(context.Background(), t)
+	AssertTrue(ledger.ErrInvalidBalance.Is(err))
 }

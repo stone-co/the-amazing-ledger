@@ -7,6 +7,7 @@ const (
 	ErrInvalidAmount           = ClientError("invalid amount")
 	ErrInvalidEntriesNumber    = ClientError("invalid entries number")
 	ErrInvalidVersion          = ClientError("invalid version")
+	ErrInvalidBalance          = ClientError("invalid balance")
 	ErrInvalidAccountStructure = ClientError("invalid account structure")
 	ErrAccountNotFound         = ClientError("account not found")
 	ErrConnectionFailed        = ClientError("connection failed")
@@ -20,6 +21,9 @@ func (err ClientError) Error() string {
 }
 
 func (err ClientError) Is(target error) bool {
+	if target == nil {
+		return false
+	}
 	ts := target.Error()
 	es := string(err)
 	return ts == es
