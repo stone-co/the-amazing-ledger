@@ -54,7 +54,7 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 	err = br.Close()
 	if err != nil {
 		// TODO: assuming that is duplicate key.
-		return app.ErrIdempotencyKey
+		return app.ErrIdempotencyKeyViolation
 	}
 
 	err = tx.Commit(ctx)
