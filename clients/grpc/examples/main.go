@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
@@ -17,6 +18,9 @@ func main() {
 
 	// Connect to the Ledger gRPC server
 	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
+	defer cancel()
+
 	host := "localhost"
 	port := 3000
 	conn, err := ledger.Connect(ctx, host, port)
