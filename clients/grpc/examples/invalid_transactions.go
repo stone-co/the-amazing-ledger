@@ -17,6 +17,7 @@ func invalidTransactionsTests(log *logrus.Entry, conn *ledger.Connection) {
 	entryWithInvalidVersion(log, conn)
 	entryWithInvalidAccountStructure(log, conn)
 	transactionWithInvalidBalanceReturnsErrInvalidBalance(log, conn)
+	transactionWithInvalidIdempotencyKeyReturnsErrIdempotencyKeyViolation(log, conn)
 }
 
 func transactionWithInvalidIdReturnsInvalidTransactionID(log *logrus.Entry, conn *ledger.Connection) {
@@ -113,4 +114,20 @@ func transactionWithInvalidBalanceReturnsErrInvalidBalance(log *logrus.Entry, co
 	t.AddEntry(uuid.New(), accountID2, vos.NewAccountVersion, vos.CreditOperation, 25000)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertTrue(ledger.ErrInvalidBalance.Is(err))
+}
+
+func transactionWithInvalidIdempotencyKeyReturnsErrIdempotencyKeyViolation(log *logrus.Entry, conn *ledger.Connection) {
+	log.Println("starting transactionWithInvalidIdempotencyKeyReturnsErrIdempotencyKey")
+	defer log.Println("finishing transactionWithInvalidIdempotencyKeyReturnsErrIdempotencyKey")
+
+	accountID1 := "liability:clients:available:" + uuid.New().String()
+	accountID2 := "liability:clients:available:" + uuid.New().String()
+
+	idempotencyKey := uuid.New()
+
+	t := conn.NewTransaction(uuid.New())
+	t.AddEntry(idempotencyKey, accountID1, vos.NewAccountVersion, vos.DebitOperation, 15000)
+	t.AddEntry(idempotencyKey, accountID2, vos.NewAccountVersion, vos.CreditOperation, 15000)
+	err := conn.SaveTransaction(context.Background(), t)
+	AssertTrue(ledger.ErrIdempotencyKeyViolation.Is(err))
 }

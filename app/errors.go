@@ -11,7 +11,7 @@ const (
 	ErrInvalidAmount           = DomainError("invalid amount")
 	ErrInvalidEntriesNumber    = DomainError("invalid entries number")
 	ErrInvalidBalance          = DomainError("invalid balance")
-	ErrIdempotencyKey          = DomainError("idempotency key violation")
+	ErrIdempotencyKeyViolation = DomainError("idempotency key violation")
 	ErrInvalidVersion          = DomainError("invalid version")
 	ErrAccountNotFound         = DomainError("account not found")
 	ErrInvalidAccountStructure = DomainError("invalid account structure")

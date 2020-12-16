@@ -155,11 +155,11 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		entries = []entities.Entry{*e1, *e2}
 		useCase.repository = &mocks.Repository{
 			OnCreateTransaction: func(context.Context, *entities.Transaction) error {
-				return app.ErrIdempotencyKey
+				return app.ErrIdempotencyKeyViolation
 			},
 		}
 		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
-		assert.True(t, app.ErrIdempotencyKey.Is(err))
+		assert.True(t, app.ErrIdempotencyKeyViolation.Is(err))
 		assert.NotEqual(t, lastVersion, useCase.GetLastVersion())
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 4, 123)
