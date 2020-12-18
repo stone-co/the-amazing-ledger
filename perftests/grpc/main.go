@@ -21,7 +21,6 @@ func main() {
 		"0.0.0.0:3000",
 		runner.WithProtoFile("../../proto/ledger/ledger.proto", []string{"../../third_party/googleapis/"}),
 		runner.WithDataFromJSON(scenario.JSON()),
-		// runner.WithDataFromReader(scenario),
 		runner.WithInsecure(true),
 		runner.WithTotalRequests(uint(totalRequests)),
 		runner.WithConcurrency(uint(concurrency)),
