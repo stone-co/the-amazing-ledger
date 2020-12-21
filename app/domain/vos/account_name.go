@@ -28,7 +28,7 @@ const (
 //   - "liability:clients:available:96a131a8-c4ac-495e-8971-fcecdbdd003a"
 //   - "liability:clients:available:96a131a8-c4ac-495e-8971-fcecdbdd003a/somedetail"
 //   - "liability:clients:available:96a131a8-c4ac-495e-8971-fcecdbdd003a/detail1/detail2"
-type AccountName struct { // TODO: could be just "Account", but already exists the type "Account"
+type AccountName struct {
 	Class    *AccountClass
 	Group    string
 	Subgroup string

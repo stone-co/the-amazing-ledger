@@ -44,3 +44,15 @@ func newFakeGetAccountBalance(accountBalance *vos.AccountBalance, result error) 
 
 	return NewLedgerUseCase(log, mockRepository)
 }
+
+func newFakeGetAnalyticalData(entries []vos.Entry, result error) *LedgerUseCase {
+	log := logrus.New()
+
+	mockRepository := &mocks.Repository{
+		OnGetAnalyticalData: func(ctx context.Context, path vos.AccountPath) ([]vos.Entry, error) {
+			return entries, result
+		},
+	}
+
+	return NewLedgerUseCase(log, mockRepository)
+}

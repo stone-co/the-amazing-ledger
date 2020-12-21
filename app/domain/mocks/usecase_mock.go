@@ -15,6 +15,7 @@ type UseCase struct {
 	OnCreateTransaction    func(ctx context.Context, id uuid.UUID, entries []entities.Entry) error
 	OnLoadObjectsIntoCache func(ctx context.Context) error
 	OnGetAccountBalance    func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
+	OnGetAnalyticalData    func(ctx context.Context, path vos.AccountPath) ([]vos.Entry, error)
 }
 
 func (m UseCase) CreateTransaction(ctx context.Context, id uuid.UUID, entries []entities.Entry) error {
@@ -27,6 +28,10 @@ func (m UseCase) LoadObjectsIntoCache(ctx context.Context) error {
 
 func (m UseCase) GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
 	return m.OnGetAccountBalance(ctx, accountName)
+}
+
+func (m UseCase) GetAnalyticalData(ctx context.Context, path vos.AccountPath) ([]vos.Entry, error) {
+	return m.OnGetAnalyticalData(ctx, path)
 }
 
 func SuccessfulTransactionMock() UseCase {
@@ -44,6 +49,9 @@ func SuccessfulTransactionMock() UseCase {
 				TotalCredit:    0,
 				TotalDebit:     0,
 			}, nil
+		},
+		OnGetAnalyticalData: func(ctx context.Context, accountName vos.AccountPath) ([]vos.Entry, error) {
+			return []vos.Entry{}, nil
 		},
 	}
 }
