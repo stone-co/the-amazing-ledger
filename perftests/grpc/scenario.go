@@ -7,16 +7,14 @@ import (
 	"github.com/google/uuid"
 )
 
-// Scenario
-//
-// setup
-//		- create the "stone" account (assets:aaa:bbb:sa)
-// 		- create 1k client accounts (liability:aaa:bbb:UUID)
-//
-// steps
-//      For each client account above, execute:
-//      - 1 get account balance on the client account (TODO)
-//      - 1 transaction that transfer money from CA to SA
+// We are using GHZ (https://ghz.sh/) to run some perf tests with the Ledger.
+
+// Scenario:
+// - we create a "stone" fake account (assets:aaa:bbb:sa)
+// - we create 1k fake client accounts (liability:aaa:bbb:UUID)
+
+// For each client account above, we create a transaction that transfers money from the client account to the stone account.
+// These transactions are executed N times.
 
 type Scenario struct {
 	stoneAccount   string
