@@ -3,6 +3,7 @@ module github.com/stone-co/the-amazing-ledger
 go 1.14
 
 require (
+	github.com/bojand/ghz v0.70.0
 	github.com/bufbuild/buf v0.30.1
 	github.com/golang-migrate/migrate/v4 v4.12.2
 	github.com/golang/protobuf v1.4.3
