@@ -17,13 +17,28 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 		amount
 	FROM
 		entries
-	WHERE
-		account_class = $1 AND account_group = $2 AND account_subgroup = $3
-	ORDER BY
-		version
 	`
 
-	rows, err := r.db.Query(ctx, query, path.Class, path.Group, path.Subgroup)
+	args := []interface{}{}
+
+	if path.TotalLevels >= 1 {
+		query += " WHERE account_class = $1"
+		args = append(args, path.Class.String())
+
+		if path.TotalLevels >= 2 {
+			query += " AND account_group = $2"
+			args = append(args, path.Group)
+
+			if path.TotalLevels >= 3 {
+				query += " AND account_subgroup = $3"
+				args = append(args, path.Subgroup)
+			}
+		}
+	}
+
+	query += " ORDER BY version"
+
+	rows, err := r.db.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,6 +67,7 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 
 		account := vos.FormatAccount(class, group, subgroup, id)
 
+		// TODO: must return in chunks.
 		entries = append(entries, vos.Entry{
 			Account:   account,
 			Operation: vos.OperationTypeFromString(op),
