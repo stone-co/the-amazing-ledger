@@ -37,4 +37,5 @@ func main() {
 	getAccountBalance(log, conn)
 	getAccountBalanceWithMoreEntries(log, conn)
 	getAccountBalanceNotFoundAccount(log, conn)
+	getAnalyticalData(log, conn)
 }
