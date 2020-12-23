@@ -14,7 +14,7 @@ type Repository struct {
 	OnCreateTransaction    func(context.Context, *entities.Transaction) error
 	OnLoadObjectsIntoCache func(ctx context.Context, cachedAccounts *entities.CachedAccounts) (vos.Version, error)
 	OnGetAccountBalance    func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
-	OnGetAnalyticalData    func(ctx context.Context, path vos.AccountPath) ([]vos.Entry, error)
+	OnGetAnalyticalData    func(ctx context.Context, path vos.AccountPath) ([]vos.Statement, error)
 }
 
 func (s Repository) CreateTransaction(ctx context.Context, transaction *entities.Transaction) error {
@@ -29,6 +29,6 @@ func (s Repository) GetAccountBalance(ctx context.Context, accountName vos.Accou
 	return s.OnGetAccountBalance(ctx, accountName)
 }
 
-func (s Repository) GetAnalyticalData(ctx context.Context, path vos.AccountPath) ([]vos.Entry, error) {
+func (s Repository) GetAnalyticalData(ctx context.Context, path vos.AccountPath) ([]vos.Statement, error) {
 	return s.OnGetAnalyticalData(ctx, path)
 }

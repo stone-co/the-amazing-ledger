@@ -13,7 +13,7 @@ func TestLedgerUseCase_GetAnalyticalData(t *testing.T) {
 		accountPath, err := vos.NewAccountPath("liability:stone:clients")
 		assert.Nil(t, err)
 
-		entries := []vos.Entry{}
+		entries := []vos.Statement{}
 
 		useCase := newFakeGetAnalyticalData(entries, nil)
 		res, err := useCase.GetAnalyticalData(context.Background(), *accountPath)
@@ -28,7 +28,7 @@ func TestLedgerUseCase_GetAnalyticalData(t *testing.T) {
 		accountName1 := "liability:stone:clients:user-1"
 		accountName2 := "liability:stone:clients:user-2"
 
-		entries := []vos.Entry{
+		entries := []vos.Statement{
 			{
 				Account:   accountName1,
 				Operation: vos.CreditOperation,

@@ -4,13 +4,13 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app"
 )
 
-type Entry struct {
+type Statement struct {
 	Account   string
 	Operation OperationType
 	Amount    int
 }
 
-func NewEntry(account string, operation OperationType, amount int) (*Entry, error) {
+func NewEntry(account string, operation OperationType, amount int) (*Statement, error) {
 	if operation == InvalidOperation {
 		return nil, app.ErrInvalidOperation
 	}
@@ -19,7 +19,7 @@ func NewEntry(account string, operation OperationType, amount int) (*Entry, erro
 		return nil, app.ErrInvalidAmount
 	}
 
-	return &Entry{
+	return &Statement{
 		Account:   account,
 		Operation: operation,
 		Amount:    amount,

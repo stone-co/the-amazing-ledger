@@ -6,7 +6,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
-func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.AccountPath) ([]vos.Entry, error) {
+func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.AccountPath) ([]vos.Statement, error) {
 	query := `
 	SELECT
 		account_class,
@@ -44,7 +44,7 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 	}
 	defer rows.Close()
 
-	entries := []vos.Entry{}
+	entries := []vos.Statement{}
 
 	for rows.Next() {
 		var class string
@@ -68,7 +68,7 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 		account := vos.FormatAccount(class, group, subgroup, id)
 
 		// TODO: must return in chunks.
-		entries = append(entries, vos.Entry{
+		entries = append(entries, vos.Statement{
 			Account:   account,
 			Operation: vos.OperationTypeFromString(op),
 			Amount:    amount,
