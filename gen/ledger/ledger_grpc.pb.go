@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 type LedgerServiceClient interface {
 	CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	GetAccountBalance(ctx context.Context, in *GetAccountBalanceRequest, opts ...grpc.CallOption) (*GetAccountBalanceResponse, error)
+	GetAnalyticalData(ctx context.Context, in *GetAnalyticalDataRequest, opts ...grpc.CallOption) (LedgerService_GetAnalyticalDataClient, error)
 }
 
 type ledgerServiceClient struct {
@@ -49,12 +50,45 @@ func (c *ledgerServiceClient) GetAccountBalance(ctx context.Context, in *GetAcco
 	return out, nil
 }
 
+func (c *ledgerServiceClient) GetAnalyticalData(ctx context.Context, in *GetAnalyticalDataRequest, opts ...grpc.CallOption) (LedgerService_GetAnalyticalDataClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_LedgerService_serviceDesc.Streams[0], "/ledger.LedgerService/GetAnalyticalData", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &ledgerServiceGetAnalyticalDataClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type LedgerService_GetAnalyticalDataClient interface {
+	Recv() (*GetAnalyticalDataResponse, error)
+	grpc.ClientStream
+}
+
+type ledgerServiceGetAnalyticalDataClient struct {
+	grpc.ClientStream
+}
+
+func (x *ledgerServiceGetAnalyticalDataClient) Recv() (*GetAnalyticalDataResponse, error) {
+	m := new(GetAnalyticalDataResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // LedgerServiceServer is the server API for LedgerService service.
 // All implementations should embed UnimplementedLedgerServiceServer
 // for forward compatibility
 type LedgerServiceServer interface {
 	CreateTransaction(context.Context, *CreateTransactionRequest) (*empty.Empty, error)
 	GetAccountBalance(context.Context, *GetAccountBalanceRequest) (*GetAccountBalanceResponse, error)
+	GetAnalyticalData(*GetAnalyticalDataRequest, LedgerService_GetAnalyticalDataServer) error
 }
 
 // UnimplementedLedgerServiceServer should be embedded to have forward compatible implementations.
@@ -66,6 +100,9 @@ func (UnimplementedLedgerServiceServer) CreateTransaction(context.Context, *Crea
 }
 func (UnimplementedLedgerServiceServer) GetAccountBalance(context.Context, *GetAccountBalanceRequest) (*GetAccountBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountBalance not implemented")
+}
+func (UnimplementedLedgerServiceServer) GetAnalyticalData(*GetAnalyticalDataRequest, LedgerService_GetAnalyticalDataServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetAnalyticalData not implemented")
 }
 
 // UnsafeLedgerServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -115,6 +152,27 @@ func _LedgerService_GetAccountBalance_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LedgerService_GetAnalyticalData_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetAnalyticalDataRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(LedgerServiceServer).GetAnalyticalData(m, &ledgerServiceGetAnalyticalDataServer{stream})
+}
+
+type LedgerService_GetAnalyticalDataServer interface {
+	Send(*GetAnalyticalDataResponse) error
+	grpc.ServerStream
+}
+
+type ledgerServiceGetAnalyticalDataServer struct {
+	grpc.ServerStream
+}
+
+func (x *ledgerServiceGetAnalyticalDataServer) Send(m *GetAnalyticalDataResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 var _LedgerService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "ledger.LedgerService",
 	HandlerType: (*LedgerServiceServer)(nil),
@@ -128,7 +186,13 @@ var _LedgerService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _LedgerService_GetAccountBalance_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "GetAnalyticalData",
+			Handler:       _LedgerService_GetAnalyticalData_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "ledger/ledger.proto",
 }
 

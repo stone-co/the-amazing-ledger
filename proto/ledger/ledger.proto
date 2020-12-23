@@ -19,9 +19,14 @@ service LedgerService {
       get: "/api/v1/accounts/{account_path}/balance"
     };
   };
+  rpc GetAnalyticalData(GetAnalyticalDataRequest) returns (stream GetAnalyticalDataResponse){
+    option (google.api.http) = {
+      get: "/api/v1/analytical-data/{account_path}"
+    };
+  };
 }
 
-// SaveTransactionRequest represents a transaction to be saved. A transaction must
+// CreateTransactionRequest represents a transaction to be saved. A transaction must
 // have at least two entries, with a valid balance. More info here:
 // https://en.wikipedia.org/wiki/Double-entry_bookkeeping
 message CreateTransactionRequest {
@@ -74,6 +79,23 @@ message GetAccountBalanceResponse {
   // The Account balance
   int64 balance = 5;
 }
+
+// GetAnalyticalDataRequest contains the filters to be used to get data from the accounts.
+message GetAnalyticalDataRequest {
+  // The account path
+  string account_path = 1;
+}
+
+// GetAnalyticalDataResponse
+message GetAnalyticalDataResponse {
+  // Account involved in the operation.
+  string account_id = 1;
+  // Operation: debit or credit.
+  Operation operation = 2;
+  // Amount (in cents).
+  int32 amount = 3;
+}
+
 
 //https://github.com/grpc/grpc/blob/master/doc/health-checking.md
 // HealthCheckResponse is the health check status
