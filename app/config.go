@@ -48,7 +48,8 @@ type PostgresConfig struct {
 	Password     string `envconfig:"DATABASE_PASSWORD" default:"postgres"`
 	Host         string `envconfig:"DATABASE_HOST" default:"localhost"`
 	Port         string `envconfig:"DATABASE_PORT" default:"5432"`
-	PoolSize     string `envconfig:"DATABASE_POOL_SIZE" default:"10"`
+	PoolMinSize  string `envconfig:"DATABASE_POOL_MIN_SIZE" default:"2"`
+	PoolMaxSize  string `envconfig:"DATABASE_POOL_MAX_SIZE" default:"10"`
 	SSLMode      string `envconfig:"DATABASE_SSLMODE" default:"disable"`
 	SSLRootCert  string `envconfig:"DATABASE_SSL_ROOTCERT"`
 	SSLCert      string `envconfig:"DATABASE_SSL_CERT"`
@@ -56,8 +57,8 @@ type PostgresConfig struct {
 }
 
 func (c PostgresConfig) DSN() string {
-	connectString := fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s pool_max_conns=%s",
-		c.User, c.Password, c.Host, c.Port, c.DatabaseName, c.PoolSize)
+	connectString := fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s pool_min_conns=%s pool_max_conns=%s",
+		c.User, c.Password, c.Host, c.Port, c.DatabaseName, c.PoolMinSize, c.PoolMaxSize)
 
 	if c.SSLMode != "" {
 		connectString = fmt.Sprintf("%s sslmode=%s",
