@@ -9,14 +9,21 @@ import (
 )
 
 func TestLedgerUseCase_GetAnalyticalData(t *testing.T) {
+	res := []vos.Statement{}
+	fn := func(st vos.Statement) error {
+		res = append(res, st)
+		return nil
+	}
+
 	t.Run("Account can be empty", func(t *testing.T) {
 		accountPath, err := vos.NewAccountPath("liability:stone:clients")
 		assert.Nil(t, err)
 
 		entries := []vos.Statement{}
-
 		useCase := newFakeGetAnalyticalData(entries, nil)
-		res, err := useCase.GetAnalyticalData(context.Background(), *accountPath)
+
+		res = []vos.Statement{}
+		err = useCase.GetAnalyticalData(context.Background(), *accountPath, fn)
 		assert.Nil(t, err)
 		assert.Equal(t, entries, res)
 	})
@@ -42,7 +49,9 @@ func TestLedgerUseCase_GetAnalyticalData(t *testing.T) {
 		}
 
 		useCase := newFakeGetAnalyticalData(entries, nil)
-		res, err := useCase.GetAnalyticalData(context.Background(), *accountPath)
+
+		res = []vos.Statement{}
+		err = useCase.GetAnalyticalData(context.Background(), *accountPath, fn)
 		assert.Nil(t, err)
 		assert.Equal(t, entries, res)
 	})

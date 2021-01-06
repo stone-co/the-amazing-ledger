@@ -49,8 +49,13 @@ func newFakeGetAnalyticalData(entries []vos.Statement, result error) *LedgerUseC
 	log := logrus.New()
 
 	mockRepository := &mocks.Repository{
-		OnGetAnalyticalData: func(ctx context.Context, path vos.AccountPath) ([]vos.Statement, error) {
-			return entries, result
+		OnGetAnalyticalData: func(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error {
+			for _, entry := range entries {
+				if err := fn(entry); err != nil {
+					return err
+				}
+			}
+			return result
 		},
 	}
 

@@ -19,20 +19,22 @@ func (a *API) GetAnalyticalData(request *proto.GetAnalyticalDataRequest, stream 
 		return status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	entries, err := a.UseCase.GetAnalyticalData(stream.Context(), *accountPath)
-	if err != nil {
-		log.WithError(err).Error("can't get account")
-		return status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	for _, entry := range entries {
-		if err := stream.Send(&proto.GetAnalyticalDataResponse{
-			AccountId: entry.Account,
-			Operation: proto.Operation(entry.Operation),
-			Amount:    int32(entry.Amount),
+	fn := func(st vos.Statement) error {
+		if err = stream.Send(&proto.GetAnalyticalDataResponse{
+			AccountId: st.Account,
+			Operation: proto.Operation(st.Operation),
+			Amount:    int32(st.Amount),
 		}); err != nil {
 			return err
 		}
+
+		return nil
+	}
+
+	err = a.UseCase.GetAnalyticalData(stream.Context(), *accountPath, fn)
+	if err != nil {
+		log.WithError(err).Error("can't get account")
+		return status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	return nil

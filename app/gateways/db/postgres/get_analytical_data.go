@@ -6,7 +6,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
-func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.AccountPath) ([]vos.Statement, error) {
+func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error {
 	query := `
 	SELECT
 		account_class,
@@ -40,11 +40,9 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 
 	rows, err := r.db.Query(ctx, query, args...)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer rows.Close()
-
-	entries := []vos.Statement{}
 
 	for rows.Next() {
 		var class string
@@ -54,7 +52,7 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 		var op string
 		var amount int
 
-		if err := rows.Scan(
+		if err = rows.Scan(
 			&class,
 			&group,
 			&subgroup,
@@ -62,22 +60,24 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 			&op,
 			&amount,
 		); err != nil {
-			return nil, err
+			return err
 		}
 
 		account := vos.FormatAccount(class, group, subgroup, id)
 
-		// TODO: must return in chunks.
-		entries = append(entries, vos.Statement{
+		err = fn(vos.Statement{
 			Account:   account,
 			Operation: vos.OperationTypeFromString(op),
 			Amount:    amount,
 		})
+		if err != nil {
+			return err
+		}
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return err
 	}
 
-	return entries, nil
+	return nil
 }
