@@ -1,0 +1,102 @@
+package main
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
+)
+
+func getAccountHistory(log *logrus.Entry, conn *ledger.Connection) {
+	log.Println("starting GetAccountHistory")
+	defer log.Println("finishing GetAccountHistory")
+
+	accountPathOne := "liability:stone:clients:" + uuid.New().String()
+	accountPathTwo := "liability:stone:clients:" + uuid.New().String()
+
+	t := conn.NewTransaction(uuid.New())
+	t.AddEntry(uuid.New(), accountPathOne, vos.NewAccountVersion, vos.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NewAccountVersion, vos.DebitOperation, 1000)
+	err := conn.SaveTransaction(context.Background(), t)
+	AssertEqual(nil, err)
+
+	accountOne, err := conn.GetAccountBalance(context.Background(), accountPathOne)
+
+	t = conn.NewTransaction(uuid.New())
+	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), vos.DebitOperation, 500)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.AnyAccountVersion, vos.CreditOperation, 500)
+	err = conn.SaveTransaction(context.Background(), t)
+	AssertEqual(nil, err)
+
+	accountHistory, err := conn.GetAccountHistory(context.Background(), accountPathOne)
+
+	AssertEqual(1000, accountHistory.TotalCredit())
+	AssertEqual(500, accountHistory.TotalDebit())
+
+	AssertEqual(1000, accountHistory.EntriesHistory()[0].Amount())
+	AssertEqual(vos.CreditOperation, accountHistory.EntriesHistory()[0].Operation())
+
+	AssertEqual(500, accountHistory.EntriesHistory()[1].Amount())
+	AssertEqual(vos.DebitOperation, accountHistory.EntriesHistory()[1].Operation())
+
+	AssertEqual(nil, err)
+}
+
+func getAccountHistoryWithForEntries(log *logrus.Entry, conn *ledger.Connection) {
+	log.Println("starting getAccountHistoryWithForEntries")
+	defer log.Println("finishing getAccountHistoryWithForEntries")
+
+	accountPathOne := "liability:stone:clients:" + uuid.New().String()
+	accountPathTwo := "liability:stone:clients:" + uuid.New().String()
+
+	t := conn.NewTransaction(uuid.New())
+	t.AddEntry(uuid.New(), accountPathOne, vos.NewAccountVersion, vos.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NewAccountVersion, vos.DebitOperation, 1000)
+	err := conn.SaveTransaction(context.Background(), t)
+	AssertEqual(nil, err)
+
+	accountOne, err := conn.GetAccountBalance(context.Background(), accountPathOne)
+
+	t = conn.NewTransaction(uuid.New())
+	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), vos.CreditOperation, 500)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.AnyAccountVersion, vos.DebitOperation, 500)
+	err = conn.SaveTransaction(context.Background(), t)
+	AssertEqual(nil, err)
+
+	accountOne, err = conn.GetAccountBalance(context.Background(), accountPathOne)
+
+	t = conn.NewTransaction(uuid.New())
+	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), vos.DebitOperation, 500)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.AnyAccountVersion, vos.CreditOperation, 500)
+	err = conn.SaveTransaction(context.Background(), t)
+	AssertEqual(nil, err)
+
+	accountOne, err = conn.GetAccountBalance(context.Background(), accountPathOne)
+
+	t = conn.NewTransaction(uuid.New())
+	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), vos.DebitOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.AnyAccountVersion, vos.CreditOperation, 1000)
+	err = conn.SaveTransaction(context.Background(), t)
+	AssertEqual(nil, err)
+
+	accountHistory, err := conn.GetAccountHistory(context.Background(), accountPathOne)
+
+	AssertEqual(1500, accountHistory.TotalCredit())
+	AssertEqual(1500, accountHistory.TotalDebit())
+
+	AssertEqual(1000, accountHistory.EntriesHistory()[0].Amount())
+	AssertEqual(vos.CreditOperation, accountHistory.EntriesHistory()[0].Operation())
+
+	AssertEqual(500, accountHistory.EntriesHistory()[1].Amount())
+	AssertEqual(vos.CreditOperation, accountHistory.EntriesHistory()[1].Operation())
+
+	AssertEqual(500, accountHistory.EntriesHistory()[2].Amount())
+	AssertEqual(vos.DebitOperation, accountHistory.EntriesHistory()[2].Operation())
+
+	AssertEqual(1000, accountHistory.EntriesHistory()[3].Amount())
+	AssertEqual(vos.DebitOperation, accountHistory.EntriesHistory()[3].Operation())
+
+	AssertEqual(nil, err)
+}
