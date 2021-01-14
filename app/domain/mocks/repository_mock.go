@@ -32,6 +32,7 @@ func (s Repository) GetAccountBalance(ctx context.Context, accountName vos.Accou
 
 func (s Repository) GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error {
 	return s.OnGetAnalyticalData(ctx, path, fn)
+}
 
 func (s Repository) GetAccountHistory(ctx context.Context, accountName vos.AccountName) (*vos.AccountHistory, error) {
 	return s.OnGetAccountHistory(ctx, accountName)

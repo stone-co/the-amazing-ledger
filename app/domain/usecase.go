@@ -13,4 +13,5 @@ type UseCase interface {
 	LoadObjectsIntoCache(ctx context.Context) error
 	GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
 	GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error
+	GetAccountHistory(ctx context.Context, accountName vos.AccountName) (*vos.AccountHistory, error)
 }
