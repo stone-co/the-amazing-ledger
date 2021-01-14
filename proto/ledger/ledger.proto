@@ -6,6 +6,7 @@ package ledger;
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 service LedgerService {
   rpc CreateTransaction(CreateTransactionRequest) returns (google.protobuf.Empty){
@@ -22,6 +23,11 @@ service LedgerService {
   rpc GetAnalyticalData(GetAnalyticalDataRequest) returns (stream GetAnalyticalDataResponse){
     option (google.api.http) = {
       get: "/api/v1/analytical-data/{account_path}"
+    };
+  };
+  rpc GetAccountHistory(GetAccountHistoryRequest) returns (GetAccountHistoryResponse){
+    option (google.api.http) = {
+      get: "/api/v1/accounts/{account_path}/history"
     };
   };
 }
@@ -96,6 +102,33 @@ message GetAnalyticalDataResponse {
   int32 amount = 3;
 }
 
+// GetAccountHistory Request
+message GetAccountHistoryRequest {
+  // The account name
+  string account_path = 1;
+}
+
+// GetAccountBalance Response
+message GetAccountHistoryResponse {
+  // The account name
+  string account_path = 1;
+  // The account version
+  int64 total_credit = 2;
+  // All debit accumulated
+  int64 total_debit = 3;
+  // The Account balance
+  repeated EntryHistory entries_history = 4;
+}
+
+// EntryHistory to AccountHistory
+message EntryHistory {
+  // Operation: debit or credit.
+  Operation operation = 1;
+  // amount in cents
+  int64 amount = 2;
+  // timestamp to created at
+  google.protobuf.Timestamp created_at = 3;
+}
 
 //https://github.com/grpc/grpc/blob/master/doc/health-checking.md
 // HealthCheckResponse is the health check status
