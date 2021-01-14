@@ -12,4 +12,5 @@ type Repository interface {
 	LoadObjectsIntoCache(ctx context.Context, objects *entities.CachedAccounts) (vos.Version, error)
 	GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
 	GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error
+	GetAccountHistory(ctxt context.Context, accountName vos.AccountName) (*vos.AccountHistory, error)
 }
