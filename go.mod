@@ -15,6 +15,9 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/kevinburke/go-bindata v3.22.0+incompatible
 	github.com/kyoh86/richgo v0.3.3
+	github.com/newrelic/go-agent/v3 v3.10.0
+	github.com/newrelic/go-agent/v3/integrations/nrgrpc v1.1.0
+	github.com/newrelic/go-agent/v3/integrations/nrlogrus v1.0.0
 	github.com/prometheus/client_golang v1.7.1
 	github.com/resotto/gochk v1.2.0
 	github.com/sirupsen/logrus v1.7.0

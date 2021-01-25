@@ -4,19 +4,13 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v4"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 )
 
 func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *entities.Transaction) error {
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		_ = tx.Rollback(ctx)
-	}()
+	operation := "Repository.CreateTransaction"
 
 	query := `
 		INSERT INTO
@@ -32,6 +26,25 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 				transaction_id
 			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 	`
+
+	txn := newrelic.FromContext(ctx)
+	seg := newrelic.DatastoreSegment{
+		Product:            newrelic.DatastorePostgres,
+		Collection:         "entries",
+		Operation:          operation,
+		ParameterizedQuery: query,
+	}
+	seg.StartTime = txn.StartSegmentNow()
+	defer seg.End()
+
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		_ = tx.Rollback(ctx)
+	}()
 
 	var batch pgx.Batch
 

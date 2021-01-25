@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
@@ -9,6 +10,8 @@ import (
 )
 
 func (a *API) GetAnalyticalData(request *proto.GetAnalyticalDataRequest, stream proto.LedgerService_GetAnalyticalDataServer) error {
+	defer newrelic.FromContext(stream.Context()).StartSegment("GetAnalyticalData").End()
+
 	log := a.log.WithFields(logrus.Fields{
 		"handler": "GetAnalyticalData",
 	})
