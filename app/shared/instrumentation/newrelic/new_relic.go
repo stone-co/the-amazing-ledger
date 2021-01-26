@@ -1,6 +1,8 @@
 package newrelic
 
 import (
+	"context"
+
 	"github.com/newrelic/go-agent/v3/integrations/nrlogrus"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
@@ -22,4 +24,16 @@ func NewRelicApp(appName, licenseKey string, log *logrus.Entry) (*newrelic.Appli
 			cfg.ErrorCollector.RecordPanics = true
 		},
 	)
+}
+
+func NewDatastoreSegment(ctx context.Context, collection, operation, query string) *newrelic.DatastoreSegment {
+	txn := newrelic.FromContext(ctx)
+	seg := &newrelic.DatastoreSegment{
+		Product:            newrelic.DatastorePostgres,
+		Collection:         collection,
+		Operation:          operation,
+		ParameterizedQuery: query,
+	}
+	seg.StartTime = txn.StartSegmentNow()
+	return seg
 }

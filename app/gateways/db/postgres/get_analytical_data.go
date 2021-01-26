@@ -3,13 +3,12 @@ package postgres
 import (
 	"context"
 
-	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
 func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error {
 	operation := "Repository.GetAnalyticalData"
-
 	query := `
 	SELECT
 		account_class,
@@ -21,16 +20,6 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 	FROM
 		entries
 	`
-
-	txn := newrelic.FromContext(ctx)
-	seg := newrelic.DatastoreSegment{
-		Product:            newrelic.DatastorePostgres,
-		Collection:         "entries",
-		Operation:          operation,
-		ParameterizedQuery: query,
-	}
-	seg.StartTime = txn.StartSegmentNow()
-	defer seg.End()
 
 	args := []interface{}{}
 
@@ -50,6 +39,8 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 	}
 
 	query += " ORDER BY version"
+
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
 
 	rows, err := r.db.Query(ctx, query, args...)
 	if err != nil {
