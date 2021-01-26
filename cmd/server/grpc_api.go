@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/usecases"
@@ -17,9 +18,9 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewGRPCServer(useCase *usecases.LedgerUseCase, cfg app.ServerConfig, log *logrus.Logger) (*http.Server, error) {
+func NewGRPCServer(useCase *usecases.LedgerUseCase, nr *newrelic.Application, cfg app.ServerConfig, log *logrus.Logger) (*http.Server, error) {
 	api := rpc.NewAPI(log, useCase)
-	grpcServer := api.NewServer()
+	grpcServer := api.NewServer(nr)
 	server, err := NewServer(grpcServer, cfg)
 	if err != nil {
 		return nil, err

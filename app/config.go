@@ -11,6 +11,7 @@ type Config struct {
 	Server   ServerConfig
 	Metrics  MetricsConfig
 	Postgres PostgresConfig
+	NewRelic NewRelicConfig
 }
 
 func LoadConfig() (*Config, error) {
@@ -54,6 +55,11 @@ type PostgresConfig struct {
 	SSLRootCert  string `envconfig:"DATABASE_SSL_ROOTCERT"`
 	SSLCert      string `envconfig:"DATABASE_SSL_CERT"`
 	SSLKey       string `envconfig:"DATABASE_SSL_KEY"`
+}
+
+type NewRelicConfig struct {
+	AppName    string `envconfig:"NEW_RELIC_APP_NAME"`
+	LicenseKey string `envconfig:"NEW_RELIC_LICENSE_KEY"`
 }
 
 func (c PostgresConfig) DSN() string {

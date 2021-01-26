@@ -6,6 +6,10 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain"
 )
 
+const (
+	collection = "entries"
+)
+
 var _ domain.Repository = &LedgerRepository{}
 
 type LedgerRepository struct {

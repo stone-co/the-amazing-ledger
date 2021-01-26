@@ -4,9 +4,11 @@ import (
 	"context"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
 func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error {
+	operation := "Repository.GetAnalyticalData"
 	query := `
 	SELECT
 		account_class,
@@ -37,6 +39,8 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 	}
 
 	query += " ORDER BY version"
+
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
 
 	rows, err := r.db.Query(ctx, query, args...)
 	if err != nil {

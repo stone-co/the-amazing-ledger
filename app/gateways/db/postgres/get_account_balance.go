@@ -4,9 +4,11 @@ import (
 	"context"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
 func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
+	operation := "Repository.GetAccountBalance"
 	query := `
 		SELECT
 			account_class,
@@ -26,6 +28,9 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vo
 		WHERE account_class = $3 AND account_group = $4 AND account_subgroup = $5 AND account_id = $6
 		GROUP BY account_class, account_group, account_subgroup, account_id
 	`
+
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
+
 	creditOperation := vos.CreditOperation.String()
 	debitOperation := vos.DebitOperation.String()
 

@@ -5,6 +5,8 @@ import (
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	"github.com/newrelic/go-agent/v3/integrations/nrgrpc"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/app/domain"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
@@ -27,7 +29,7 @@ func NewAPI(log *logrus.Logger, useCase domain.UseCase) *API {
 	}
 }
 
-func (a *API) NewServer() *grpc.Server {
+func (a *API) NewServer(nr *newrelic.Application) *grpc.Server {
 	// Define a func to handle panic
 	dealPanic := func(p interface{}) (err error) {
 		log.Printf("panic triggered: %v", p)
@@ -41,9 +43,11 @@ func (a *API) NewServer() *grpc.Server {
 	srv := grpc.NewServer(
 		grpc_middleware.WithUnaryServerChain(
 			grpc_recovery.UnaryServerInterceptor(opts...),
+			nrgrpc.UnaryServerInterceptor(nr),
 		),
 		grpc_middleware.WithStreamServerChain(
 			grpc_recovery.StreamServerInterceptor(opts...),
+			nrgrpc.StreamServerInterceptor(nr),
 		),
 	)
 

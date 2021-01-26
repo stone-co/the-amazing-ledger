@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
@@ -12,6 +13,8 @@ import (
 )
 
 func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBalanceRequest) (*proto.GetAccountBalanceResponse, error) {
+	defer newrelic.FromContext(ctx).StartSegment("GetAccountBalance").End()
+
 	log := a.log.WithFields(logrus.Fields{
 		"handler": "GetAccountBalance",
 	})

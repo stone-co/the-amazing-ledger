@@ -5,6 +5,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
@@ -15,6 +16,9 @@ import (
 )
 
 func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactionRequest) (*empty.Empty, error) {
+
+	defer newrelic.FromContext(ctx).StartSegment("CreateTransaction").End()
+
 	log := a.log.WithFields(logrus.Fields{
 		"handler": "CreateTransaction",
 	})

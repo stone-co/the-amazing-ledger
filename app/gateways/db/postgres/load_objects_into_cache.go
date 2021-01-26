@@ -5,15 +5,19 @@ import (
 
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
 func (r *LedgerRepository) LoadObjectsIntoCache(ctx context.Context, cachedAccounts *entities.CachedAccounts) (vos.Version, error) {
+	operation := "Repository.LoadObjectsIntoCache"
 	query := `
 		SELECT account_class, account_group, account_subgroup, account_id, MAX(version) As version
 		FROM entries
 		GROUP BY account_class, account_group, account_subgroup, account_id
 		ORDER BY version desc
 	`
+
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
 
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {

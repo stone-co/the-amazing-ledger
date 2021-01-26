@@ -14,6 +14,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain/usecases"
 	"github.com/stone-co/the-amazing-ledger/app/gateways/db/postgres"
 	"github.com/stone-co/the-amazing-ledger/app/gateways/http/prometheus"
+	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
 func main() {
@@ -23,6 +24,11 @@ func main() {
 	cfg, err := app.LoadConfig()
 	if err != nil {
 		log.WithError(err).Fatal("unable to load app configuration")
+	}
+
+	nr, err := newrelic.NewRelicApp(cfg.NewRelic.AppName, cfg.NewRelic.LicenseKey, logrus.NewEntry(log))
+	if err != nil {
+		log.WithError(err).Fatal("error starting new relic")
 	}
 
 	conn, err := postgres.ConnectPool(cfg.Postgres.DSN(), log)
@@ -53,7 +59,7 @@ func main() {
 	}()
 
 	// Initialize the server (grpc-gateway)
-	server, err := NewGRPCServer(ledgerUseCase, cfg.Server, log)
+	server, err := NewGRPCServer(ledgerUseCase, nr, cfg.Server, log)
 	if err != nil {
 		log.WithError(err).Fatal("failed to initialize the server")
 	}
