@@ -19,7 +19,8 @@ import (
 
 func main() {
 	log := logrus.New()
-	log.Infoln("Starting Ledger process...")
+	log.Infoln("starting ledger process...")
+	log.Infof("build info: time[%s] git_hash[%s]", BuildTime, BuildGitCommit)
 
 	cfg, err := app.LoadConfig()
 	if err != nil {
