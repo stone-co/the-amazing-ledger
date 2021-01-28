@@ -8,6 +8,8 @@ REGISTRY ?= stoneopenbank
 TERM=xterm-256color
 CLICOLOR_FORCE=true
 RICHGO_FORCE_COLOR=1
+GIT_COMMIT=$(shell git rev-parse HEAD)
+GIT_BUILD_TIME=$(shell date '+%Y-%m-%d__%I:%M:%S%p')
 
 .PHONY: setup
 setup:
@@ -35,7 +37,9 @@ test:
 .PHONY: compile
 compile: clean
 	@echo "==> Go Building CommandHandler"
-	@env GOOS=${OS} GOARCH=amd64 go build -v -o build/${NAME_COMMAND_HANDLER} ${PKG}/${NAME_COMMAND_HANDLER}
+	@env GOOS=${OS} GOARCH=amd64 go build -v -o build/${NAME_COMMAND_HANDLER} \
+		-ldflags "-X main.BuildGitCommit=$(GIT_COMMIT) -X main.BuildTime=$(GIT_BUILD_TIME)" \
+		${PKG}/${NAME_COMMAND_HANDLER} 
 
 .PHONY: build
 build: compile
