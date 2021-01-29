@@ -21,7 +21,7 @@ type LedgerServiceClient interface {
 	CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	GetAccountBalance(ctx context.Context, in *GetAccountBalanceRequest, opts ...grpc.CallOption) (*GetAccountBalanceResponse, error)
 	GetAnalyticalData(ctx context.Context, in *GetAnalyticalDataRequest, opts ...grpc.CallOption) (LedgerService_GetAnalyticalDataClient, error)
-	GetAccountHistory(ctx context.Context, in *GetAccountHistoryRequest, opts ...grpc.CallOption) (*GetAccountHistoryResponse, error)
+	GetAccountHistory(ctx context.Context, in *GetAccountHistoryRequest, opts ...grpc.CallOption) (LedgerService_GetAccountHistoryClient, error)
 }
 
 type ledgerServiceClient struct {
@@ -82,13 +82,36 @@ func (x *ledgerServiceGetAnalyticalDataClient) Recv() (*GetAnalyticalDataRespons
 	return m, nil
 }
 
-func (c *ledgerServiceClient) GetAccountHistory(ctx context.Context, in *GetAccountHistoryRequest, opts ...grpc.CallOption) (*GetAccountHistoryResponse, error) {
-	out := new(GetAccountHistoryResponse)
-	err := c.cc.Invoke(ctx, "/ledger.LedgerService/GetAccountHistory", in, out, opts...)
+func (c *ledgerServiceClient) GetAccountHistory(ctx context.Context, in *GetAccountHistoryRequest, opts ...grpc.CallOption) (LedgerService_GetAccountHistoryClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_LedgerService_serviceDesc.Streams[1], "/ledger.LedgerService/GetAccountHistory", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &ledgerServiceGetAccountHistoryClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type LedgerService_GetAccountHistoryClient interface {
+	Recv() (*GetAccountHistoryResponse, error)
+	grpc.ClientStream
+}
+
+type ledgerServiceGetAccountHistoryClient struct {
+	grpc.ClientStream
+}
+
+func (x *ledgerServiceGetAccountHistoryClient) Recv() (*GetAccountHistoryResponse, error) {
+	m := new(GetAccountHistoryResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // LedgerServiceServer is the server API for LedgerService service.
@@ -98,7 +121,7 @@ type LedgerServiceServer interface {
 	CreateTransaction(context.Context, *CreateTransactionRequest) (*empty.Empty, error)
 	GetAccountBalance(context.Context, *GetAccountBalanceRequest) (*GetAccountBalanceResponse, error)
 	GetAnalyticalData(*GetAnalyticalDataRequest, LedgerService_GetAnalyticalDataServer) error
-	GetAccountHistory(context.Context, *GetAccountHistoryRequest) (*GetAccountHistoryResponse, error)
+	GetAccountHistory(*GetAccountHistoryRequest, LedgerService_GetAccountHistoryServer) error
 }
 
 // UnimplementedLedgerServiceServer should be embedded to have forward compatible implementations.
@@ -114,8 +137,8 @@ func (UnimplementedLedgerServiceServer) GetAccountBalance(context.Context, *GetA
 func (UnimplementedLedgerServiceServer) GetAnalyticalData(*GetAnalyticalDataRequest, LedgerService_GetAnalyticalDataServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetAnalyticalData not implemented")
 }
-func (UnimplementedLedgerServiceServer) GetAccountHistory(context.Context, *GetAccountHistoryRequest) (*GetAccountHistoryResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAccountHistory not implemented")
+func (UnimplementedLedgerServiceServer) GetAccountHistory(*GetAccountHistoryRequest, LedgerService_GetAccountHistoryServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetAccountHistory not implemented")
 }
 
 // UnsafeLedgerServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -186,22 +209,25 @@ func (x *ledgerServiceGetAnalyticalDataServer) Send(m *GetAnalyticalDataResponse
 	return x.ServerStream.SendMsg(m)
 }
 
-func _LedgerService_GetAccountHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAccountHistoryRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+func _LedgerService_GetAccountHistory_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetAccountHistoryRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(LedgerServiceServer).GetAccountHistory(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ledger.LedgerService/GetAccountHistory",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LedgerServiceServer).GetAccountHistory(ctx, req.(*GetAccountHistoryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(LedgerServiceServer).GetAccountHistory(m, &ledgerServiceGetAccountHistoryServer{stream})
+}
+
+type LedgerService_GetAccountHistoryServer interface {
+	Send(*GetAccountHistoryResponse) error
+	grpc.ServerStream
+}
+
+type ledgerServiceGetAccountHistoryServer struct {
+	grpc.ServerStream
+}
+
+func (x *ledgerServiceGetAccountHistoryServer) Send(m *GetAccountHistoryResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 var _LedgerService_serviceDesc = grpc.ServiceDesc{
@@ -216,15 +242,16 @@ var _LedgerService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "GetAccountBalance",
 			Handler:    _LedgerService_GetAccountBalance_Handler,
 		},
-		{
-			MethodName: "GetAccountHistory",
-			Handler:    _LedgerService_GetAccountHistory_Handler,
-		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "GetAnalyticalData",
 			Handler:       _LedgerService_GetAnalyticalData_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "GetAccountHistory",
+			Handler:       _LedgerService_GetAccountHistory_Handler,
 			ServerStreams: true,
 		},
 	},

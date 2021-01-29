@@ -25,7 +25,7 @@ service LedgerService {
       get: "/api/v1/analytical-data/{account_path}"
     };
   };
-  rpc GetAccountHistory(GetAccountHistoryRequest) returns (GetAccountHistoryResponse){
+  rpc GetAccountHistory(GetAccountHistoryRequest) returns (stream GetAccountHistoryResponse){
     option (google.api.http) = {
       get: "/api/v1/accounts/{account_path}/history"
     };
@@ -108,24 +108,12 @@ message GetAccountHistoryRequest {
   string account_path = 1;
 }
 
-// GetAccountBalance Response
-message GetAccountHistoryResponse {
-  // The account name
-  string account_path = 1;
-  // The account version
-  int64 total_credit = 2;
-  // All debit accumulated
-  int64 total_debit = 3;
-  // The Account balance
-  repeated EntryHistory entries_history = 4;
-}
-
 // EntryHistory to AccountHistory
-message EntryHistory {
-  // Operation: debit or credit.
-  Operation operation = 1;
+message GetAccountHistoryResponse {
   // amount in cents
-  int64 amount = 2;
+  int64 amount = 1;
+  // Operation: debit or credit.
+  Operation operation = 2;
   // timestamp to created at
   google.protobuf.Timestamp created_at = 3;
 }

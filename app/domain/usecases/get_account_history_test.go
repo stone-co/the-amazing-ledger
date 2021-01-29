@@ -10,25 +10,43 @@ import (
 )
 
 func TestLedgerUseCase_GetAccountHistory(t *testing.T) {
-	t.Run("The AccountHistory must sum debits and credit", func(t *testing.T) {
+	res := []vos.EntryHistory{}
+	fn := func(et vos.EntryHistory) error {
+		res = append(res, et)
+		return nil
+	}
+
+	t.Run("The account history can be empty", func(t *testing.T) {
 		accountName, err := vos.NewAccountName("liability:stone:clients:user-1")
 		assert.Nil(t, err)
 
-		entriesHistory := make([]vos.EntryHistory, 4)
-		for i := range entriesHistory {
-			entryHistory, _ := vos.NewEntryHistory(vos.CreditOperation, 150, time.Now())
-			entriesHistory[i] = *entryHistory
-		}
+		entries := []vos.EntryHistory{}
 
-		fakeAccountHistory, _ := vos.NewAccountHistory(*accountName, entriesHistory...)
-		useCase := newFakeGetAccountHistory(&fakeAccountHistory, nil)
-		accountHistory, err := useCase.GetAccountHistory(context.Background(), *accountName)
+		// clear res
+		res = []vos.EntryHistory{}
+		useCase := newFakeGetAccountHistory(entries, nil)
+		err = useCase.GetAccountHistory(context.Background(), *accountName, fn)
 
 		assert.Nil(t, err)
-		assert.Equal(t, fakeAccountHistory.Account.Name(), accountHistory.Account.Name())
-		assert.Equal(t, fakeAccountHistory.EntriesHistory, accountHistory.EntriesHistory)
+		assert.Equal(t, entries, res)
+	})
 
-		assert.Equal(t, fakeAccountHistory.TotalCredit, accountHistory.TotalCredit)
-		assert.Equal(t, fakeAccountHistory.TotalDebit, accountHistory.TotalDebit)
+	t.Run("The account history should don't modify any Entry History", func(t *testing.T) {
+		accountName, err := vos.NewAccountName("liability:stone:clients:user-2")
+		assert.Nil(t, err)
+
+		entries := make([]vos.EntryHistory, 4)
+		for i := range entries {
+			entryHistory, _ := vos.NewEntryHistory(vos.CreditOperation, 150, time.Now())
+			entries[i] = *entryHistory
+		}
+
+		// clear res
+		res = []vos.EntryHistory{}
+		useCase := newFakeGetAccountHistory(entries, nil)
+		err = useCase.GetAccountHistory(context.Background(), *accountName, fn)
+
+		assert.Nil(t, err)
+		assert.Equal(t, entries, res)
 	})
 }

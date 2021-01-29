@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/bojand/ghz v0.70.0
-	github.com/bufbuild/buf v0.30.1
+	github.com/bufbuild/buf v0.36.0
 	github.com/golang-migrate/migrate/v4 v4.12.2
 	github.com/golang/protobuf v1.4.3
 	github.com/golangci/golangci-lint v1.31.0
@@ -21,11 +21,13 @@ require (
 	github.com/prometheus/client_golang v1.7.1
 	github.com/resotto/gochk v1.2.0
 	github.com/sirupsen/logrus v1.7.0
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
+	golang.org/x/crypto v0.0.0-20201112155050-0c6587e931a9 // indirect
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73
+	golang.org/x/sys v0.0.0-20201112073958-5cba982894dd // indirect
 	golang.org/x/tools v0.0.0-20200825202427-b303f430e36d
 	google.golang.org/genproto v0.0.0-20201112120144-2985b7af83de
 	google.golang.org/grpc v1.33.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.0.1
-	google.golang.org/protobuf v1.25.1-0.20201020201750-d3470999428b
+	google.golang.org/protobuf v1.25.1-0.20201208041424-160c7477e0e8
 )

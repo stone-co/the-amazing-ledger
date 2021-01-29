@@ -32,14 +32,11 @@ func getAccountHistory(log *logrus.Entry, conn *ledger.Connection) {
 
 	accountHistory, err := conn.GetAccountHistory(context.Background(), accountPathOne)
 
-	AssertEqual(1000, accountHistory.TotalCredit())
-	AssertEqual(500, accountHistory.TotalDebit())
+	AssertEqual(1000, accountHistory[0].Amount())
+	AssertEqual(vos.CreditOperation, accountHistory[0].Operation())
 
-	AssertEqual(1000, accountHistory.EntriesHistory()[0].Amount())
-	AssertEqual(vos.CreditOperation, accountHistory.EntriesHistory()[0].Operation())
-
-	AssertEqual(500, accountHistory.EntriesHistory()[1].Amount())
-	AssertEqual(vos.DebitOperation, accountHistory.EntriesHistory()[1].Operation())
+	AssertEqual(500, accountHistory[1].Amount())
+	AssertEqual(vos.DebitOperation, accountHistory[1].Operation())
 
 	AssertEqual(nil, err)
 }
@@ -83,20 +80,17 @@ func getAccountHistoryWithForEntries(log *logrus.Entry, conn *ledger.Connection)
 
 	accountHistory, err := conn.GetAccountHistory(context.Background(), accountPathOne)
 
-	AssertEqual(1500, accountHistory.TotalCredit())
-	AssertEqual(1500, accountHistory.TotalDebit())
+	AssertEqual(1000, accountHistory[0].Amount())
+	AssertEqual(vos.CreditOperation, accountHistory[0].Operation())
 
-	AssertEqual(1000, accountHistory.EntriesHistory()[0].Amount())
-	AssertEqual(vos.CreditOperation, accountHistory.EntriesHistory()[0].Operation())
+	AssertEqual(500, accountHistory[1].Amount())
+	AssertEqual(vos.CreditOperation, accountHistory[1].Operation())
 
-	AssertEqual(500, accountHistory.EntriesHistory()[1].Amount())
-	AssertEqual(vos.CreditOperation, accountHistory.EntriesHistory()[1].Operation())
+	AssertEqual(500, accountHistory[2].Amount())
+	AssertEqual(vos.DebitOperation, accountHistory[2].Operation())
 
-	AssertEqual(500, accountHistory.EntriesHistory()[2].Amount())
-	AssertEqual(vos.DebitOperation, accountHistory.EntriesHistory()[2].Operation())
-
-	AssertEqual(1000, accountHistory.EntriesHistory()[3].Amount())
-	AssertEqual(vos.DebitOperation, accountHistory.EntriesHistory()[3].Operation())
+	AssertEqual(1000, accountHistory[3].Amount())
+	AssertEqual(vos.DebitOperation, accountHistory[3].Operation())
 
 	AssertEqual(nil, err)
 }

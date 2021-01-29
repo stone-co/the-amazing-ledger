@@ -47,9 +47,18 @@
         "operationId": "LedgerService_GetAccountHistory",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "A successful response.(streaming responses)",
             "schema": {
-              "$ref": "#/definitions/ledgerGetAccountHistoryResponse"
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/ledgerGetAccountHistoryResponse"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of ledgerGetAccountHistoryResponse"
             }
           },
           "default": {
@@ -227,26 +236,6 @@
       },
       "description": "Entry represents a new entry on the Ledger."
     },
-    "ledgerEntryHistory": {
-      "type": "object",
-      "properties": {
-        "operation": {
-          "$ref": "#/definitions/ledgerOperation",
-          "description": "Operation: debit or credit."
-        },
-        "amount": {
-          "type": "string",
-          "format": "int64",
-          "title": "amount in cents"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "title": "timestamp to created at"
-        }
-      },
-      "title": "EntryHistory to AccountHistory"
-    },
     "ledgerGetAccountBalanceResponse": {
       "type": "object",
       "properties": {
@@ -280,29 +269,22 @@
     "ledgerGetAccountHistoryResponse": {
       "type": "object",
       "properties": {
-        "accountPath": {
-          "type": "string",
-          "title": "The account name"
-        },
-        "totalCredit": {
+        "amount": {
           "type": "string",
           "format": "int64",
-          "title": "The account version"
+          "title": "amount in cents"
         },
-        "totalDebit": {
+        "operation": {
+          "$ref": "#/definitions/ledgerOperation",
+          "description": "Operation: debit or credit."
+        },
+        "createdAt": {
           "type": "string",
-          "format": "int64",
-          "title": "All debit accumulated"
-        },
-        "entriesHistory": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ledgerEntryHistory"
-          },
-          "title": "The Account balance"
+          "format": "date-time",
+          "title": "timestamp to created at"
         }
       },
-      "title": "GetAccountBalance Response"
+      "title": "EntryHistory to AccountHistory"
     },
     "ledgerGetAnalyticalDataResponse": {
       "type": "object",

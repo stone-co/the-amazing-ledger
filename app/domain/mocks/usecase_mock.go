@@ -16,7 +16,7 @@ type UseCase struct {
 	OnLoadObjectsIntoCache func(ctx context.Context) error
 	OnGetAccountBalance    func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
 	OnGetAnalyticalData    func(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error
-	OnGetAccountHistory    func(ctx context.Context, accountName vos.AccountName) (*vos.AccountHistory, error)
+	OnGetAccountHistory    func(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error
 }
 
 func (m UseCase) CreateTransaction(ctx context.Context, id uuid.UUID, entries []entities.Entry) error {
@@ -35,8 +35,8 @@ func (m UseCase) GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn
 	return m.OnGetAnalyticalData(ctx, path, fn)
 }
 
-func (m UseCase) GetAccountHistory(ctx context.Context, accountName vos.AccountName) (*vos.AccountHistory, error) {
-	return m.OnGetAccountHistory(ctx, accountName)
+func (m UseCase) GetAccountHistory(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error {
+	return m.OnGetAccountHistory(ctx, accountName, fn)
 }
 
 func SuccessfulTransactionMock() UseCase {

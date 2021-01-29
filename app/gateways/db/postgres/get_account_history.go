@@ -7,7 +7,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
-func (r *LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos.AccountName) (*vos.AccountHistory, error) {
+func (r *LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error {
 	query := `
 		SELECT
 			amount,
@@ -27,11 +27,10 @@ func (r *LedgerRepository) GetAccountHistory(ctx context.Context, accountName vo
 		accountName.ID,
 	)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer rows.Close()
 
-	var entriesHistory []vos.EntryHistory
 	for rows.Next() {
 		var amount int
 		var operation string
@@ -42,26 +41,23 @@ func (r *LedgerRepository) GetAccountHistory(ctx context.Context, accountName vo
 			&operation,
 			&createdAt,
 		); err != nil {
-			return nil, err
+			return err
 		}
 
-		operationType := vos.OperationTypeFromString(operation)
-		entryHistory, errH := vos.NewEntryHistory(operationType, amount, createdAt)
+		err = fn(vos.EntryHistory{
+			Amount:    amount,
+			Operation: vos.OperationTypeFromString(operation),
+			CreatedAt: createdAt,
+		})
 
-		if errH != nil {
-			return nil, errH
+		if err != nil {
+			return err
 		}
-
-		entriesHistory = append(entriesHistory, *entryHistory)
 	}
+
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return err
 	}
 
-	accountHistory, err := vos.NewAccountHistory(accountName, entriesHistory...)
-	if err != nil {
-		return nil, err
-	}
-
-	return &accountHistory, nil
+	return nil
 }
