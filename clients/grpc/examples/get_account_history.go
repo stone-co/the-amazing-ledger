@@ -47,10 +47,10 @@ func getAccountHistory(log *logrus.Entry, conn *ledger.Connection) {
 	AssertEqual(2, len(accountHistoryTwo))
 
 	AssertEqual(1000, accountHistoryTwo[0].Amount())
-	AssertEqual(vos.CreditOperation, accountHistoryTwo[0].Operation())
+	AssertEqual(vos.DebitOperation, accountHistoryTwo[0].Operation())
 
 	AssertEqual(500, accountHistoryTwo[1].Amount())
-	AssertEqual(vos.DebitOperation, accountHistoryTwo[1].Operation())
+	AssertEqual(vos.CreditOperation, accountHistoryTwo[1].Operation())
 }
 
 func getAccountHistoryWithForEntries(log *logrus.Entry, conn *ledger.Connection) {
@@ -93,7 +93,7 @@ func getAccountHistoryWithForEntries(log *logrus.Entry, conn *ledger.Connection)
 	accountHistoryOne, err := conn.GetAccountHistory(context.Background(), accountPathOne)
 	AssertEqual(nil, err)
 
-	AssertEqual(2, len(accountHistoryOne))
+	AssertEqual(4, len(accountHistoryOne))
 
 	AssertEqual(1000, accountHistoryOne[0].Amount())
 	AssertEqual(vos.CreditOperation, accountHistoryOne[0].Operation())
@@ -110,17 +110,17 @@ func getAccountHistoryWithForEntries(log *logrus.Entry, conn *ledger.Connection)
 	accountHistoryTwo, err := conn.GetAccountHistory(context.Background(), accountPathTwo)
 	AssertEqual(nil, err)
 
-	AssertEqual(2, len(accountHistoryTwo))
+	AssertEqual(4, len(accountHistoryTwo))
 
 	AssertEqual(1000, accountHistoryTwo[0].Amount())
-	AssertEqual(vos.CreditOperation, accountHistoryTwo[0].Operation())
+	AssertEqual(vos.DebitOperation, accountHistoryTwo[0].Operation())
 
 	AssertEqual(500, accountHistoryTwo[1].Amount())
-	AssertEqual(vos.CreditOperation, accountHistoryTwo[1].Operation())
+	AssertEqual(vos.DebitOperation, accountHistoryTwo[1].Operation())
 
 	AssertEqual(500, accountHistoryTwo[2].Amount())
-	AssertEqual(vos.DebitOperation, accountHistoryTwo[2].Operation())
+	AssertEqual(vos.CreditOperation, accountHistoryTwo[2].Operation())
 
 	AssertEqual(1000, accountHistoryTwo[3].Amount())
-	AssertEqual(vos.DebitOperation, accountHistoryTwo[3].Operation())
+	AssertEqual(vos.CreditOperation, accountHistoryTwo[3].Operation())
 }
