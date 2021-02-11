@@ -30,15 +30,27 @@ func getAccountHistory(log *logrus.Entry, conn *ledger.Connection) {
 	err = conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
-	accountHistory, err := conn.GetAccountHistory(context.Background(), accountPathOne)
-
-	AssertEqual(1000, accountHistory[0].Amount())
-	AssertEqual(vos.CreditOperation, accountHistory[0].Operation())
-
-	AssertEqual(500, accountHistory[1].Amount())
-	AssertEqual(vos.DebitOperation, accountHistory[1].Operation())
-
+	accountHistoryOne, err := conn.GetAccountHistory(context.Background(), accountPathOne)
 	AssertEqual(nil, err)
+
+	AssertEqual(2, len(accountHistoryOne))
+
+	AssertEqual(1000, accountHistoryOne[0].Amount())
+	AssertEqual(vos.CreditOperation, accountHistoryOne[0].Operation())
+
+	AssertEqual(500, accountHistoryOne[1].Amount())
+	AssertEqual(vos.DebitOperation, accountHistoryOne[1].Operation())
+
+	accountHistoryTwo, err := conn.GetAccountHistory(context.Background(), accountPathTwo)
+	AssertEqual(nil, err)
+
+	AssertEqual(2, len(accountHistoryTwo))
+
+	AssertEqual(1000, accountHistoryTwo[0].Amount())
+	AssertEqual(vos.CreditOperation, accountHistoryTwo[0].Operation())
+
+	AssertEqual(500, accountHistoryTwo[1].Amount())
+	AssertEqual(vos.DebitOperation, accountHistoryTwo[1].Operation())
 }
 
 func getAccountHistoryWithForEntries(log *logrus.Entry, conn *ledger.Connection) {
@@ -78,19 +90,37 @@ func getAccountHistoryWithForEntries(log *logrus.Entry, conn *ledger.Connection)
 	err = conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
-	accountHistory, err := conn.GetAccountHistory(context.Background(), accountPathOne)
-
-	AssertEqual(1000, accountHistory[0].Amount())
-	AssertEqual(vos.CreditOperation, accountHistory[0].Operation())
-
-	AssertEqual(500, accountHistory[1].Amount())
-	AssertEqual(vos.CreditOperation, accountHistory[1].Operation())
-
-	AssertEqual(500, accountHistory[2].Amount())
-	AssertEqual(vos.DebitOperation, accountHistory[2].Operation())
-
-	AssertEqual(1000, accountHistory[3].Amount())
-	AssertEqual(vos.DebitOperation, accountHistory[3].Operation())
-
+	accountHistoryOne, err := conn.GetAccountHistory(context.Background(), accountPathOne)
 	AssertEqual(nil, err)
+
+	AssertEqual(2, len(accountHistoryOne))
+
+	AssertEqual(1000, accountHistoryOne[0].Amount())
+	AssertEqual(vos.CreditOperation, accountHistoryOne[0].Operation())
+
+	AssertEqual(500, accountHistoryOne[1].Amount())
+	AssertEqual(vos.CreditOperation, accountHistoryOne[1].Operation())
+
+	AssertEqual(500, accountHistoryOne[2].Amount())
+	AssertEqual(vos.DebitOperation, accountHistoryOne[2].Operation())
+
+	AssertEqual(1000, accountHistoryOne[3].Amount())
+	AssertEqual(vos.DebitOperation, accountHistoryOne[3].Operation())
+
+	accountHistoryTwo, err := conn.GetAccountHistory(context.Background(), accountPathTwo)
+	AssertEqual(nil, err)
+
+	AssertEqual(2, len(accountHistoryTwo))
+
+	AssertEqual(1000, accountHistoryTwo[0].Amount())
+	AssertEqual(vos.CreditOperation, accountHistoryTwo[0].Operation())
+
+	AssertEqual(500, accountHistoryTwo[1].Amount())
+	AssertEqual(vos.CreditOperation, accountHistoryTwo[1].Operation())
+
+	AssertEqual(500, accountHistoryTwo[2].Amount())
+	AssertEqual(vos.DebitOperation, accountHistoryTwo[2].Operation())
+
+	AssertEqual(1000, accountHistoryTwo[3].Amount())
+	AssertEqual(vos.DebitOperation, accountHistoryTwo[3].Operation())
 }
