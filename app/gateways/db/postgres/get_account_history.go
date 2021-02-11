@@ -5,9 +5,11 @@ import (
 	"time"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
 func (r *LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error {
+	operation := "Repository.GetAccountHistory"
 	query := `
 		SELECT
 			amount,
@@ -17,6 +19,8 @@ func (r *LedgerRepository) GetAccountHistory(ctx context.Context, accountName vo
 		WHERE account_class = $1 AND account_group = $2 AND account_subgroup = $3 AND account_id = $4
 		ORDER BY version;
 	`
+
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
 
 	rows, err := r.db.Query(
 		context.Background(),

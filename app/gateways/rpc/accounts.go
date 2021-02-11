@@ -48,6 +48,8 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 }
 
 func (a *API) GetAccountHistory(request *proto.GetAccountHistoryRequest, stream proto.LedgerService_GetAccountHistoryServer) error {
+	defer newrelic.FromContext(stream.Context()).StartSegment("GetAccountHistory").End()
+
 	log := a.log.WithFields(logrus.Fields{
 		"handler": "GetAccountHistory",
 	})
