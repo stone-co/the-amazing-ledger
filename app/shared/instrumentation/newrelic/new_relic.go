@@ -11,7 +11,7 @@ import (
 func NewRelicApp(appName, licenseKey string, log *logrus.Entry) (*newrelic.Application, error) {
 	if appName == "" || licenseKey == "" {
 		log.Warnf("empty app name or license key for new relic application: falling back to empty tracer")
-		return &newrelic.Application{}, nil
+		return newrelic.NewApplication(newrelic.ConfigEnabled(false))
 	}
 
 	log.WithField("appName", appName).Info("starting new relic tracing")
