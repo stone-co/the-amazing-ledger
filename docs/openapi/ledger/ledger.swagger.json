@@ -42,6 +42,46 @@
         ]
       }
     },
+    "/api/v1/accounts/{accountPath}/history": {
+      "get": {
+        "operationId": "LedgerService_GetAccountHistory",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/ledgerGetAccountHistoryResponse"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of ledgerGetAccountHistoryResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountPath",
+            "description": "The account name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
     "/api/v1/analytical-data/{accountPath}": {
       "get": {
         "operationId": "LedgerService_GetAnalyticalData",
@@ -225,6 +265,26 @@
         }
       },
       "title": "GetAccountBalance Response"
+    },
+    "ledgerGetAccountHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "format": "int64",
+          "title": "amount in cents"
+        },
+        "operation": {
+          "$ref": "#/definitions/ledgerOperation",
+          "description": "Operation: debit or credit."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "timestamp to created at"
+        }
+      },
+      "title": "EntryHistory to AccountHistory"
     },
     "ledgerGetAnalyticalDataResponse": {
       "type": "object",

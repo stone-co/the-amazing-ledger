@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 
+	"github.com/golang/protobuf/ptypes"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"github.com/stone-co/the-amazing-ledger/app"
@@ -10,6 +11,7 @@ import (
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBalanceRequest) (*proto.GetAccountBalanceResponse, error) {
@@ -43,4 +45,45 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 		TotalDebit:     int64(accountBalance.TotalDebit),
 		Balance:        int64(accountBalance.Balance()),
 	}, nil
+}
+
+func (a *API) GetAccountHistory(request *proto.GetAccountHistoryRequest, stream proto.LedgerService_GetAccountHistoryServer) error {
+	defer newrelic.FromContext(stream.Context()).StartSegment("GetAccountHistory").End()
+
+	log := a.log.WithFields(logrus.Fields{
+		"handler": "GetAccountHistory",
+	})
+
+	accountName, err := vos.NewAccountName(request.AccountPath)
+	if err != nil {
+		log.WithError(err).Error("can't create account name")
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	fn := func(et vos.EntryHistory) error {
+		var timestamp *timestamppb.Timestamp
+		timestamp, err = ptypes.TimestampProto(et.CreatedAt)
+		if err != nil {
+			log.WithError(err).Error("can't convert time.Time to proto timestamp")
+			return err
+		}
+
+		if err = stream.Send(&proto.GetAccountHistoryResponse{
+			Amount:    int64(et.Amount),
+			Operation: proto.Operation(et.Operation),
+			CreatedAt: timestamp,
+		}); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	err = a.UseCase.GetAccountHistory(stream.Context(), *accountName, fn)
+	if err != nil {
+		log.WithError(err).Error("can't get account")
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	return nil
 }

@@ -15,6 +15,7 @@ type Repository struct {
 	OnLoadObjectsIntoCache func(ctx context.Context, cachedAccounts *entities.CachedAccounts) (vos.Version, error)
 	OnGetAccountBalance    func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
 	OnGetAnalyticalData    func(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error
+	OnGetAccountHistory    func(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error
 }
 
 func (s Repository) CreateTransaction(ctx context.Context, transaction *entities.Transaction) error {
@@ -31,4 +32,8 @@ func (s Repository) GetAccountBalance(ctx context.Context, accountName vos.Accou
 
 func (s Repository) GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error {
 	return s.OnGetAnalyticalData(ctx, path, fn)
+}
+
+func (s Repository) GetAccountHistory(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error {
+	return s.OnGetAccountHistory(ctx, accountName, fn)
 }

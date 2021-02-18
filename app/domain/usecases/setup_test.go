@@ -61,3 +61,20 @@ func newFakeGetAnalyticalData(entries []vos.Statement, result error) *LedgerUseC
 
 	return NewLedgerUseCase(log, mockRepository)
 }
+
+func newFakeGetAccountHistory(entries []vos.EntryHistory, result error) *LedgerUseCase {
+	log := logrus.New()
+
+	mockRepository := &mocks.Repository{
+		OnGetAccountHistory: func(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error {
+			for _, entry := range entries {
+				if err := fn(entry); err != nil {
+					return err
+				}
+			}
+			return result
+		},
+	}
+
+	return NewLedgerUseCase(log, mockRepository)
+}
