@@ -19,12 +19,12 @@ const (
 	idLevel
 )
 
-// AccountName must have 4 levels in her structure: "class:group:subgroup:id", where:
+// AccountName must have 4 levels in its structure: "class:group:subgroup:id", where:
 //   - class could be liability, assets, income, expense or equity;
 //   - group, subgroup and id are "free text";
 //   - ":" must be used as a separator.
 //
-// AccountName can have a fifth level in her structure: "class:group:subgroup:id/suffix", where:
+// AccountName can have a fifth level in its structure: "class:group:subgroup:id/suffix", where:
 //   - suffix is "free text";
 //   - it is considered a suffix everything after the id
 //   - "/" must be used as a separator
