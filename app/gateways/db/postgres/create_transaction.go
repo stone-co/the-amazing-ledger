@@ -22,8 +22,9 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 	  			operation,
 				amount,
 				version,
-				transaction_id
-			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+				transaction_id,
+				account_suffix
+			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
@@ -51,6 +52,7 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 			entry.Amount,
 			entry.Version,
 			transaction.ID,
+			entry.Account.Suffix,
 		)
 	}
 

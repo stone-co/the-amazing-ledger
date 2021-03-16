@@ -11,9 +11,9 @@ import (
 func (r *LedgerRepository) LoadObjectsIntoCache(ctx context.Context, cachedAccounts *entities.CachedAccounts) (vos.Version, error) {
 	operation := "Repository.LoadObjectsIntoCache"
 	query := `
-		SELECT account_class, account_group, account_subgroup, account_id, MAX(version) As version
+		SELECT account_class, account_group, account_subgroup, account_id, account_suffix, MAX(version) As version
 		FROM entries
-		GROUP BY account_class, account_group, account_subgroup, account_id
+		GROUP BY account_class, account_group, account_subgroup, account_id, account_suffix
 		ORDER BY version desc
 	`
 
@@ -32,6 +32,7 @@ func (r *LedgerRepository) LoadObjectsIntoCache(ctx context.Context, cachedAccou
 		var accGroup string
 		var accSubgroup string
 		var accID string
+		var accSuffix string
 		var version vos.Version
 
 		if err := rows.Scan(
@@ -45,7 +46,7 @@ func (r *LedgerRepository) LoadObjectsIntoCache(ctx context.Context, cachedAccou
 		}
 
 		// TODO: check for duplicated?
-		account := vos.FormatAccount(accClass, accGroup, accSubgroup, accID)
+		account := vos.FormatAccount(accClass, accGroup, accSubgroup, accID, accSuffix)
 		cachedAccounts.Store(account, version)
 
 		if version > maxVersion {

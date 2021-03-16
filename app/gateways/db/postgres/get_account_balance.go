@@ -15,6 +15,7 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vo
 			account_group,
 			account_subgroup,
 			account_id,
+			account_suffix,
 			MAX(version) as current_version,
 			SUM(CASE operation
 				WHEN $1 THEN amount
@@ -25,8 +26,8 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vo
 				ELSE 0
 				END) AS total_debit
 		FROM entries
-		WHERE account_class = $3 AND account_group = $4 AND account_subgroup = $5 AND account_id = $6
-		GROUP BY account_class, account_group, account_subgroup, account_id
+		WHERE account_class = $3 AND account_group = $4 AND account_subgroup = $5 AND account_id = $6 AND account_suffix = $7
+		GROUP BY account_class, account_group, account_subgroup, account_id, account_suffix
 	`
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
@@ -43,6 +44,7 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vo
 		accountName.Group,
 		accountName.Subgroup,
 		accountName.ID,
+		accountName.Suffix,
 	)
 	var currentVersion uint64
 	var totalCredit int

@@ -16,7 +16,7 @@ func (r *LedgerRepository) GetAccountHistory(ctx context.Context, accountName vo
 			operation,
 			created_at
 		FROM entries
-		WHERE account_class = $1 AND account_group = $2 AND account_subgroup = $3 AND account_id = $4
+		WHERE account_class = $1 AND account_group = $2 AND account_subgroup = $3 AND account_id = $4 AND account_suffix = $5
 		ORDER BY version;
 	`
 
@@ -29,6 +29,7 @@ func (r *LedgerRepository) GetAccountHistory(ctx context.Context, accountName vo
 		accountName.Group,
 		accountName.Subgroup,
 		accountName.ID,
+		accountName.Suffix,
 	)
 	if err != nil {
 		return err
