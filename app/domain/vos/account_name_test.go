@@ -131,6 +131,7 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 		expGroup    string
 		expSubgroup string
 		expID       string
+		expSuffix   string
 	}{
 		{
 			test:        "Successfully get data from a valid account",
@@ -139,6 +140,7 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			expGroup:    "bacen",
 			expSubgroup: "conta_liquidacao",
 			expID:       "tesouraria",
+			expSuffix:   "",
 		},
 		{
 			test:        "Successfully get data from a valid account",
@@ -147,6 +149,7 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			expGroup:    "clients",
 			expSubgroup: "available",
 			expID:       newUUID,
+			expSuffix:   "",
 		},
 		{
 			test:        "Successfully get data from a valid account",
@@ -154,7 +157,8 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			expClass:    "liability",
 			expGroup:    "clients",
 			expSubgroup: "available",
-			expID:       newUUID + "/mydetail",
+			expID:       newUUID,
+			expSuffix:   "mydetail",
 		},
 		{
 			test:        "Successfully get data from a valid account",
@@ -162,7 +166,8 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			expClass:    "liability",
 			expGroup:    "clients",
 			expSubgroup: "available",
-			expID:       newUUID + "/mydetail1/mydetail2/mydetail3",
+			expID:       newUUID,
+			expSuffix:   "mydetail1/mydetail2/mydetail3",
 		},
 	}
 
@@ -175,6 +180,7 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			assert.Equal(t, tt.expGroup, got.Group)
 			assert.Equal(t, tt.expSubgroup, got.Subgroup)
 			assert.Equal(t, tt.expID, got.ID)
+			assert.Equal(t, tt.expSuffix, got.Suffix)
 		})
 	}
 }
