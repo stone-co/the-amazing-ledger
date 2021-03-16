@@ -61,8 +61,9 @@ func NewAccountName(name string) (*AccountName, error) {
 		return nil, app.ErrInvalidAccountStructure
 	}
 
-	suffix := ""
 	identifiers := strings.SplitN(levels[idLevel], AccountSuffixSep, 2)
+	id := identifiers[0]
+	suffix := ""
 	if len(identifiers) > 1 {
 		suffix = identifiers[1]
 	}
@@ -71,7 +72,7 @@ func NewAccountName(name string) (*AccountName, error) {
 		Class:    accountClass,
 		Group:    levels[groupLevel],
 		Subgroup: levels[subgroupLevel],
-		ID:       identifiers[0],
+		ID:       id,
 		Suffix:   suffix,
 	}, nil
 }
