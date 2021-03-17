@@ -108,6 +108,13 @@ func TestNewAccountName(t *testing.T) {
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
+		{
+			name: "Error when sending empty suffix",
+			args: args{
+				name: "xpto:bacen:conta_liquidacao:tesouraria/",
+			},
+			err: app.ErrInvalidAccountStructure,
+		},
 	}
 
 	for _, tt := range tests {
