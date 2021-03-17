@@ -61,11 +61,9 @@ func NewAccountName(name string) (*AccountName, error) {
 		return nil, app.ErrInvalidAccountStructure
 	}
 
-	identifiers := strings.SplitN(levels[idLevel], AccountSuffixSep, 2)
-	id := identifiers[0]
-	suffix := ""
-	if len(identifiers) > 1 {
-		suffix = identifiers[1]
+	id, suffix, err := ExtractIdAndSuffix(levels[idLevel])
+	if err != nil {
+		return nil, err
 	}
 
 	return &AccountName{
@@ -87,4 +85,20 @@ func FormatAccount(class, group, subgroup, id, suffix string) string {
 		name += AccountSuffixSep + suffix
 	}
 	return name
+}
+
+func ExtractIdAndSuffix(identifier string) (string, string, error) {
+	identifiers := strings.SplitN(identifier, AccountSuffixSep, 2)
+	id := identifiers[0]
+
+	if len(identifiers) <= 1 {
+		return id, "", nil
+	}
+
+	suffix := identifiers[1]
+	if suffix == "" {
+		return "", "", app.ErrInvalidAccountStructure
+	}
+
+	return id, suffix, nil
 }
