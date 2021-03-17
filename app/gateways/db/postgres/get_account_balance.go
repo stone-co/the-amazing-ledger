@@ -55,6 +55,7 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vo
 		nil,
 		nil,
 		nil,
+		nil,
 		&currentVersion,
 		&totalCredit,
 		&totalDebit,

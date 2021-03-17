@@ -40,6 +40,7 @@ func (r *LedgerRepository) LoadObjectsIntoCache(ctx context.Context, cachedAccou
 			&accGroup,
 			&accSubgroup,
 			&accID,
+			&accSuffix,
 			&version,
 		); err != nil {
 			return 0, err
