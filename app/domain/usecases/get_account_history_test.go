@@ -17,7 +17,7 @@ func TestLedgerUseCase_GetAccountHistory(t *testing.T) {
 	}
 
 	t.Run("The account history can be empty", func(t *testing.T) {
-		accountName, err := vos.NewAccountName("liability:stone:clients:user-1")
+		accountName, err := vos.NewAccountName("liability:stone:clients:user-1", true)
 		assert.Nil(t, err)
 
 		entries := []vos.EntryHistory{}
@@ -32,7 +32,7 @@ func TestLedgerUseCase_GetAccountHistory(t *testing.T) {
 	})
 
 	t.Run("The account history should don't modify any Entry History", func(t *testing.T) {
-		accountName, err := vos.NewAccountName("liability:stone:clients:user-2")
+		accountName, err := vos.NewAccountName("liability:stone:clients:user-2", true)
 		assert.Nil(t, err)
 
 		entries := make([]vos.EntryHistory, 4)

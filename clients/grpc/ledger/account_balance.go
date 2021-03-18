@@ -52,7 +52,7 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountPath string) 
 		return nil, fmt.Errorf("%w: %s", ErrUndefined, err)
 	}
 
-	accountName, err := vos.NewAccountName(response.AccountPath)
+	accountName, err := vos.NewAccountName(response.AccountPath, true)
 	if err != nil {
 		return nil, err
 	}

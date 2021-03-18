@@ -21,7 +21,7 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 		"handler": "GetAccountBalance",
 	})
 
-	accountName, err := vos.NewAccountName(request.AccountPath)
+	accountName, err := vos.NewAccountName(request.AccountPath, true)
 	if err != nil {
 		log.WithError(err).Error("can't create account name")
 		return nil, status.Error(codes.InvalidArgument, err.Error())
@@ -54,7 +54,7 @@ func (a *API) GetAccountHistory(request *proto.GetAccountHistoryRequest, stream 
 		"handler": "GetAccountHistory",
 	})
 
-	accountName, err := vos.NewAccountName(request.AccountPath)
+	accountName, err := vos.NewAccountName(request.AccountPath, true)
 	if err != nil {
 		log.WithError(err).Error("can't create account name")
 		return status.Error(codes.InvalidArgument, err.Error())
