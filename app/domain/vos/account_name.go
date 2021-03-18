@@ -42,7 +42,7 @@ type AccountName struct {
 	Suffix   string
 }
 
-func NewAccountName(name string) (*AccountName, error) {
+func NewAccountName(name string, wildcardEnabled bool) (*AccountName, error) {
 	name = strings.ToLower(name)
 
 	levels := strings.Split(name, AccountStructureSep)
@@ -61,7 +61,7 @@ func NewAccountName(name string) (*AccountName, error) {
 		return nil, app.ErrInvalidAccountStructure
 	}
 
-	id, suffix, err := ExtractIdAndSuffix(levels[idLevel])
+	id, suffix, err := ExtractIdAndSuffix(levels[idLevel], wildcardEnabled)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func FormatAccount(class, group, subgroup, id, suffix string) string {
 	return name
 }
 
-func ExtractIdAndSuffix(identifier string) (string, string, error) {
+func ExtractIdAndSuffix(identifier string, wildcardEnabled bool) (string, string, error) {
 	identifiers := strings.SplitN(identifier, AccountSuffixSep, 2)
 	id := identifiers[0]
 
@@ -97,6 +97,10 @@ func ExtractIdAndSuffix(identifier string) (string, string, error) {
 
 	suffix := identifiers[1]
 	if suffix == "" {
+		return "", "", app.ErrInvalidAccountStructure
+	}
+
+	if !wildcardEnabled && suffix == "*" {
 		return "", "", app.ErrInvalidAccountStructure
 	}
 
