@@ -30,6 +30,10 @@ func (s Repository) GetAccountBalance(ctx context.Context, accountName vos.Accou
 	return s.OnGetAccountBalance(ctx, accountName)
 }
 
+func (s Repository) GetAccountBalanceAggregated(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
+	return s.OnGetAccountBalance(ctx, accountName)
+}
+
 func (s Repository) GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error {
 	return s.OnGetAnalyticalData(ctx, path, fn)
 }

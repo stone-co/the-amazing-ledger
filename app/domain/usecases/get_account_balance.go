@@ -9,8 +9,15 @@ import (
 )
 
 func (l *LedgerUseCase) GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
+	var accountBalance *vos.AccountBalance
+	var err error
 
-	accountBalance, err := l.repository.GetAccountBalance(ctx, accountName)
+	if accountName.Suffix == "*" {
+		accountBalance, err = l.repository.GetAccountBalanceAggregated(ctx, accountName)
+	} else {
+		accountBalance, err = l.repository.GetAccountBalance(ctx, accountName)
+	}
+
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, app.ErrAccountNotFound
