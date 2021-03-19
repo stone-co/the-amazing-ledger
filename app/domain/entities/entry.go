@@ -27,7 +27,7 @@ func NewEntry(id uuid.UUID, operation vos.OperationType, accountID string, versi
 		return nil, app.ErrInvalidAmount
 	}
 
-	acc, err := vos.NewAccountName(accountID, false)
+	acc, err := vos.NewAccountName(accountID)
 	if err != nil {
 		return nil, err
 	}

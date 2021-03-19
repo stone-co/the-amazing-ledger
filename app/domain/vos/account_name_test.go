@@ -10,8 +10,7 @@ import (
 
 func TestNewAccountName(t *testing.T) {
 	type args struct {
-		name            string
-		wildcardEnabled bool
+		name string
 	}
 	tests := []struct {
 		name string
@@ -21,128 +20,98 @@ func TestNewAccountName(t *testing.T) {
 		{
 			name: "Successfully creates an account name with minimum inputs",
 			args: args{
-				name:            "assets:bacen:conta_liquidacao:tesouraria",
-				wildcardEnabled: true,
+				name: "assets:bacen:conta_liquidacao:tesouraria",
 			},
 			err: nil,
 		},
 		{
 			name: "Successfully creates an account name with 4 levels",
 			args: args{
-				name:            "liability:clients:available:" + uuid.New().String(),
-				wildcardEnabled: true,
+				name: "liability:clients:available:" + uuid.New().String(),
 			},
 			err: nil,
 		},
 		{
 			name: "Successfully creates an account name with 4 levels and one detail",
 			args: args{
-				name:            "liability:clients:available:" + uuid.New().String() + "/mydetail",
-				wildcardEnabled: true,
+				name: "liability:clients:available:" + uuid.New().String() + "/mydetail",
 			},
 			err: nil,
 		},
 		{
 			name: "Successfully creates an account name with 4 levels and a lot of details",
 			args: args{
-				name:            "liability:clients:available:" + uuid.New().String() + "/mydetail1/mydetail2/mydetail3",
-				wildcardEnabled: true,
-			},
-			err: nil,
-		},
-		{
-			name: "Successfully creates an account with wildcard suffix",
-			args: args{
-				name:            "liability:clients:available:" + uuid.New().String() + "/*",
-				wildcardEnabled: true,
+				name: "liability:clients:available:" + uuid.New().String() + "/mydetail1/mydetail2/mydetail3",
 			},
 			err: nil,
 		},
 		{
 			name: "Error when account has only 1 level",
 			args: args{
-				name:            "assets",
-				wildcardEnabled: true,
+				name: "assets",
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account has only 2 levels",
 			args: args{
-				name:            "assets:bacen",
-				wildcardEnabled: true,
+				name: "assets:bacen",
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account has only 3 levels",
 			args: args{
-				name:            "assets:bacen:conta_liquidacao",
-				wildcardEnabled: true,
+				name: "assets:bacen:conta_liquidacao",
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account has more than 4 levels",
 			args: args{
-				name:            "liability:clients:available:" + uuid.New().String() + ":invalid",
-				wildcardEnabled: true,
+				name: "liability:clients:available:" + uuid.New().String() + ":invalid",
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account omits level 1",
 			args: args{
-				name:            ":bacen:conta_liquidacao:tesouraria",
-				wildcardEnabled: true,
+				name: ":bacen:conta_liquidacao:tesouraria",
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account omits level 2",
 			args: args{
-				name:            "assets::conta_liquidacao:tesouraria",
-				wildcardEnabled: true,
+				name: "assets::conta_liquidacao:tesouraria",
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account omits level 3",
 			args: args{
-				name:            "assets:bacen::tesouraria",
-				wildcardEnabled: true,
+				name: "assets:bacen::tesouraria",
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account omits level 4",
 			args: args{
-				name:            "assets:bacen:conta_liquidacao:",
-				wildcardEnabled: true,
+				name: "assets:bacen:conta_liquidacao:",
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when level 1 is not one of the predefined values (assets, liability, ...)",
 			args: args{
-				name:            "xpto:bacen:conta_liquidacao:tesouraria",
-				wildcardEnabled: true,
+				name: "xpto:bacen:conta_liquidacao:tesouraria",
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when sending empty suffix",
 			args: args{
-				name:            "xpto:bacen:conta_liquidacao:tesouraria/",
-				wildcardEnabled: true,
-			},
-			err: app.ErrInvalidAccountStructure,
-		},
-		{
-			name: "Error when sending * wildcard with it disabled",
-			args: args{
-				name:            "xpto:bacen:conta_liquidacao:tesouraria/*",
-				wildcardEnabled: false,
+				name: "xpto:bacen:conta_liquidacao:tesouraria/",
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
@@ -150,7 +119,7 @@ func TestNewAccountName(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewAccountName(tt.args.name, tt.args.wildcardEnabled)
+			got, err := NewAccountName(tt.args.name)
 			assert.Equal(t, tt.err, err)
 			if err == nil {
 				assert.Equal(t, tt.args.name, got.Name())
@@ -207,20 +176,11 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			expID:       newUUID,
 			expSuffix:   "mydetail1/mydetail2/mydetail3",
 		},
-		{
-			test:        "Successfully get data from a valid account",
-			account:     "liability:clients:available:" + newUUID + "/*",
-			expClass:    "liability",
-			expGroup:    "clients",
-			expSubgroup: "available",
-			expID:       newUUID,
-			expSuffix:   "*",
-		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.test, func(t *testing.T) {
-			got, err := NewAccountName(tt.account, true)
+			got, err := NewAccountName(tt.account)
 			assert.Equal(t, nil, err)
 			assert.Equal(t, tt.account, got.Name())
 			assert.Equal(t, tt.expClass, got.Class.String())
