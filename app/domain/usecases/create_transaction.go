@@ -18,6 +18,10 @@ func (l *LedgerUseCase) CreateTransaction(ctx context.Context, id uuid.UUID, ent
 	accounts := make([]*entities.CachedAccountInfo, 0, len(entries))
 
 	for _, entry := range entries {
+		if entry.Account.Suffix == "*" {
+			return app.ErrInvalidAccountStructure
+		}
+
 		account := l.cachedAccounts.LoadOrStore(entry.Account.Name())
 		accounts = append(accounts, account)
 
