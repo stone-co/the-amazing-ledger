@@ -89,13 +89,13 @@ func FormatAccount(class, group, subgroup, id, suffix string) string {
 
 func ExtractIdAndSuffix(identifier string) (string, string, error) {
 	identifiers := strings.SplitN(identifier, AccountSuffixSep, 2)
-	id := identifiers[0]
+	id := strings.TrimSpace(identifiers[0])
 
 	if len(identifiers) <= 1 {
 		return id, "", nil
 	}
 
-	suffix := identifiers[1]
+	suffix := strings.TrimSpace(identifiers[1])
 	if suffix == "" {
 		return "", "", app.ErrInvalidAccountStructure
 	}
