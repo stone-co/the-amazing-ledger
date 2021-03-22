@@ -41,19 +41,4 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, expectedVersion, a.CurrentVersion)
 	})
-
-	t.Run("The max version for account path must be version in account balance", func(t *testing.T) {
-		expectedVersion := vos.Version(5)
-
-		accountName, err := vos.NewAccountName("liability:stone:clients:user-1")
-		assert.Nil(t, err)
-
-		accountBalance := vos.NewAccountBalance(*accountName, expectedVersion, 0, 0)
-
-		useCase := newFakeGetAccountBalance(accountBalance, nil)
-		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.AccountName)
-
-		assert.Nil(t, err)
-		assert.Equal(t, expectedVersion, a.CurrentVersion)
-	})
 }
