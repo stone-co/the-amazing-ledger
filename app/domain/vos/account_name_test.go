@@ -191,3 +191,42 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 		})
 	}
 }
+
+func TestExtractIdAndSuffix(t *testing.T) {
+	newUUID := uuid.New().String()
+
+	tests := []struct {
+		test        string
+		identifiers string
+		expID       string
+		expSuffix   string
+	}{
+		{
+			test:        "Successfully get data from a valid account",
+			identifiers: newUUID,
+			expID:       newUUID,
+			expSuffix:   "",
+		},
+		{
+			test:        "Successfully get data from a valid account",
+			identifiers: newUUID + "/suffix",
+			expID:       newUUID,
+			expSuffix:   "suffix",
+		},
+		{
+			test:        "Successfully get data from a valid account",
+			identifiers: " " + newUUID + " / suffix ",
+			expID:       newUUID,
+			expSuffix:   "suffix",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.test, func(t *testing.T) {
+			id, suffix, err := ExtractIdAndSuffix(tt.identifiers)
+			assert.Equal(t, nil, err)
+			assert.Equal(t, tt.expID, id)
+			assert.Equal(t, tt.expSuffix, suffix)
+		})
+	}
+}
