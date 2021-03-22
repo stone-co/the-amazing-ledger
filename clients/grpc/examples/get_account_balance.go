@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -70,4 +71,58 @@ func getAccountBalanceNotFoundAccount(log *logrus.Entry, conn *ledger.Connection
 
 	AssertNil(accountBalance)
 	AssertTrue(ledger.ErrAccountNotFound.Is(err))
+}
+
+func getAccountBalanceWithWildcard(log *logrus.Entry, conn *ledger.Connection) {
+	log.Println("starting getAccountBalanceWithWildcard")
+	defer log.Println("finishing getAccountBalanceWithWildcard")
+
+	transactionOne := 1100
+	transactionTwo := 900
+	expectedBalance := transactionOne + transactionTwo
+	newUUID := uuid.New().String()
+	accountPathOne := "liability:stone:clients:" + newUUID + "/test_1"
+	accountPathTwo := "liability:stone:clients:" + newUUID + "/test_2"
+	accountPathThree := "liability:stone:clients:" + uuid.New().String()
+
+	t := conn.NewTransaction(uuid.New())
+	t.AddEntry(uuid.New(), accountPathOne, vos.NewAccountVersion, vos.CreditOperation, transactionOne)
+	t.AddEntry(uuid.New(), accountPathThree, vos.NewAccountVersion, vos.DebitOperation, transactionOne)
+
+	err := conn.SaveTransaction(context.Background(), t)
+	AssertEqual(nil, err)
+
+	accountThree, err := conn.GetAccountBalance(context.Background(), accountPathThree)
+	AssertEqual(nil, err)
+
+	t = conn.NewTransaction(uuid.New())
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NewAccountVersion, vos.CreditOperation, transactionTwo)
+	t.AddEntry(uuid.New(), accountPathThree, accountThree.CurrentVersion(), vos.DebitOperation, transactionTwo)
+
+	err = conn.SaveTransaction(context.Background(), t)
+	AssertEqual(nil, err)
+
+	// Check wildcard balance is ok
+	wildcardPath := strings.Replace(accountPathOne, "/test_1", "/*", 1)
+	wildcard, err := conn.GetAccountBalance(context.Background(), wildcardPath)
+	AssertEqual(nil, err)
+
+	AssertEqual(wildcardPath, wildcard.AccountName().Name())
+	AssertEqual(expectedBalance, wildcard.Balance())
+	AssertEqual(nil, err)
+
+	// Check separate account balances are ok
+	accountOne, err := conn.GetAccountBalance(context.Background(), accountPathOne)
+	AssertEqual(nil, err)
+
+	AssertEqual(accountPathOne, accountOne.AccountName().Name())
+	AssertEqual(transactionOne, accountOne.Balance())
+	AssertEqual(nil, err)
+
+	accountTwo, err := conn.GetAccountBalance(context.Background(), accountPathTwo)
+	AssertEqual(nil, err)
+
+	AssertEqual(accountPathTwo, accountTwo.AccountName().Name())
+	AssertEqual(transactionTwo, accountTwo.Balance())
+	AssertEqual(nil, err)
 }

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+
 	"github.com/jackc/pgx/v4"
 	"github.com/stone-co/the-amazing-ledger/app"
 
@@ -110,7 +111,6 @@ func (r *LedgerRepository) GetAccountBalanceAggregated(ctx context.Context, acco
 		accountName.Group,
 		accountName.Subgroup,
 		accountName.ID,
-		accountName.Suffix,
 	)
 	var currentVersion uint64
 	var totalCredit int
