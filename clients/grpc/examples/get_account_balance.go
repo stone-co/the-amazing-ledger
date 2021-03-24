@@ -79,25 +79,38 @@ func getAccountBalanceWithWildcard(log *logrus.Entry, conn *ledger.Connection) {
 
 	transactionOne := 1100
 	transactionTwo := 900
-	expectedBalance := transactionOne + transactionTwo
+	transactionThree := 1000
+	expectedBalance := transactionOne + transactionTwo + transactionThree
+
 	newUUID := uuid.New().String()
 	accountPathOne := "liability:stone:clients:" + newUUID + "/test_1"
 	accountPathTwo := "liability:stone:clients:" + newUUID + "/test_2"
-	accountPathThree := "liability:stone:clients:" + uuid.New().String()
+	accountPathThree := "liability:stone:clients:" + newUUID
+	accountPathFour := "liability:stone:clients:" + uuid.New().String()
 
 	t := conn.NewTransaction(uuid.New())
 	t.AddEntry(uuid.New(), accountPathOne, vos.NewAccountVersion, vos.CreditOperation, transactionOne)
-	t.AddEntry(uuid.New(), accountPathThree, vos.NewAccountVersion, vos.DebitOperation, transactionOne)
+	t.AddEntry(uuid.New(), accountPathFour, vos.NewAccountVersion, vos.DebitOperation, transactionOne)
 
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
-	accountThree, err := conn.GetAccountBalance(context.Background(), accountPathThree)
+	accountFour, err := conn.GetAccountBalance(context.Background(), accountPathFour)
 	AssertEqual(nil, err)
 
 	t = conn.NewTransaction(uuid.New())
 	t.AddEntry(uuid.New(), accountPathTwo, vos.NewAccountVersion, vos.CreditOperation, transactionTwo)
-	t.AddEntry(uuid.New(), accountPathThree, accountThree.CurrentVersion(), vos.DebitOperation, transactionTwo)
+	t.AddEntry(uuid.New(), accountPathFour, accountFour.CurrentVersion(), vos.DebitOperation, transactionTwo)
+
+	err = conn.SaveTransaction(context.Background(), t)
+	AssertEqual(nil, err)
+
+	accountFour, err = conn.GetAccountBalance(context.Background(), accountPathFour)
+	AssertEqual(nil, err)
+
+	t = conn.NewTransaction(uuid.New())
+	t.AddEntry(uuid.New(), accountPathThree, vos.NewAccountVersion, vos.CreditOperation, transactionThree)
+	t.AddEntry(uuid.New(), accountPathFour, accountFour.CurrentVersion(), vos.DebitOperation, transactionThree)
 
 	err = conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
@@ -124,5 +137,12 @@ func getAccountBalanceWithWildcard(log *logrus.Entry, conn *ledger.Connection) {
 
 	AssertEqual(accountPathTwo, accountTwo.AccountName().Name())
 	AssertEqual(transactionTwo, accountTwo.Balance())
+	AssertEqual(nil, err)
+
+	accountThree, err := conn.GetAccountBalance(context.Background(), accountPathThree)
+	AssertEqual(nil, err)
+
+	AssertEqual(accountPathThree, accountThree.AccountName().Name())
+	AssertEqual(transactionThree, accountThree.Balance())
 	AssertEqual(nil, err)
 }
