@@ -108,6 +108,13 @@ func TestNewAccountName(t *testing.T) {
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
+		{
+			name: "Error when sending empty suffix",
+			args: args{
+				name: "xpto:bacen:conta_liquidacao:tesouraria/",
+			},
+			err: app.ErrInvalidAccountStructure,
+		},
 	}
 
 	for _, tt := range tests {
@@ -131,6 +138,7 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 		expGroup    string
 		expSubgroup string
 		expID       string
+		expSuffix   string
 	}{
 		{
 			test:        "Successfully get data from a valid account",
@@ -139,6 +147,7 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			expGroup:    "bacen",
 			expSubgroup: "conta_liquidacao",
 			expID:       "tesouraria",
+			expSuffix:   "",
 		},
 		{
 			test:        "Successfully get data from a valid account",
@@ -147,6 +156,7 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			expGroup:    "clients",
 			expSubgroup: "available",
 			expID:       newUUID,
+			expSuffix:   "",
 		},
 		{
 			test:        "Successfully get data from a valid account",
@@ -154,7 +164,8 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			expClass:    "liability",
 			expGroup:    "clients",
 			expSubgroup: "available",
-			expID:       newUUID + "/mydetail",
+			expID:       newUUID,
+			expSuffix:   "mydetail",
 		},
 		{
 			test:        "Successfully get data from a valid account",
@@ -162,7 +173,8 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			expClass:    "liability",
 			expGroup:    "clients",
 			expSubgroup: "available",
-			expID:       newUUID + "/mydetail1/mydetail2/mydetail3",
+			expID:       newUUID,
+			expSuffix:   "mydetail1/mydetail2/mydetail3",
 		},
 	}
 
@@ -175,6 +187,46 @@ func TestNewAccountNameIsSplitted(t *testing.T) {
 			assert.Equal(t, tt.expGroup, got.Group)
 			assert.Equal(t, tt.expSubgroup, got.Subgroup)
 			assert.Equal(t, tt.expID, got.ID)
+			assert.Equal(t, tt.expSuffix, got.Suffix)
+		})
+	}
+}
+
+func TestExtractIdAndSuffix(t *testing.T) {
+	newUUID := uuid.New().String()
+
+	tests := []struct {
+		test        string
+		identifiers string
+		expID       string
+		expSuffix   string
+	}{
+		{
+			test:        "Successfully get data from a valid account",
+			identifiers: newUUID,
+			expID:       newUUID,
+			expSuffix:   "",
+		},
+		{
+			test:        "Successfully get data from a valid account",
+			identifiers: newUUID + "/suffix",
+			expID:       newUUID,
+			expSuffix:   "suffix",
+		},
+		{
+			test:        "Successfully get data from a valid account",
+			identifiers: " " + newUUID + " / suffix ",
+			expID:       newUUID,
+			expSuffix:   "suffix",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.test, func(t *testing.T) {
+			id, suffix, err := ExtractIdAndSuffix(tt.identifiers)
+			assert.Equal(t, nil, err)
+			assert.Equal(t, tt.expID, id)
+			assert.Equal(t, tt.expSuffix, suffix)
 		})
 	}
 }

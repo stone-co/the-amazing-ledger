@@ -40,6 +40,9 @@ func newFakeGetAccountBalance(accountBalance *vos.AccountBalance, result error) 
 		OnGetAccountBalance: func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
 			return accountBalance, result
 		},
+		OnGetAccountBalanceAggregated: func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
+			return accountBalance, result
+		},
 	}
 
 	return NewLedgerUseCase(log, mockRepository)

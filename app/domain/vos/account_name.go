@@ -8,6 +8,7 @@ import (
 
 const (
 	AccountStructureSep = ":"
+	AccountSuffixSep    = "/"
 	structureLevels     = 4
 )
 
@@ -18,10 +19,15 @@ const (
 	idLevel
 )
 
-// AccountName must have 4 levels in her structure: "class:group:subgroup:id", where:
+// AccountName must have 4 levels in its structure: "class:group:subgroup:id", where:
 //   - class could be liability, assets, income, expense or equity;
 //   - group, subgroup and id are "free text";
 //   - ":" must be used as a separator.
+//
+// AccountName can have a fifth level in its structure: "class:group:subgroup:id/suffix", where:
+//   - suffix is "free text";
+//   - it is considered a suffix everything after the id
+//   - "/" must be used as a separator
 //
 // Some examples:
 //   - "assets:bacen:conta_liquidacao:tesouraria"
@@ -33,6 +39,7 @@ type AccountName struct {
 	Group    string
 	Subgroup string
 	ID       string
+	Suffix   string
 }
 
 func NewAccountName(name string) (*AccountName, error) {
@@ -54,18 +61,44 @@ func NewAccountName(name string) (*AccountName, error) {
 		return nil, app.ErrInvalidAccountStructure
 	}
 
+	id, suffix, err := ExtractIdAndSuffix(levels[idLevel])
+	if err != nil {
+		return nil, err
+	}
+
 	return &AccountName{
 		Class:    accountClass,
 		Group:    levels[groupLevel],
 		Subgroup: levels[subgroupLevel],
-		ID:       levels[idLevel],
+		ID:       id,
+		Suffix:   suffix,
 	}, nil
 }
 
 func (a AccountName) Name() string {
-	return FormatAccount(a.Class.String(), a.Group, a.Subgroup, a.ID)
+	return FormatAccount(a.Class.String(), a.Group, a.Subgroup, a.ID, a.Suffix)
 }
 
-func FormatAccount(class, group, subgroup, id string) string {
-	return class + AccountStructureSep + group + AccountStructureSep + subgroup + AccountStructureSep + id
+func FormatAccount(class, group, subgroup, id, suffix string) string {
+	name := class + AccountStructureSep + group + AccountStructureSep + subgroup + AccountStructureSep + id
+	if suffix != "" {
+		name += AccountSuffixSep + suffix
+	}
+	return name
+}
+
+func ExtractIdAndSuffix(identifier string) (string, string, error) {
+	identifiers := strings.SplitN(identifier, AccountSuffixSep, 2)
+	id := strings.TrimSpace(identifiers[0])
+
+	if len(identifiers) <= 1 {
+		return id, "", nil
+	}
+
+	suffix := strings.TrimSpace(identifiers[1])
+	if suffix == "" {
+		return "", "", app.ErrInvalidAccountStructure
+	}
+
+	return id, suffix, nil
 }

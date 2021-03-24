@@ -15,6 +15,7 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 		account_group,
 		account_subgroup,
 		account_id,
+		account_suffix,
 		operation,
 		amount
 	FROM
@@ -53,6 +54,7 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 		var group string
 		var subgroup string
 		var id string
+		var suffix string
 		var op string
 		var amount int
 
@@ -61,13 +63,14 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.Accou
 			&group,
 			&subgroup,
 			&id,
+			&suffix,
 			&op,
 			&amount,
 		); err != nil {
 			return err
 		}
 
-		account := vos.FormatAccount(class, group, subgroup, id)
+		account := vos.FormatAccount(class, group, subgroup, id, suffix)
 
 		err = fn(vos.Statement{
 			Account:   account,

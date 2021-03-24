@@ -37,6 +37,7 @@ func main() {
 	getAccountBalance(log, conn)
 	getAccountBalanceWithMoreEntries(log, conn)
 	getAccountBalanceNotFoundAccount(log, conn)
+	getAccountBalanceWithWildcard(log, conn)
 	getAnalyticalData(log, conn)
 
 	getAccountHistory(log, conn)
