@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-
 	"os"
 	"os/signal"
 	"syscall"
@@ -50,7 +49,7 @@ func main() {
 		log.WithError(err).Fatal("failed to populate cache")
 	}
 
-	httpServer := server.NewHttpServer(cfg.HttpServer, BuildGitCommit, BuildTime)
+	httpServer := server.NewHttpServer(cfg.HttpServer, BuildGitCommit, BuildTime, log)
 	defer func() {
 		ctx, cancel := context.WithTimeout(context.Background(), cfg.HttpServer.ShutdownTimeout)
 		defer cancel()
