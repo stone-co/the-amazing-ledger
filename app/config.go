@@ -8,10 +8,10 @@ import (
 )
 
 type Config struct {
-	Server   ServerConfig
-	Metrics  MetricsConfig
-	Postgres PostgresConfig
-	NewRelic NewRelicConfig
+	RPCServer  RPCServerConfig
+	HttpServer HttpServerConfig
+	Postgres   PostgresConfig
+	NewRelic   NewRelicConfig
 }
 
 func LoadConfig() (*Config, error) {
@@ -24,7 +24,7 @@ func LoadConfig() (*Config, error) {
 	return &config, nil
 }
 
-type ServerConfig struct {
+type RPCServerConfig struct {
 	Host            string        `envconfig:"GRPC_HOST" default:"0.0.0.0"`
 	Port            int           `envconfig:"GRPC_PORT" default:"3000"`
 	ShutdownTimeout time.Duration `envconfig:"APP_SHUTDOWN_TIMEOUT" default:"5s"`
@@ -32,11 +32,7 @@ type ServerConfig struct {
 	WriteTimeout    time.Duration `envconfig:"GRPC_WRITE_TIMEOUT" default:"10s"`
 }
 
-type MetricsConfig struct {
-	Prometheus PrometheusServerConfig
-}
-
-type PrometheusServerConfig struct {
+type HttpServerConfig struct {
 	Port            int           `envconfig:"PROM_PORT" default:"3001"`
 	ShutdownTimeout time.Duration `envconfig:"PROM_SHUTDOWN_TIMEOUT" default:"1s"`
 	ReadTimeout     time.Duration `envconfig:"PROM_READ_TIMEOUT" default:"30s"`

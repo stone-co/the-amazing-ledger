@@ -18,7 +18,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewGRPCServer(useCase *usecases.LedgerUseCase, nr *newrelic.Application, cfg app.ServerConfig, log *logrus.Logger) (*http.Server, error) {
+func NewGRPCServer(useCase *usecases.LedgerUseCase, nr *newrelic.Application, cfg app.RPCServerConfig, log *logrus.Logger) (*http.Server, error) {
 	api := rpc.NewAPI(log, useCase)
 	grpcServer := api.NewServer(nr)
 	server, err := NewServer(grpcServer, cfg)
@@ -28,7 +28,7 @@ func NewGRPCServer(useCase *usecases.LedgerUseCase, nr *newrelic.Application, cf
 	return server, nil
 }
 
-func NewServer(grpcServer *grpc.Server, cfg app.ServerConfig) (*http.Server, error) {
+func NewServer(grpcServer *grpc.Server, cfg app.RPCServerConfig) (*http.Server, error) {
 	// gwMux is the grpc-gateway ServeMux, used to serve HTTP/REST requests.
 	gwMux := runtime.NewServeMux()
 	// Always use localhost for gateway
