@@ -43,6 +43,7 @@ func version(w http.ResponseWriter, commit string, time string, log *logrus.Logg
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	_, err = w.Write(b)
 	if err != nil {
 		log.WithError(err).Errorln("Failed to write version body")
