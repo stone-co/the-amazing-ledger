@@ -33,10 +33,10 @@ type RPCServerConfig struct {
 }
 
 type HttpServerConfig struct {
-	Port            int           `envconfig:"PROM_PORT" default:"3001"`
-	ShutdownTimeout time.Duration `envconfig:"PROM_SHUTDOWN_TIMEOUT" default:"1s"`
-	ReadTimeout     time.Duration `envconfig:"PROM_READ_TIMEOUT" default:"30s"`
-	WriteTimeout    time.Duration `envconfig:"PROM_WRITE_TIMEOUT" default:"10s"`
+	Port            int           `envconfig:"HTTP_PORT" default:"3001"`
+	ShutdownTimeout time.Duration `envconfig:"HTTP_SHUTDOWN_TIMEOUT" default:"1s"`
+	ReadTimeout     time.Duration `envconfig:"HTTP_READ_TIMEOUT" default:"30s"`
+	WriteTimeout    time.Duration `envconfig:"HTTP_WRITE_TIMEOUT" default:"10s"`
 }
 
 type PostgresConfig struct {
