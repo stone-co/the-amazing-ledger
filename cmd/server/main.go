@@ -13,7 +13,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/usecases"
 	"github.com/stone-co/the-amazing-ledger/app/gateways/db/postgres"
-	"github.com/stone-co/the-amazing-ledger/app/gateways/http/prometheus"
+	server "github.com/stone-co/the-amazing-ledger/app/gateways/http"
 	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
@@ -49,18 +49,21 @@ func main() {
 		log.WithError(err).Fatal("failed to populate cache")
 	}
 
-	metricsServer := prometheus.NewInternal(cfg.Metrics.Prometheus)
+	httpServer := server.NewHttpServer(cfg.HttpServer, BuildGitCommit, BuildTime, log)
 	defer func() {
-		ctx, cancel := context.WithTimeout(context.Background(), cfg.Metrics.Prometheus.ShutdownTimeout)
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.HttpServer.ShutdownTimeout)
 		defer cancel()
-		if er := metricsServer.Shutdown(ctx); er != nil {
-			_ = metricsServer.Close()
+		if er := httpServer.Shutdown(ctx); er != nil {
+			_ = httpServer.Close()
 			log.WithError(er).Fatal("server error:could not stop server gracefully")
 		}
 	}()
+	go func() {
+		log.Fatal(httpServer.ListenAndServe())
+	}()
 
 	// Initialize the server (grpc-gateway)
-	server, err := NewGRPCServer(ledgerUseCase, nr, cfg.Server, log)
+	rpcServer, err := NewGRPCServer(ledgerUseCase, nr, cfg.RPCServer, log)
 	if err != nil {
 		log.WithError(err).Fatal("failed to initialize the server")
 	}
@@ -69,15 +72,15 @@ func main() {
 	serverErrors := make(chan error, 1)
 	// NewServer Server listening for requests.
 	go func() {
-		log.Infof("ready to accept connections at: %s", server.Addr)
-		serverErrors <- fmt.Errorf("server's ListenAndServe failed. %w", server.ListenAndServe())
+		log.Infof("ready to accept connections at: %s", rpcServer.Addr)
+		serverErrors <- fmt.Errorf("server's ListenAndServe failed. %w", rpcServer.ListenAndServe())
 	}()
 
 	// =================
 	// Shutdown
 
 	//Handle OS signals
-	go handleInterrupt(cfg, log, server)
+	go handleInterrupt(cfg, log, rpcServer)
 
 	// Blocking main and waiting for server error.
 	err = <-serverErrors
@@ -94,7 +97,7 @@ func handleInterrupt(cfg *app.Config, log *logrus.Logger, sv *http.Server) {
 	signal.Stop(signals)
 	// Make a channel to listen for an interrupt or terminate signal from the OS.
 	// Use a buffered channel because the signal package requires it.
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.Server.ShutdownTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.RPCServer.ShutdownTimeout)
 	defer cancel()
 	// Asking listener to shutdown and shed load.
 	if err := sv.Shutdown(ctx); err != nil {
