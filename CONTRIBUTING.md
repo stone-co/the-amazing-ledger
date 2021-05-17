@@ -29,6 +29,9 @@ We love your input! We want to make contributing to this project as easy and tra
 
 _write a grpc examples are optional, we use like end-to-end tests_
 
+Please be sure to **write the tests**, it is very important for your PR be
+approved.
+
 ### Running end-to-end tests
 
 The amazing ledger needs a Postgres database running and ready to connections,
