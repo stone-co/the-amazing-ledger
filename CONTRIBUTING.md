@@ -7,6 +7,43 @@ We love your input! We want to make contributing to this project as easy and tra
 * Proposing new features
 * Becoming a maintainer
 
+## An Guideline to Write a Feature
+
+- Download dependencies
+    - run `make setup` to get all required softwares.
+- Add entities or vos
+    - add or edit `app/domain/entities/` and `app/domain/vos/`.
+- Repository interface
+    - edit `app/domain/repository.go` to add your method to interface
+    - add file in `app/gateways/db/` implementing this method.
+- Ledger Usecase interface
+    - edit `app/domain/usecase.go` to add yout method to interface
+    - add file in `app/domain/usecases/` implementing this method
+- Work with protofile
+    - change the file `proto/ledger/ledger.proto` adding your services.
+    - generate proto server with `$ make generate` shell command.
+- Write SDK
+    - add file in `clients/grpc/ledger/` with your sdk feature.
+    - add file in `clients/grpc/examples/` to test your feature.
+    - call your test feature in `clients/grpc/examples/main.go`.
+
+_write a grpc examples are optional, we use like end-to-end tests_
+
+### Running end-to-end tests
+
+The amazing ledger needs a Postgres database running and ready to connections,
+see `docker-compose` files to run a database, or use another way like install
+postgres in your machine.
+
+After up the database, you need compile the code with `$ make compile`, so a
+binary file will be created at `build/` folder.
+
+Now, you can run `the amazing ledger` with `./build/server` command.
+
+Finally you need run `clients/grpc/examples` with `go run ./...` command.
+
+Let us know if you have any questions, use [gitter][gitter] to send us a message
+
 ## We use [Github Flow](https://guides.github.com/introduction/flow/index.html), so all code changes happen through Pull Requests
 Pull requests are the best way to propose changes to the codebase (we use [Github Flow](https://guides.github.com/introduction/flow/index.html)). We actively welcome your pull requests:
 
@@ -34,3 +71,5 @@ All of our issues have a template with tips for describing the problem. Try to f
 
 ## License
 By contributing, you agree that your contributions will be licensed under its [MIT license](LICENSE).
+
+[gitter]:https://gitter.im/the-amazing-ledger/community#

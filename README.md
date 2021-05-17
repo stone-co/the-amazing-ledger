@@ -44,6 +44,9 @@ $ make compile
 $ ./build/server
 ```
 
+See the *[CONTRIBUTING.md][contributing]* to read a guideline to develop a new
+feature.
+
 ## Setup
 
 Download and install dependency tools
@@ -71,3 +74,5 @@ curl -i -X POST localhost:3000/api/v1/transactions -d \
 "account_id":"liability:clients:available:16b23084-686b-434a-8323-db483ce1e581", "version": 0, "amount":
 123}]}'
 ```
+
+[contributing]:/CONTRIBUTING.md
