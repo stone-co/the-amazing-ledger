@@ -6,12 +6,13 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/app"
-	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
-	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/stone-co/the-amazing-ledger/app"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 )
 
 func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBalanceRequest) (*proto.GetAccountBalanceResponse, error) {
@@ -27,7 +28,7 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	accountBalance, err := a.UseCase.GetAccountBalance(ctx, *accountName)
+	accountBalance, err := a.UseCase.GetAccountBalance(ctx, accountName)
 	if err != nil {
 		if err == app.ErrAccountNotFound {
 			log.WithError(err).Error("account name does not exist")
@@ -79,7 +80,7 @@ func (a *API) GetAccountHistory(request *proto.GetAccountHistoryRequest, stream 
 		return nil
 	}
 
-	err = a.UseCase.GetAccountHistory(stream.Context(), *accountName, fn)
+	err = a.UseCase.GetAccountHistory(stream.Context(), accountName, fn)
 	if err != nil {
 		log.WithError(err).Error("can't get account")
 		return status.Error(codes.InvalidArgument, err.Error())

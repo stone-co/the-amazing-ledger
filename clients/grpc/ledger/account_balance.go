@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/grpc/status"
+
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
-	"google.golang.org/grpc/status"
 )
 
 type AccountBalance struct {
@@ -38,7 +39,6 @@ func (a AccountBalance) Balance() int {
 }
 
 func (c *Connection) GetAccountBalance(ctx context.Context, accountPath string) (*AccountBalance, error) {
-
 	accountRequest := &proto.GetAccountBalanceRequest{
 		AccountPath: accountPath,
 	}
@@ -58,7 +58,7 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountPath string) 
 	}
 
 	accountBalance := &AccountBalance{
-		accountName:    *accountName,
+		accountName:    accountName,
 		currentVersion: vos.Version(response.CurrentVersion),
 		totalCredit:    int(response.TotalCredit),
 		totalDebit:     int(response.TotalDebit),

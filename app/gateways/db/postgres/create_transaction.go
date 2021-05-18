@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v4"
+
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
@@ -45,9 +46,8 @@ func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *e
 			query,
 			entry.ID,
 			entry.Account.Class.String(),
-			entry.Account.Group,
 			entry.Account.Subgroup,
-			entry.Account.ID,
+			entry.Account.Account,
 			entry.Operation.String(),
 			entry.Amount,
 			entry.Version,

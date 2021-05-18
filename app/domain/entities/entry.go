@@ -2,6 +2,7 @@ package entities
 
 import (
 	"github.com/google/uuid"
+
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
@@ -9,7 +10,7 @@ import (
 type Entry struct {
 	ID        uuid.UUID
 	Operation vos.OperationType
-	Account   *vos.AccountName
+	Account   vos.AccountName
 	Version   vos.Version
 	Amount    int
 }
