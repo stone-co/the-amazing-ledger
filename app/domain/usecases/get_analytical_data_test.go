@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
 func TestLedgerUseCase_GetAnalyticalData(t *testing.T) {
@@ -16,7 +17,7 @@ func TestLedgerUseCase_GetAnalyticalData(t *testing.T) {
 	}
 
 	t.Run("Account can be empty", func(t *testing.T) {
-		accountPath, err := vos.NewAccountPath("liability:stone:clients")
+		accountPath, err := vos.NewAccountPath("liability.stone.clients")
 		assert.Nil(t, err)
 
 		entries := []vos.Statement{}
@@ -29,11 +30,11 @@ func TestLedgerUseCase_GetAnalyticalData(t *testing.T) {
 	})
 
 	t.Run("Account with 2 entries", func(t *testing.T) {
-		accountPath, err := vos.NewAccountPath("liability:stone:clients")
+		accountPath, err := vos.NewAccountPath("liability.stone.clients")
 		assert.Nil(t, err)
 
-		accountName1 := "liability:stone:clients:user-1"
-		accountName2 := "liability:stone:clients:user-2"
+		accountName1 := "liability.stone.clients.user-1"
+		accountName2 := "liability.stone.clients.user-2"
 
 		entries := []vos.Statement{
 			{

@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
 func TestLedgerUseCase_GetAccountHistory(t *testing.T) {
@@ -17,7 +18,7 @@ func TestLedgerUseCase_GetAccountHistory(t *testing.T) {
 	}
 
 	t.Run("The account history can be empty", func(t *testing.T) {
-		accountName, err := vos.NewAccountName("liability:stone:clients:user-1")
+		accountName, err := vos.NewAccountName("liability.stone.clients.user-1")
 		assert.Nil(t, err)
 
 		entries := []vos.EntryHistory{}
@@ -25,14 +26,14 @@ func TestLedgerUseCase_GetAccountHistory(t *testing.T) {
 		// clear res
 		res = []vos.EntryHistory{}
 		useCase := newFakeGetAccountHistory(entries, nil)
-		err = useCase.GetAccountHistory(context.Background(), *accountName, fn)
+		err = useCase.GetAccountHistory(context.Background(), accountName, fn)
 
 		assert.Nil(t, err)
 		assert.Equal(t, entries, res)
 	})
 
 	t.Run("The account history should don't modify any Entry History", func(t *testing.T) {
-		accountName, err := vos.NewAccountName("liability:stone:clients:user-2")
+		accountName, err := vos.NewAccountName("liability.stone.clients.user-2")
 		assert.Nil(t, err)
 
 		entries := make([]vos.EntryHistory, 4)
@@ -44,7 +45,7 @@ func TestLedgerUseCase_GetAccountHistory(t *testing.T) {
 		// clear res
 		res = []vos.EntryHistory{}
 		useCase := newFakeGetAccountHistory(entries, nil)
-		err = useCase.GetAccountHistory(context.Background(), *accountName, fn)
+		err = useCase.GetAccountHistory(context.Background(), accountName, fn)
 
 		assert.Nil(t, err)
 		assert.Equal(t, entries, res)

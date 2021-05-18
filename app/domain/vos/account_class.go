@@ -20,15 +20,15 @@ var accountClasses = map[string]struct{}{
 
 var empty struct{}
 
-func NewAccountClassFromString(class string) (*AccountClass, error) {
+func NewAccountClassFromString(class string) (AccountClass, error) {
 	class = strings.ToLower(class)
 
 	_, ok := accountClasses[class]
 	if !ok {
-		return nil, app.ErrInvalidClassName
+		return AccountClass{}, app.ErrInvalidClassName
 	}
 
-	return &AccountClass{class}, nil
+	return AccountClass{class}, nil
 }
 
 func (ac AccountClass) String() string {

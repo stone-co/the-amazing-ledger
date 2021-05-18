@@ -6,18 +6,17 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app"
 )
 
-// AccountPath could have between 0 (empty) and 3 levels in her structure: "class:group:subgroup".
+// AccountPath could have between 0 (empty) and n levels in her structure: "class.subgroup.account...".
 // And, as AccountName, AccountPath has pre-defined classes.
 //
 // Some examples:
 //   - ""
 //   - "liability"
-//   - "liability:clients"
-//   - "liability:clients:available"
-//   - "assets:bacen:conta_liquidacao"
+//   - "liability.clients"
+//   - "liability.clients.available"
+
 type AccountPath struct {
-	Class       *AccountClass
-	Group       string
+	Class       AccountClass
 	Subgroup    string
 	TotalLevels int
 }
@@ -28,10 +27,7 @@ func NewAccountPath(name string) (*AccountPath, error) {
 	var levels []string
 
 	if len(name) > 0 {
-		levels = strings.Split(name, AccountStructureSep)
-		if len(levels) > structureLevels-1 {
-			return nil, app.ErrInvalidAccountStructure
-		}
+		levels = strings.SplitN(name, AccountStructureSep, maximumStructureLevels)
 	}
 
 	account := &AccountPath{
@@ -46,7 +42,7 @@ func NewAccountPath(name string) (*AccountPath, error) {
 		}
 	}
 
-	if account.TotalLevels >= 1 {
+	if len(levels) >= 1 {
 		var err error
 		account.Class, err = NewAccountClassFromString(levels[classLevel])
 		if err != nil {
@@ -54,11 +50,7 @@ func NewAccountPath(name string) (*AccountPath, error) {
 		}
 	}
 
-	if account.TotalLevels >= 2 {
-		account.Group = levels[groupLevel]
-	}
-
-	if account.TotalLevels >= 3 {
+	if len(levels) >= 2 {
 		account.Subgroup = levels[subgroupLevel]
 	}
 
@@ -72,11 +64,6 @@ func (a AccountPath) Name() string {
 
 	str := a.Class.String()
 	if a.TotalLevels == 1 {
-		return str
-	}
-
-	str += AccountStructureSep + a.Group
-	if a.TotalLevels == 2 {
 		return str
 	}
 
