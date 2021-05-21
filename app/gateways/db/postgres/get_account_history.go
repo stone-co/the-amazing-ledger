@@ -8,28 +8,28 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
-func (r *LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error {
-	operation := "Repository.GetAccountHistory"
-	query := `
-		SELECT
-			amount,
-			operation,
-			created_at
-		FROM entries
-		WHERE account_class = $1 AND account_group = $2 AND account_subgroup = $3 AND account_id = $4 AND account_suffix = $5
-		ORDER BY version;
-	`
+const accountHistoryQuery = `
+select
+    operation,
+    amount,
+    created_at
+from
+	entry
+where
+	account = $1
+order by
+	version;
+`
 
-	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
+func (r LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error {
+	const operation = "Repository.GetAccountHistory"
+
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, accountHistoryQuery).End()
 
 	rows, err := r.db.Query(
 		context.Background(),
-		query,
-		accountName.Class.String(),
-		accountName.Group,
-		accountName.Subgroup,
-		accountName.ID,
-		accountName.Suffix,
+		accountHistoryQuery,
+		accountName.Name(),
 	)
 	if err != nil {
 		return err
