@@ -3,7 +3,6 @@ package mocks
 import (
 	"context"
 
-	"github.com/google/uuid"
 	"github.com/stone-co/the-amazing-ledger/app/domain"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
@@ -12,15 +11,15 @@ import (
 var _ domain.UseCase = &UseCase{}
 
 type UseCase struct {
-	OnCreateTransaction    func(ctx context.Context, id uuid.UUID, entries []entities.Entry) error
+	OnCreateTransaction    func(ctx context.Context, transaction entities.Transaction) error
 	OnLoadObjectsIntoCache func(ctx context.Context) error
 	OnGetAccountBalance    func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
 	OnGetAnalyticalData    func(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error
 	OnGetAccountHistory    func(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error
 }
 
-func (m UseCase) CreateTransaction(ctx context.Context, id uuid.UUID, entries []entities.Entry) error {
-	return m.OnCreateTransaction(ctx, id, entries)
+func (m UseCase) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
+	return m.OnCreateTransaction(ctx, transaction)
 }
 
 func (m UseCase) LoadObjectsIntoCache(ctx context.Context) error {
@@ -41,7 +40,7 @@ func (m UseCase) GetAccountHistory(ctx context.Context, accountName vos.AccountN
 
 func SuccessfulTransactionMock() UseCase {
 	return UseCase{
-		OnCreateTransaction: func(ctx context.Context, id uuid.UUID, entries []entities.Entry) error {
+		OnCreateTransaction: func(ctx context.Context, transaction entities.Transaction) error {
 			return nil
 		},
 		OnLoadObjectsIntoCache: func(ctx context.Context) error {

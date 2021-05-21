@@ -11,7 +11,7 @@ import (
 var _ domain.Repository = &Repository{}
 
 type Repository struct {
-	OnCreateTransaction           func(context.Context, *entities.Transaction) error
+	OnCreateTransaction           func(context.Context, entities.Transaction) error
 	OnLoadObjectsIntoCache        func(ctx context.Context, cachedAccounts *entities.CachedAccounts) (vos.Version, error)
 	OnGetAccountBalance           func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
 	OnGetAccountBalanceAggregated func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
@@ -19,7 +19,7 @@ type Repository struct {
 	OnGetAccountHistory           func(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error
 }
 
-func (s Repository) CreateTransaction(ctx context.Context, transaction *entities.Transaction) error {
+func (s Repository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
 	return s.OnCreateTransaction(ctx, transaction)
 }
 

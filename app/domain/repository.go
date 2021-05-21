@@ -8,7 +8,7 @@ import (
 )
 
 type Repository interface {
-	CreateTransaction(context.Context, *entities.Transaction) error
+	CreateTransaction(context.Context, entities.Transaction) error
 	LoadObjectsIntoCache(ctx context.Context, objects *entities.CachedAccounts) (vos.Version, error)
 	GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
 	GetAccountBalanceAggregated(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)

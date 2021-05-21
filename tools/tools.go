@@ -10,7 +10,6 @@ import (
 	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"               // general linter
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway" // gRPC gateway
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2"    // Generates swagger from gRPC definitions
-	_ "github.com/kevinburke/go-bindata"                                  // converts any file into manageable Go source code
 	_ "github.com/kyoh86/richgo"                                          // enrich go test outputs with text decorations
 	_ "github.com/resotto/gochk/cmd/gochk"                                // gochk architecture linter
 	_ "golang.org/x/tools/cmd/goimports"                                  //Updates imports and formats code
