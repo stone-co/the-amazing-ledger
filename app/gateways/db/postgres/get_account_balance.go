@@ -10,55 +10,42 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
-func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
-	operation := "Repository.GetAccountBalance"
-	query := `
-		SELECT
-			account_class,
-			account_group,
-			account_subgroup,
-			account_id,
-			account_suffix,
-			MAX(version) as current_version,
-			SUM(CASE operation
-				WHEN $1 THEN amount
-				ELSE 0
-				END) AS total_credit,
-			SUM(CASE operation
-				WHEN $2 THEN amount
-				ELSE 0
-				END) AS total_debit
-		FROM entries
-		WHERE account_class = $3 AND account_group = $4 AND account_subgroup = $5 AND account_id = $6 AND account_suffix = $7
-		GROUP BY account_class, account_group, account_subgroup, account_id, account_suffix
-	`
+const getAccountBalanceQuery = `
+select
+    max(version) as current_version,
+    SUM(
+        CASE operation
+        WHEN 'credit' THEN amount
+        ELSE 0
+        END
+    ) AS total_credit,
+    SUM(
+        CASE operation
+        WHEN 'debit' THEN amount
+        ELSE 0
+        END
+    ) AS total_debit
+from
+     entry
+where account = $1
+group by account;
+`
 
-	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
+func (r LedgerRepository) GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
+	const operation = "Repository.GetAccountBalance"
 
-	creditOperation := vos.CreditOperation.String()
-	debitOperation := vos.DebitOperation.String()
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, getAccountBalanceQuery).End()
 
 	row := r.db.QueryRow(
 		context.Background(),
-		query,
-		creditOperation,
-		debitOperation,
-		accountName.Class.String(),
-		accountName.Group,
-		accountName.Subgroup,
-		accountName.ID,
-		accountName.Suffix,
+		getAccountBalanceQuery,
+		accountName.Name(),
 	)
 	var currentVersion uint64
 	var totalCredit int
 	var totalDebit int
 
 	err := row.Scan(
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
 		&currentVersion,
 		&totalCredit,
 		&totalDebit,
@@ -75,52 +62,42 @@ func (r *LedgerRepository) GetAccountBalance(ctx context.Context, accountName vo
 
 }
 
-func (r *LedgerRepository) GetAccountBalanceAggregated(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
-	operation := "Repository.GetAccountBalanceAggregated"
-	query := `
-		SELECT
-			account_class,
-			account_group,
-			account_subgroup,
-			account_id,
-			MAX(version) as current_version,
-			SUM(CASE operation
-				WHEN $1 THEN amount
-				ELSE 0
-				END) AS total_credit,
-			SUM(CASE operation
-				WHEN $2 THEN amount
-				ELSE 0
-				END) AS total_debit
-		FROM entries
-		WHERE account_class = $3 AND account_group = $4 AND account_subgroup = $5 AND account_id = $6
-		GROUP BY account_class, account_group, account_subgroup, account_id
-	`
+const getAccountBalanceAggregatedQuery = `
+select
+    max(version) as current_version,
+    SUM(
+        CASE operation
+        WHEN 'credit' THEN amount
+        ELSE 0
+        END
+    ) AS total_credit,
+    SUM(
+        CASE operation
+        WHEN 'debit' THEN amount
+        ELSE 0
+        END
+    ) AS total_debit
+from
+     entry
+where account <@ $1
+group by account;
+`
 
-	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
+func (r LedgerRepository) GetAccountBalanceAggregated(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
+	const operation = "Repository.GetAccountBalanceAggregated"
 
-	creditOperation := vos.CreditOperation.String()
-	debitOperation := vos.DebitOperation.String()
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, getAccountBalanceAggregatedQuery).End()
 
 	row := r.db.QueryRow(
 		context.Background(),
-		query,
-		creditOperation,
-		debitOperation,
-		accountName.Class.String(),
-		accountName.Group,
-		accountName.Subgroup,
-		accountName.ID,
+		getAccountBalanceAggregatedQuery,
+		accountName.Name(),
 	)
 	var currentVersion uint64
 	var totalCredit int
 	var totalDebit int
 
 	err := row.Scan(
-		nil,
-		nil,
-		nil,
-		nil,
 		&currentVersion,
 		&totalCredit,
 		&totalDebit,
@@ -134,5 +111,4 @@ func (r *LedgerRepository) GetAccountBalanceAggregated(ctx context.Context, acco
 
 	accountBalance := vos.NewAccountBalance(accountName, vos.Version(currentVersion), totalCredit, totalDebit)
 	return accountBalance, nil
-
 }
