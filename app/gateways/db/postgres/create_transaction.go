@@ -10,49 +10,36 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
-func (r *LedgerRepository) CreateTransaction(ctx context.Context, transaction *entities.Transaction) error {
-	operation := "Repository.CreateTransaction"
-	query := `
-		INSERT INTO
-			entries (
-				id,
-				account_class,
-				account_group,
-				account_subgroup,
-				account_id,
-	  			operation,
-				amount,
-				version,
-				transaction_id,
-				account_suffix
-			) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-	`
+const createTransactionQuery = `
+insert into entry (id, tx_id, version, operation, company, event, amount, competence_date, account)
+values ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+`
 
-	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
+func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction *entities.Transaction) error {
+	const operation = "Repository.CreateTransaction"
+
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, createTransactionQuery).End()
 
 	tx, err := r.db.Begin(ctx)
 	if err != nil {
 		return err
 	}
 
-	defer func() {
-		_ = tx.Rollback(ctx)
-	}()
+	defer tx.Rollback(ctx)
 
 	var batch pgx.Batch
-
 	for _, entry := range transaction.Entries {
 		batch.Queue(
-			query,
+			createTransactionQuery,
 			entry.ID,
-			entry.Account.Class.String(),
-			entry.Account.Subgroup,
-			entry.Account.Account,
-			entry.Operation.String(),
-			entry.Amount,
-			entry.Version,
 			transaction.ID,
-			entry.Account.Suffix,
+			entry.Version,
+			entry.Operation.String(),
+			transaction.Company,
+			transaction.Event,
+			entry.Amount,
+			entry.Competence,
+			entry.Account.Name(),
 		)
 	}
 
