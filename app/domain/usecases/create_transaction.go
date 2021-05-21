@@ -3,42 +3,24 @@ package usecases
 import (
 	"context"
 
-	"github.com/google/uuid"
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
-func (l *LedgerUseCase) CreateTransaction(ctx context.Context, id uuid.UUID, entries []entities.Entry) error {
-	transaction, err := entities.NewTransaction(id, entries...)
-	if err != nil {
-		return err
-	}
+func (l *LedgerUseCase) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
+	accounts := make([]*entities.CachedAccountInfo, 0, len(transaction.Entries))
 
-	accounts := make([]*entities.CachedAccountInfo, 0, len(entries))
-
-	for _, entry := range entries {
-		if entry.Account.Suffix == "*" {
-			return app.ErrInvalidAccountStructure
+	for _, entry := range transaction.Entries {
+		account, err := l.checkVersion(entry)
+		if err != nil {
+			return err
 		}
-
-		account := l.cachedAccounts.LoadOrStore(entry.Account.Name())
 		accounts = append(accounts, account)
-
-		account.Lock()
-		defer account.Unlock()
-
-		if entry.Version == vos.AnyAccountVersion {
-			continue
-		}
-
-		if entry.Version != account.CurrentVersion {
-			return app.ErrInvalidVersion
-		}
 	}
 
-	for i := range entries {
-		entries[i].Version = l.lastVersion.Next()
+	for i := range transaction.Entries {
+		transaction.Entries[i].Version = l.lastVersion.Next()
 	}
 
 	if err := l.repository.CreateTransaction(ctx, transaction); err != nil {
@@ -46,8 +28,25 @@ func (l *LedgerUseCase) CreateTransaction(ctx context.Context, id uuid.UUID, ent
 	}
 
 	for i := range accounts {
-		accounts[i].CurrentVersion = entries[i].Version
+		accounts[i].CurrentVersion = transaction.Entries[i].Version
 	}
 
 	return nil
+}
+
+func (l *LedgerUseCase) checkVersion(entry entities.Entry) (*entities.CachedAccountInfo, error) {
+	account := l.cachedAccounts.LoadOrStore(entry.Account.Name())
+
+	account.Lock()
+	defer account.Unlock()
+
+	if entry.Version == vos.AnyAccountVersion {
+		return account, nil
+	}
+
+	if entry.Version != account.CurrentVersion {
+		return nil, app.ErrInvalidVersion
+	}
+
+	return account, nil
 }
