@@ -8,18 +8,18 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
+const loadCacheQuery = `
+select account, max(version) as version 
+from entries
+group by account;
+`
+
 func (r *LedgerRepository) LoadObjectsIntoCache(ctx context.Context, cachedAccounts *entities.CachedAccounts) (vos.Version, error) {
-	operation := "Repository.LoadObjectsIntoCache"
-	query := `
-		SELECT account_class, account_group, account_subgroup, account_id, account_suffix, MAX(version) As version
-		FROM entries
-		GROUP BY account_class, account_group, account_subgroup, account_id, account_suffix
-		ORDER BY version desc
-	`
+	const operation = "Repository.LoadObjectsIntoCache"
 
-	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, loadCacheQuery).End()
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, loadCacheQuery)
 	if err != nil {
 		return 0, err
 	}
@@ -28,26 +28,16 @@ func (r *LedgerRepository) LoadObjectsIntoCache(ctx context.Context, cachedAccou
 	var maxVersion vos.Version
 
 	for rows.Next() {
-		var accClass string
-		var accGroup string
-		var accSubgroup string
-		var accID string
-		var accSuffix string
+		var account string
 		var version vos.Version
 
 		if err := rows.Scan(
-			&accClass,
-			&accGroup,
-			&accSubgroup,
-			&accID,
-			&accSuffix,
+			&account,
 			&version,
 		); err != nil {
 			return 0, err
 		}
 
-		// TODO: check for duplicated?
-		account := vos.FormatAccount(accClass, accGroup, accSubgroup, accID, accSuffix)
 		cachedAccounts.Store(account, version)
 
 		if version > maxVersion {
