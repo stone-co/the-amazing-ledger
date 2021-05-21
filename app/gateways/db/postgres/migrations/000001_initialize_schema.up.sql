@@ -1,34 +1,48 @@
-BEGIN;
+begin;
 
-CREATE TYPE account_class AS ENUM (
-	'liability',
-	'assets',
-	'income',
-	'expense',
-	'equity'
+create extension if not exists ltree;
+
+create table event
+(
+    id   smallint primary key generated always as identity,
+    name text not null unique
 );
 
-CREATE TYPE operation_type AS ENUM (
-	'debit',
-	'credit'
+create table company
+(
+    id   smallint primary key generated always as identity,
+    name text not null unique
 );
 
-CREATE TABLE entries (
-	id               UUID primary key,
-	account_class    ACCOUNT_CLASS not null,
-	account_group    TEXT not null,
-	account_subgroup TEXT not null,
-	account_id       TEXT not null,
-	operation        OPERATION_TYPE not null,
-	amount           INT not null,
-	version          BIGINT not null,
-	transaction_id   UUID not null,
-	created_at       TIMESTAMPTZ not null default CURRENT_TIMESTAMP
+create type operation as enum ('debit', 'credit');
+
+create table entry
+(
+    id              uuid primary key,
+    tx_id           uuid        not null,
+    version         bigint      not null,
+    operation       operation   not null,
+    company         smallint    not null references company(id),
+    event           smallint    not null references event(id),
+    amount          bigint      not null,
+    created_at      timestamptz not null default now(),
+    competence_date timestamptz not null,
+    account         ltree       not null,
+    metadata        jsonb       not null default '{}'
 );
 
-CREATE INDEX idx_entries_account_class ON entries(account_class);
-CREATE INDEX idx_entries_account_group ON entries(account_group);
-CREATE INDEX idx_entries_account_subgroup ON entries(account_subgroup);
-CREATE INDEX idx_entries_account_id ON entries(account_id);
+create index idx_entry_account_gist
+    on entry using gist (account gist_ltree_ops(siglen=32));
+create index idx_entry_company
+    on entry using btree (company);
+create index idx_entry_event
+    on entry using btree (event);
+create index idx_created_at
+    on entry using brin (created_at);
+create index idx_competence_date
+    on entry using btree (competence_date);
 
-COMMIT;
+create unique index idx_entry_account_max_version
+    on entry (account, version desc);
+
+commit;

@@ -1,12 +1,17 @@
-BEGIN;
+begin;
 
-DROP INDEX idx_entries_account_class;
-DROP INDEX idx_entries_account_group;
-DROP INDEX idx_entries_account_subgroup;
-DROP INDEX idx_entries_account_id;
+drop index idx_entry_account_gist;
+drop index idx_entry_company;
+drop index idx_entry_event;
+drop index idx_created_at;
+drop index idx_competence_date;
 
-DROP TABLE entries;
-DROP TYPE  operation_type;
-DROP TYPE  account_class;
+drop table entry;
+drop table event;
+drop table company;
 
-COMMIT;
+drop type operation;
+
+drop extension ltree;
+
+commit;
