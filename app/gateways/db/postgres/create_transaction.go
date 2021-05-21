@@ -15,7 +15,7 @@ insert into entry (id, tx_id, version, operation, company, event, amount, compet
 values ($1, $2, $3, $4, $5, $6, $7, $8, $9);
 `
 
-func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction *entities.Transaction) error {
+func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
 	const operation = "Repository.CreateTransaction"
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, createTransactionQuery).End()
