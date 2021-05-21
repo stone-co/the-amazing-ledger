@@ -1,6 +1,6 @@
 module github.com/stone-co/the-amazing-ledger
 
-go 1.14
+go 1.16
 
 require (
 	github.com/bojand/ghz v0.70.0
