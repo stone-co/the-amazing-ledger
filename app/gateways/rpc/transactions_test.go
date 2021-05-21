@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestAPI_CreateTransaction_Success(t *testing.T) {
@@ -32,7 +33,17 @@ func TestAPI_CreateTransaction_Success(t *testing.T) {
 						Operation:       proto.Operation_OPERATION_DEBIT,
 						Amount:          123,
 					},
+					{
+						Id:              "f6162a96-efa3-4d8b-8636-851a9c1a2cd4",
+						AccountId:       ValidAccountID,
+						ExpectedVersion: 3,
+						Operation:       proto.Operation_OPERATION_CREDIT,
+						Amount:          123,
+					},
 				},
+				Company:        1,
+				Event:          1,
+				CompetenceDate: timestamppb.Now(),
 			},
 		},
 	}
@@ -79,6 +90,9 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 						Amount:          123,
 					},
 				},
+				Company:        1,
+				Event:          1,
+				CompetenceDate: timestamppb.Now(),
 			},
 			expectedCode:    codes.InvalidArgument,
 			expectedMessage: "error parsing entry id",
@@ -96,6 +110,9 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 						Amount:          123,
 					},
 				},
+				Company:        1,
+				Event:          1,
+				CompetenceDate: timestamppb.Now(),
 			},
 			expectedCode:    codes.InvalidArgument,
 			expectedMessage: "invalid operation",
@@ -113,6 +130,9 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 						Amount:          -3,
 					},
 				},
+				Company:        1,
+				Event:          1,
+				CompetenceDate: timestamppb.Now(),
 			},
 			expectedCode:    codes.InvalidArgument,
 			expectedMessage: "invalid amount",

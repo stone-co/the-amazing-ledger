@@ -21,7 +21,6 @@ setup:
 	github.com/bufbuild/buf/cmd/protoc-gen-buf-check-lint \
 	github.com/golang/protobuf/protoc-gen-go \
 	github.com/golangci/golangci-lint/cmd/golangci-lint \
-	github.com/kevinburke/go-bindata \
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc \
 	github.com/kyoh86/richgo \
 	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \

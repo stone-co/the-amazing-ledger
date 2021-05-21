@@ -3,6 +3,7 @@ package usecases
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -22,8 +23,13 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.AnyAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
 
-		err := newFakeCreateTransactionUseCase(nil).CreateTransaction(context.Background(), uuid.New(), entries)
+		tx, err := entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
 
+		err = newFakeCreateTransactionUseCase(nil).CreateTransaction(context.Background(), *tx)
 		assert.Nil(t, err)
 	})
 
@@ -32,8 +38,13 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
 
-		err := newFakeCreateTransactionUseCase(nil).CreateTransaction(context.Background(), uuid.New(), entries)
+		tx, err := entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
 
+		err = newFakeCreateTransactionUseCase(nil).CreateTransaction(context.Background(), *tx)
 		assert.Nil(t, err)
 	})
 
@@ -44,15 +55,26 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
 
-		err := useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+		tx, err := entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
 
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.Nil(t, err)
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 2, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 3, 123)
 		entries = []entities.Entry{*e1, *e2}
 
-		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+		tx, err = entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.Nil(t, err)
 	})
 
@@ -63,15 +85,26 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
 
-		err := useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+		tx, err := entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
 
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.Nil(t, err)
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 2, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 4, 123)
 		entries = []entities.Entry{*e1, *e2}
 
-		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+		tx, err = entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.True(t, app.ErrInvalidVersion.Is(err))
 	})
 
@@ -82,7 +115,13 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
 
-		err := useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+		tx, err := entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
+		err = useCase.CreateTransaction(context.Background(), *tx)
 
 		assert.Nil(t, err)
 
@@ -92,7 +131,13 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 4, 123)
 		entries = []entities.Entry{*e1, *e2}
 
-		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+		tx, err = entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.True(t, app.ErrInvalidVersion.Is(err))
 
 		assert.Equal(t, lastVersion, useCase.GetLastVersion())
@@ -105,7 +150,14 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e1, _ := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NewAccountVersion, 123)
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
-		err := useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+
+		tx, err := entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.Nil(t, err)
 		assert.NotEqual(t, lastVersion, useCase.GetLastVersion())
 
@@ -113,7 +165,14 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 2, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 3, 123)
 		entries = []entities.Entry{*e1, *e2}
-		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+
+		tx, err = entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.Nil(t, err)
 		assert.NotEqual(t, lastVersion, useCase.GetLastVersion())
 
@@ -121,7 +180,14 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 2, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 3, 123)
 		entries = []entities.Entry{*e1, *e2}
-		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+
+		tx, err = entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.True(t, app.ErrInvalidVersion.Is(err))
 		assert.Equal(t, lastVersion, useCase.GetLastVersion())
 
@@ -129,7 +195,14 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 4, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 5, 123)
 		entries = []entities.Entry{*e1, *e2}
-		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+
+		tx, err = entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.Nil(t, err)
 		assert.NotEqual(t, lastVersion, useCase.GetLastVersion())
 	})
@@ -140,13 +213,27 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e1, _ := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NewAccountVersion, 123)
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NewAccountVersion, 123)
 		entries := []entities.Entry{*e1, *e2}
-		err := useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+
+		tx, err := entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.Nil(t, err)
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 2, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 3, 123)
 		entries = []entities.Entry{*e1, *e2}
-		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+
+		tx, err = entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.Nil(t, err)
 
 		lastVersion := useCase.GetLastVersion()
@@ -154,24 +241,38 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		e1, _ = entities.NewEntry(idempotencyKey, vos.DebitOperation, accountID1, 4, 123)
 		e2, _ = entities.NewEntry(idempotencyKey, vos.CreditOperation, accountID2, 5, 123)
 		entries = []entities.Entry{*e1, *e2}
+
+		tx, err = entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
 		useCase.repository = &mocks.Repository{
-			OnCreateTransaction: func(context.Context, *entities.Transaction) error {
+			OnCreateTransaction: func(context.Context, entities.Transaction) error {
 				return app.ErrIdempotencyKeyViolation
 			},
 		}
-		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.True(t, app.ErrIdempotencyKeyViolation.Is(err))
 		assert.NotEqual(t, lastVersion, useCase.GetLastVersion())
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 4, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 5, 123)
 		entries = []entities.Entry{*e1, *e2}
+
+		tx, err = entities.NewTransaction(uuid.New(), entries...)
+		assert.Nil(t, err)
+		tx.Company = 1
+		tx.Event = 1
+		tx.CompetenceDate = time.Now()
+
 		useCase.repository = &mocks.Repository{
-			OnCreateTransaction: func(context.Context, *entities.Transaction) error {
+			OnCreateTransaction: func(context.Context, entities.Transaction) error {
 				return nil
 			},
 		}
-		err = useCase.CreateTransaction(context.Background(), uuid.New(), entries)
+		err = useCase.CreateTransaction(context.Background(), *tx)
 		assert.Nil(t, err)
 	})
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
@@ -54,12 +53,16 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 		domainEntries[i] = *domainEntry
 	}
 
-	if err := a.UseCase.CreateTransaction(ctx, tid, domainEntries); err != nil {
-		log.WithError(err).Error("creating transaction")
-		if err == app.ErrInvalidVersion {
-			return nil, status.Error(codes.Aborted, err.Error())
-		}
+	tx, err := entities.NewTransaction(tid, domainEntries...)
+	if err != nil {
+		return nil, status.Error(codes.Aborted, err.Error())
+	}
+	tx.Company = req.Company
+	tx.Event = req.Event
+	tx.CompetenceDate = req.CompetenceDate.AsTime()
 
+	if err := a.UseCase.CreateTransaction(ctx, *tx); err != nil {
+		log.WithError(err).Error("creating transaction")
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 

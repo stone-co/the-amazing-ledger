@@ -11,8 +11,8 @@ import (
 type Transaction struct {
 	ID             uuid.UUID
 	Entries        []Entry
-	Company        string
-	Event          string
+	Company        uint32
+	Event          uint32
 	CompetenceDate time.Time
 }
 

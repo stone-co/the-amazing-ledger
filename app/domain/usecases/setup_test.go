@@ -14,7 +14,7 @@ func newFakeCreateTransactionUseCase(result error) *LedgerUseCase {
 	log := logrus.New()
 
 	mockRepository := &mocks.Repository{}
-	mockRepository.OnCreateTransaction = func(context.Context, *entities.Transaction) error {
+	mockRepository.OnCreateTransaction = func(context.Context, entities.Transaction) error {
 		return result
 	}
 
