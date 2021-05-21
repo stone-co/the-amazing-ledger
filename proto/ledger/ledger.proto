@@ -40,6 +40,12 @@ message CreateTransactionRequest {
   string id = 1;
   // The list of entries, where len(entries) must be >= 2.
   repeated Entry entries = 2;
+  // The ledgers owner. Eg.: company name
+  uint32 company = 3;
+  // The event which triggered the transaction.
+  uint32 event = 4;
+  // The transaction competence date (execution date).
+  google.protobuf.Timestamp CompetenceDate = 5;
 }
 
 // Entry represents a new entry on the Ledger.

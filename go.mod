@@ -9,12 +9,10 @@ require (
 	github.com/golang/protobuf v1.4.3
 	github.com/golangci/golangci-lint v1.31.0
 	github.com/google/uuid v1.1.2
-	github.com/gorilla/mux v1.7.4 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.1
 	github.com/jackc/pgx/v4 v4.8.1
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/kevinburke/go-bindata v3.22.0+incompatible
 	github.com/kyoh86/richgo v0.3.3
 	github.com/newrelic/go-agent/v3 v3.10.0
 	github.com/newrelic/go-agent/v3/integrations/nrgrpc v1.1.0
