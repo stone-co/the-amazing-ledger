@@ -1,14 +1,19 @@
 package entities
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
 type Transaction struct {
-	ID      uuid.UUID
-	Entries []Entry
+	ID             uuid.UUID
+	Entries        []Entry
+	Company        string
+	Event          string
+	CompetenceDate time.Time
 }
 
 func NewTransaction(id uuid.UUID, entries ...Entry) (*Transaction, error) {
