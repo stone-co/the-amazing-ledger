@@ -215,7 +215,7 @@
           "format": "int64",
           "description": "The event which triggered the transaction."
         },
-        "CompetenceDate": {
+        "competenceDate": {
           "type": "string",
           "format": "date-time",
           "description": "The transaction competence date (execution date)."
