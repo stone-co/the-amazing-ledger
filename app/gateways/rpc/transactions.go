@@ -31,23 +31,23 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 
 	domainEntries := make([]entities.Entry, len(req.Entries))
 	for i, entry := range req.Entries {
-		entryID, err := uuid.Parse(entry.Id)
-		if err != nil {
+		entryID, entryErr := uuid.Parse(entry.Id)
+		if entryErr != nil {
 			errMsg := "error parsing entry id"
 			log.WithError(err).Error(errMsg)
 			return nil, status.Error(codes.InvalidArgument, errMsg)
 		}
 
-		domainEntry, err := entities.NewEntry(
+		domainEntry, domainErr := entities.NewEntry(
 			entryID,
 			vos.OperationType(proto.Operation_value[entry.Operation.String()]),
 			entry.AccountId,
 			vos.Version(entry.ExpectedVersion),
 			int(entry.Amount),
 		)
-		if err != nil {
+		if domainErr != nil {
 			log.WithError(err).Error("error creating entry")
-			return nil, status.Error(codes.InvalidArgument, err.Error())
+			return nil, status.Error(codes.InvalidArgument, domainErr.Error())
 		}
 
 		domainEntries[i] = *domainEntry

@@ -10,9 +10,6 @@ import (
 )
 
 func TestNewPartialAccountName(t *testing.T) {
-	type args struct {
-		name string
-	}
 	tests := []struct {
 		name         string
 		path         string
