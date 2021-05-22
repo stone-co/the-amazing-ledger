@@ -25,7 +25,9 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 		return err
 	}
 
-	defer tx.Rollback(ctx)
+	defer func(tx pgx.Tx, ctx context.Context) {
+		_ = tx.Rollback(ctx)
+	}(tx, ctx)
 
 	var batch pgx.Batch
 	for _, entry := range transaction.Entries {
