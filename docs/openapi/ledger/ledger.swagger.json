@@ -205,6 +205,11 @@
           },
           "description": "The list of entries, where len(entries) must be \u003e= 2."
         },
+        "competenceDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The transaction competence date (execution date)."
+        },
         "company": {
           "type": "integer",
           "format": "int64",
@@ -214,11 +219,6 @@
           "type": "integer",
           "format": "int64",
           "description": "The event which triggered the transaction."
-        },
-        "competenceDate": {
-          "type": "string",
-          "format": "date-time",
-          "description": "The transaction competence date (execution date)."
         }
       },
       "title": "CreateTransactionRequest represents a transaction to be saved. A transaction must\nhave at least two entries, with a valid balance. More info here:\nhttps://en.wikipedia.org/wiki/Double-entry_bookkeeping"
