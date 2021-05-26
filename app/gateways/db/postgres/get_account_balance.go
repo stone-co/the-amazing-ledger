@@ -31,7 +31,7 @@ where account = $1
 group by account;
 `
 
-func (r LedgerRepository) GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
+func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.AccountPath) (*vos.AccountBalance, error) {
 	const operation = "Repository.GetAccountBalance"
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, getAccountBalanceQuery).End()
@@ -39,7 +39,7 @@ func (r LedgerRepository) GetAccountBalance(ctx context.Context, accountName vos
 	row := r.db.QueryRow(
 		context.Background(),
 		getAccountBalanceQuery,
-		accountName.Name(),
+		account.Name(),
 	)
 	var currentVersion uint64
 	var totalCredit int
@@ -57,7 +57,7 @@ func (r LedgerRepository) GetAccountBalance(ctx context.Context, accountName vos
 		return nil, err
 	}
 
-	accountBalance := vos.NewAccountBalance(accountName, vos.Version(currentVersion), totalCredit, totalDebit)
+	accountBalance := vos.NewAccountBalance(account, vos.Version(currentVersion), totalCredit, totalDebit)
 	return accountBalance, nil
 
 }
@@ -83,7 +83,7 @@ where account <@ $1
 group by account;
 `
 
-func (r LedgerRepository) GetAccountBalanceAggregated(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
+func (r LedgerRepository) GetAccountBalanceAggregated(ctx context.Context, account vos.AccountPath) (*vos.AccountBalance, error) {
 	const operation = "Repository.GetAccountBalanceAggregated"
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, getAccountBalanceAggregatedQuery).End()
@@ -91,7 +91,7 @@ func (r LedgerRepository) GetAccountBalanceAggregated(ctx context.Context, accou
 	row := r.db.QueryRow(
 		context.Background(),
 		getAccountBalanceAggregatedQuery,
-		accountName.Name(),
+		account.Name(),
 	)
 	var currentVersion uint64
 	var totalCredit int
@@ -109,6 +109,6 @@ func (r LedgerRepository) GetAccountBalanceAggregated(ctx context.Context, accou
 		return nil, err
 	}
 
-	accountBalance := vos.NewAccountBalance(accountName, vos.Version(currentVersion), totalCredit, totalDebit)
+	accountBalance := vos.NewAccountBalance(account, vos.Version(currentVersion), totalCredit, totalDebit)
 	return accountBalance, nil
 }

@@ -27,7 +27,7 @@ func getAccountBalance(log *logrus.Entry, conn *ledger.Connection) {
 
 	accountBalance, err := conn.GetAccountBalance(context.Background(), accountPathOne)
 
-	AssertEqual(accountPathOne, accountBalance.AccountName().Name())
+	AssertEqual(accountPathOne, accountBalance.Account().Name())
 	AssertEqual(expectedBalance, accountBalance.Balance())
 	AssertEqual(nil, err)
 }
@@ -56,7 +56,7 @@ func getAccountBalanceWithMoreEntries(log *logrus.Entry, conn *ledger.Connection
 
 	accountBalance, err := conn.GetAccountBalance(context.Background(), accountPathOne)
 
-	AssertEqual(accountPathOne, accountBalance.AccountName().Name())
+	AssertEqual(accountPathOne, accountBalance.Account().Name())
 	AssertEqual(expectedBalance, accountBalance.Balance())
 	AssertEqual(nil, err)
 }
@@ -120,7 +120,7 @@ func getAccountBalanceWithWildcard(log *logrus.Entry, conn *ledger.Connection) {
 	wildcard, err := conn.GetAccountBalance(context.Background(), wildcardPath)
 	AssertEqual(nil, err)
 
-	AssertEqual(wildcardPath, wildcard.AccountName().Name())
+	AssertEqual(wildcardPath, wildcard.Account().Name())
 	AssertEqual(expectedBalance, wildcard.Balance())
 	AssertEqual(nil, err)
 
@@ -128,21 +128,21 @@ func getAccountBalanceWithWildcard(log *logrus.Entry, conn *ledger.Connection) {
 	accountOne, err := conn.GetAccountBalance(context.Background(), accountPathOne)
 	AssertEqual(nil, err)
 
-	AssertEqual(accountPathOne, accountOne.AccountName().Name())
+	AssertEqual(accountPathOne, accountOne.Account().Name())
 	AssertEqual(transactionOne, accountOne.Balance())
 	AssertEqual(nil, err)
 
 	accountTwo, err := conn.GetAccountBalance(context.Background(), accountPathTwo)
 	AssertEqual(nil, err)
 
-	AssertEqual(accountPathTwo, accountTwo.AccountName().Name())
+	AssertEqual(accountPathTwo, accountTwo.Account().Name())
 	AssertEqual(transactionTwo, accountTwo.Balance())
 	AssertEqual(nil, err)
 
 	accountThree, err := conn.GetAccountBalance(context.Background(), accountPathThree)
 	AssertEqual(nil, err)
 
-	AssertEqual(accountPathThree, accountThree.AccountName().Name())
+	AssertEqual(accountPathThree, accountThree.Account().Name())
 	AssertEqual(transactionThree, accountThree.Balance())
 	AssertEqual(nil, err)
 }

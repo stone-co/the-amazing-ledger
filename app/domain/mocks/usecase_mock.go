@@ -13,9 +13,9 @@ var _ domain.UseCase = &UseCase{}
 type UseCase struct {
 	OnCreateTransaction    func(ctx context.Context, transaction entities.Transaction) error
 	OnLoadObjectsIntoCache func(ctx context.Context) error
-	OnGetAccountBalance    func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
-	OnGetAnalyticalData    func(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error
-	OnGetAccountHistory    func(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error
+	OnGetAccountBalance    func(ctx context.Context, account vos.AccountPath) (*vos.AccountBalance, error)
+	OnGetAnalyticalData    func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
+	OnGetAccountHistory    func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
 }
 
 func (m UseCase) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
@@ -26,16 +26,16 @@ func (m UseCase) LoadObjectsIntoCache(ctx context.Context) error {
 	return m.OnLoadObjectsIntoCache(ctx)
 }
 
-func (m UseCase) GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
-	return m.OnGetAccountBalance(ctx, accountName)
+func (m UseCase) GetAccountBalance(ctx context.Context, account vos.AccountPath) (*vos.AccountBalance, error) {
+	return m.OnGetAccountBalance(ctx, account)
 }
 
-func (m UseCase) GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error {
-	return m.OnGetAnalyticalData(ctx, path, fn)
+func (m UseCase) GetAnalyticalData(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error {
+	return m.OnGetAnalyticalData(ctx, query, fn)
 }
 
-func (m UseCase) GetAccountHistory(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error {
-	return m.OnGetAccountHistory(ctx, accountName, fn)
+func (m UseCase) GetAccountHistory(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error {
+	return m.OnGetAccountHistory(ctx, account, fn)
 }
 
 func SuccessfulTransactionMock() UseCase {
@@ -46,15 +46,15 @@ func SuccessfulTransactionMock() UseCase {
 		OnLoadObjectsIntoCache: func(ctx context.Context) error {
 			return nil
 		},
-		OnGetAccountBalance: func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
+		OnGetAccountBalance: func(ctx context.Context, account vos.AccountPath) (*vos.AccountBalance, error) {
 			return &vos.AccountBalance{
-				AccountName:    vos.AccountName{},
+				Account:        vos.AccountPath{},
 				CurrentVersion: 0,
 				TotalCredit:    0,
 				TotalDebit:     0,
 			}, nil
 		},
-		OnGetAnalyticalData: func(ctx context.Context, accountName vos.AccountPath, fn func(vos.Statement) error) error {
+		OnGetAnalyticalData: func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error {
 			return nil
 		},
 	}

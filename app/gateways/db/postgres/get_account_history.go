@@ -21,7 +21,7 @@ order by
 	version;
 `
 
-func (r LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error {
+func (r LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos.AccountPath, fn func(vos.EntryHistory) error) error {
 	const operation = "Repository.GetAccountHistory"
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, accountHistoryQuery).End()

@@ -11,15 +11,15 @@ import (
 )
 
 type AccountBalance struct {
-	accountName    vos.AccountName
+	account        vos.AccountPath
 	currentVersion vos.Version
 	totalCredit    int
 	totalDebit     int
 	balance        int
 }
 
-func (a AccountBalance) AccountName() vos.AccountName {
-	return a.accountName
+func (a AccountBalance) Account() vos.AccountPath {
+	return a.account
 }
 
 func (a AccountBalance) TotalCredit() int {
@@ -52,13 +52,13 @@ func (c *Connection) GetAccountBalance(ctx context.Context, accountPath string) 
 		return nil, fmt.Errorf("%w: %s", ErrUndefined, err)
 	}
 
-	accountName, err := vos.NewAccountName(response.AccountPath)
+	account, err := vos.NewAccountPath(response.AccountPath)
 	if err != nil {
 		return nil, err
 	}
 
 	accountBalance := &AccountBalance{
-		accountName:    accountName,
+		account:        account,
 		currentVersion: vos.Version(response.CurrentVersion),
 		totalCredit:    int(response.TotalCredit),
 		totalDebit:     int(response.TotalDebit),

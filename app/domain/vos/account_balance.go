@@ -1,15 +1,15 @@
 package vos
 
 type AccountBalance struct {
-	AccountName    AccountName
+	Account        AccountPath
 	CurrentVersion Version
 	TotalCredit    int
 	TotalDebit     int
 }
 
-func NewAccountBalance(accountName AccountName, version Version, totalCredit, totalDebit int) *AccountBalance {
+func NewAccountBalance(account AccountPath, version Version, totalCredit, totalDebit int) *AccountBalance {
 	return &AccountBalance{
-		AccountName:    accountName,
+		Account:        account,
 		CurrentVersion: version,
 		TotalCredit:    totalCredit,
 		TotalDebit:     totalDebit,

@@ -6,16 +6,12 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
-func (l *LedgerUseCase) GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
-	if accountName.Suffix != "*" {
-		return l.getAccountBalance(ctx, accountName)
-	}
-
-	return l.getAccountBalanceAggregated(ctx, accountName)
+func (l *LedgerUseCase) GetAccountBalance(ctx context.Context, account vos.AccountPath) (*vos.AccountBalance, error) {
+	return l.getAccountBalance(ctx, account)
 }
 
-func (l *LedgerUseCase) getAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
-	accountBalance, err := l.repository.GetAccountBalance(ctx, accountName)
+func (l *LedgerUseCase) getAccountBalance(ctx context.Context, account vos.AccountPath) (*vos.AccountBalance, error) {
+	accountBalance, err := l.repository.GetAccountBalance(ctx, account)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +19,7 @@ func (l *LedgerUseCase) getAccountBalance(ctx context.Context, accountName vos.A
 	return accountBalance, nil
 }
 
-func (l *LedgerUseCase) getAccountBalanceAggregated(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
+func (l *LedgerUseCase) getAccountBalanceAggregated(ctx context.Context, accountName vos.AccountPath) (*vos.AccountBalance, error) {
 	accountBalance, err := l.repository.GetAccountBalanceAggregated(ctx, accountName)
 	if err != nil {
 		return nil, err

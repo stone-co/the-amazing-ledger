@@ -10,7 +10,7 @@ import (
 type Entry struct {
 	ID        uuid.UUID
 	Operation vos.OperationType
-	Account   vos.AccountName
+	Account   vos.AccountPath
 	Version   vos.Version
 	Amount    int
 }
@@ -28,7 +28,7 @@ func NewEntry(id uuid.UUID, operation vos.OperationType, accountID string, versi
 		return nil, app.ErrInvalidAmount
 	}
 
-	acc, err := vos.NewAccountName(accountID)
+	acc, err := vos.NewAccountPath(accountID)
 	if err != nil {
 		return nil, err
 	}
