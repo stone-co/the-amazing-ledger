@@ -33,14 +33,11 @@ func newFakeLoadObjectsIntoCacheUseCase(maxVersion vos.Version, result error) *L
 	return NewLedgerUseCase(log, mockRepository)
 }
 
-func newFakeGetAccountBalance(accountBalance *vos.AccountBalance, result error) *LedgerUseCase {
+func newFakeGetAccountBalance(accountBalance vos.AccountBalance, result error) *LedgerUseCase {
 	log := logrus.New()
 
 	mockRepository := &mocks.Repository{
-		OnGetAccountBalance: func(ctx context.Context, account vos.AccountPath) (*vos.AccountBalance, error) {
-			return accountBalance, result
-		},
-		OnGetAccountBalanceAggregated: func(ctx context.Context, account vos.AccountPath) (*vos.AccountBalance, error) {
+		OnGetAccountBalance: func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
 			return accountBalance, result
 		},
 	}

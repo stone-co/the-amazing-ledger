@@ -6,23 +6,14 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
-func (l *LedgerUseCase) GetAccountBalance(ctx context.Context, account vos.AccountPath) (*vos.AccountBalance, error) {
+func (l *LedgerUseCase) GetAccountBalance(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
 	return l.getAccountBalance(ctx, account)
 }
 
-func (l *LedgerUseCase) getAccountBalance(ctx context.Context, account vos.AccountPath) (*vos.AccountBalance, error) {
+func (l *LedgerUseCase) getAccountBalance(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
 	accountBalance, err := l.repository.GetAccountBalance(ctx, account)
 	if err != nil {
-		return nil, err
-	}
-
-	return accountBalance, nil
-}
-
-func (l *LedgerUseCase) getAccountBalanceAggregated(ctx context.Context, accountName vos.AccountPath) (*vos.AccountBalance, error) {
-	accountBalance, err := l.repository.GetAccountBalanceAggregated(ctx, accountName)
-	if err != nil {
-		return nil, err
+		return vos.AccountBalance{}, err
 	}
 
 	return accountBalance, nil

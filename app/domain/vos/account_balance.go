@@ -7,8 +7,8 @@ type AccountBalance struct {
 	TotalDebit     int
 }
 
-func NewAccountBalance(account AccountPath, version Version, totalCredit, totalDebit int) *AccountBalance {
-	return &AccountBalance{
+func NewAccountBalance(account AccountPath, version Version, totalCredit, totalDebit int) AccountBalance {
+	return AccountBalance{
 		Account:        account,
 		CurrentVersion: version,
 		TotalCredit:    totalCredit,
