@@ -21,7 +21,7 @@ type AccountQuery struct {
 func NewAccountQuery(query string) (AccountQuery, error) {
 	query = strings.ToLower(query)
 
-	components := strings.Split(query, _defaultConfig.LevelSeparator)
+	components := strings.Split(query, _defaultConfig.DepthSeparator)
 	size := len(components)
 
 	if size == 0 {
@@ -33,7 +33,7 @@ func NewAccountQuery(query string) (AccountQuery, error) {
 			return AccountQuery{}, app.ErrInvalidAccountStructure
 		}
 
-		config, ok := _defaultConfig.LevelConfigs[i]
+		config, ok := _defaultConfig.DepthConfigs[i]
 		if !ok {
 			continue
 		}

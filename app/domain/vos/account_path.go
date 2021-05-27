@@ -14,8 +14,8 @@ type DepthConfig struct {
 type AccountConfig struct {
 	MinimumDepth   int
 	MaximumDepth   int
-	LevelConfigs   map[int]DepthConfig
-	LevelSeparator string
+	DepthConfigs   map[int]DepthConfig
+	DepthSeparator string
 }
 
 var _empty = struct{}{}
@@ -23,7 +23,7 @@ var _empty = struct{}{}
 var _defaultConfig = AccountConfig{
 	MinimumDepth: 3,
 	MaximumDepth: 0,
-	LevelConfigs: map[int]DepthConfig{
+	DepthConfigs: map[int]DepthConfig{
 		0: {
 			Restrictions: map[string]struct{}{
 				"liability": _empty,
@@ -35,12 +35,12 @@ var _defaultConfig = AccountConfig{
 			Name: "class",
 		},
 	},
-	LevelSeparator: ".",
+	DepthSeparator: ".",
 }
 
 // TODO: better docs
 
-// AccountPath can have as many levels as necessary, limited by AccountConfig MinimumDepth and MaximumDepth.
+// AccountPath can be as deep as needed, limited by AccountConfig MinimumDepth and MaximumDepth.
 // None of the values can be '' (empty string) or '*'.
 // Depth restrictions can be applied by using DepthConfig. The default configuration for example:
 //	- the first depth is called class
@@ -66,7 +66,7 @@ type AccountPath struct {
 func NewAccountPath(path string) (AccountPath, error) {
 	path = strings.ToLower(path)
 
-	components := strings.Split(path, _defaultConfig.LevelSeparator)
+	components := strings.Split(path, _defaultConfig.DepthSeparator)
 	size := len(components)
 
 	if size == 0 {
@@ -86,7 +86,7 @@ func NewAccountPath(path string) (AccountPath, error) {
 			return AccountPath{}, app.ErrInvalidAccountStructure
 		}
 
-		config, ok := _defaultConfig.LevelConfigs[i]
+		config, ok := _defaultConfig.DepthConfigs[i]
 		if !ok {
 			continue
 		}
