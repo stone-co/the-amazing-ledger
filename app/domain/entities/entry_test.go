@@ -14,7 +14,7 @@ func TestNewEntry(t *testing.T) {
 	newUUID := uuid.New()
 
 	t.Run("Successfully creates an entry with minimum inputs", func(t *testing.T) {
-		acc, err := vos.NewAccountName("assets.bacen.conta_liquidacao.tesouraria")
+		acc, err := vos.NewAccountPath("assets.bacen.conta_liquidacao.tesouraria")
 		assert.Nil(t, err)
 		expected := &Entry{
 			ID:        newUUID,

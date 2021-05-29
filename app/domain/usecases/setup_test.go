@@ -33,14 +33,11 @@ func newFakeLoadObjectsIntoCacheUseCase(maxVersion vos.Version, result error) *L
 	return NewLedgerUseCase(log, mockRepository)
 }
 
-func newFakeGetAccountBalance(accountBalance *vos.AccountBalance, result error) *LedgerUseCase {
+func newFakeGetAccountBalance(accountBalance vos.AccountBalance, result error) *LedgerUseCase {
 	log := logrus.New()
 
 	mockRepository := &mocks.Repository{
-		OnGetAccountBalance: func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
-			return accountBalance, result
-		},
-		OnGetAccountBalanceAggregated: func(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error) {
+		OnGetAccountBalance: func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
 			return accountBalance, result
 		},
 	}
@@ -52,7 +49,7 @@ func newFakeGetAnalyticalData(entries []vos.Statement, result error) *LedgerUseC
 	log := logrus.New()
 
 	mockRepository := &mocks.Repository{
-		OnGetAnalyticalData: func(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error {
+		OnGetAnalyticalData: func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error {
 			for _, entry := range entries {
 				if err := fn(entry); err != nil {
 					return err
@@ -69,7 +66,7 @@ func newFakeGetAccountHistory(entries []vos.EntryHistory, result error) *LedgerU
 	log := logrus.New()
 
 	mockRepository := &mocks.Repository{
-		OnGetAccountHistory: func(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error {
+		OnGetAccountHistory: func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error {
 			for _, entry := range entries {
 				if err := fn(entry); err != nil {
 					return err

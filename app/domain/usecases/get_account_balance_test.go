@@ -15,13 +15,13 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 		totalDebit := 130
 		expectedBalance := totalCredit - totalDebit
 
-		accountName, err := vos.NewAccountName("liability.stone.clients.user-1")
+		account, err := vos.NewAccountPath("liability.stone.clients.user-1")
 		assert.Nil(t, err)
 
-		accountBalance := vos.NewAccountBalance(accountName, 3, totalCredit, totalDebit)
+		accountBalance := vos.NewAccountBalance(account, 3, totalCredit, totalDebit)
 
 		useCase := newFakeGetAccountBalance(accountBalance, nil)
-		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.AccountName)
+		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.Account)
 		assert.Nil(t, err)
 		assert.Equal(t, accountBalance.TotalCredit, a.TotalCredit)
 		assert.Equal(t, accountBalance.TotalDebit, a.TotalDebit)
@@ -31,13 +31,13 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 	t.Run("The max version for account path must be version in account balance", func(t *testing.T) {
 		expectedVersion := vos.Version(5)
 
-		accountName, err := vos.NewAccountName("liability.stone.clients.user-1")
+		account, err := vos.NewAccountPath("liability.stone.clients.user-1")
 		assert.Nil(t, err)
 
-		accountBalance := vos.NewAccountBalance(accountName, expectedVersion, 0, 0)
+		accountBalance := vos.NewAccountBalance(account, expectedVersion, 0, 0)
 
 		useCase := newFakeGetAccountBalance(accountBalance, nil)
-		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.AccountName)
+		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.Account)
 
 		assert.Nil(t, err)
 		assert.Equal(t, expectedVersion, a.CurrentVersion)

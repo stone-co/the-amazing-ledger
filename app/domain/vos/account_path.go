@@ -6,67 +6,99 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app"
 )
 
-// AccountPath could have between 0 (empty) and n levels in her structure: "class.subgroup.account...".
-// And, as AccountName, AccountPath has pre-defined classes.
-//
-// Some examples:
-//   - ""
-//   - "liability"
-//   - "liability.clients"
-//   - "liability.clients.available"
-
-type AccountPath struct {
-	Class       AccountClass
-	Subgroup    string
-	TotalLevels int
+type DepthConfig struct {
+	Restrictions map[string]struct{}
+	Name         string
 }
 
-func NewAccountPath(name string) (*AccountPath, error) {
-	name = strings.ToLower(name)
+type AccountConfig struct {
+	MinimumDepth   int
+	MaximumDepth   int
+	DepthConfigs   map[int]DepthConfig
+	DepthSeparator string
+}
 
-	var levels []string
+var _empty = struct{}{}
 
-	if len(name) > 0 {
-		levels = strings.SplitN(name, AccountStructureSep, maximumStructureLevels)
+var _defaultConfig = AccountConfig{
+	MinimumDepth: 3,
+	MaximumDepth: 0,
+	DepthConfigs: map[int]DepthConfig{
+		0: {
+			Restrictions: map[string]struct{}{
+				"liability": _empty,
+				"assets":    _empty,
+				"income":    _empty,
+				"expense":   _empty,
+				"equity":    _empty,
+			},
+			Name: "class",
+		},
+	},
+	DepthSeparator: ".",
+}
+
+// TODO: better docs
+
+// AccountPath can be as deep as needed, limited by AccountConfig MinimumDepth and MaximumDepth.
+// None of the values can be '' (empty string) or '*'.
+// Depth restrictions can be applied by using DepthConfig. The default configuration for example:
+//	- the first depth is called class
+// 	- it can only be one of the following:
+//		- liability
+//		- assets
+//		- income
+//		- expense
+//		- equity
+//	- account need to have a depth of at least 3
+//	- there are no upper limits
+// 	- '.' must be used as a separator.
+//
+// Some examples:
+//   - assets.account.treasury
+//   - liability.available.96a131a8-c4ac-495e-8971-fcecdbdd003a
+//   - liability.available.96a131a8-c4ac-495e-8971-fcecdbdd003a.some_detail
+//   - liability.clients.available.96a131a8-c4ac-495e-8971-fcecdbdd003a.detail1.detail2
+type AccountPath struct {
+	path string
+}
+
+func NewAccountPath(path string) (AccountPath, error) {
+	path = strings.ToLower(path)
+
+	components := strings.Split(path, _defaultConfig.DepthSeparator)
+	size := len(components)
+
+	if size == 0 {
+		return AccountPath{}, app.ErrInvalidAccountStructure
 	}
 
-	account := &AccountPath{
-		TotalLevels: len(levels),
+	if _defaultConfig.MaximumDepth != 0 && size > _defaultConfig.MaximumDepth {
+		return AccountPath{}, app.ErrInvalidAccountStructure
 	}
 
-	if account.TotalLevels > 0 {
-		for _, v := range levels {
-			if len(v) == 0 {
-				return nil, app.ErrInvalidAccountStructure
-			}
+	if size < _defaultConfig.MinimumDepth {
+		return AccountPath{}, app.ErrInvalidAccountStructure
+	}
+
+	for i, component := range components {
+		if component == "" || component == "*" {
+			return AccountPath{}, app.ErrInvalidAccountStructure
+		}
+
+		config, ok := _defaultConfig.DepthConfigs[i]
+		if !ok {
+			continue
+		}
+
+		if _, ok = config.Restrictions[component]; !ok {
+			return AccountPath{}, app.ErrInvalidAccountStructure
 		}
 	}
 
-	if len(levels) >= 1 {
-		var err error
-		account.Class, err = NewAccountClassFromString(levels[classLevel])
-		if err != nil {
-			return nil, app.ErrInvalidAccountStructure
-		}
-	}
-
-	if len(levels) >= 2 {
-		account.Subgroup = levels[subgroupLevel]
-	}
-
-	return account, nil
+	return AccountPath{path}, nil
 }
 
 func (a AccountPath) Name() string {
-	if a.TotalLevels == 0 {
-		return ""
-	}
-
-	str := a.Class.String()
-	if a.TotalLevels == 1 {
-		return str
-	}
-
-	str += AccountStructureSep + a.Subgroup
-	return str
+	return a.path
 }

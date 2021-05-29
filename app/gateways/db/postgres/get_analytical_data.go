@@ -22,12 +22,12 @@ order by
 	version;
 `
 
-func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error {
+func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error {
 	const operation = "Repository.GetAnalyticalData"
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, analyticalDataQuery).End()
 
-	rows, err := r.db.Query(ctx, analyticalDataQuery, path.Name())
+	rows, err := r.db.Query(ctx, analyticalDataQuery, query.Value())
 	if err != nil {
 		return err
 	}

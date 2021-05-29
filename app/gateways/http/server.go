@@ -8,6 +8,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
+
 	"github.com/stone-co/the-amazing-ledger/app"
 )
 
@@ -33,10 +34,10 @@ func NewHttpServer(s app.HttpServerConfig, commit string, time string, log *logr
 func version(w http.ResponseWriter, commit string, time string, log *logrus.Logger) {
 	b, err := json.Marshal(struct {
 		GitCommitHash string `json:"git_hash"`
-		BUildTime     string `json:"time"`
+		BuildTime     string `json:"time"`
 	}{
 		GitCommitHash: commit,
-		BUildTime:     time,
+		BuildTime:     time,
 	})
 	if err != nil {
 		log.WithError(err).Errorln("Failed to marshal version")

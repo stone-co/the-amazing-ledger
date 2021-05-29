@@ -16,7 +16,7 @@ func (a *API) GetAnalyticalData(request *proto.GetAnalyticalDataRequest, stream 
 		"handler": "GetAnalyticalData",
 	})
 
-	accountPath, err := vos.NewAccountPath(request.AccountPath)
+	query, err := vos.NewAccountQuery(request.AccountPath)
 	if err != nil {
 		log.WithError(err).Error("can't create account path")
 		return status.Error(codes.InvalidArgument, err.Error())
@@ -34,7 +34,7 @@ func (a *API) GetAnalyticalData(request *proto.GetAnalyticalDataRequest, stream 
 		return nil
 	}
 
-	err = a.UseCase.GetAnalyticalData(stream.Context(), *accountPath, fn)
+	err = a.UseCase.GetAnalyticalData(stream.Context(), query, fn)
 	if err != nil {
 		log.WithError(err).Error("can't get account")
 		return status.Error(codes.InvalidArgument, err.Error())

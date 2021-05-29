@@ -2,7 +2,7 @@ package vos
 
 import "strings"
 
-type OperationType int
+type OperationType int8
 
 const (
 	InvalidOperation OperationType = iota
@@ -10,8 +10,10 @@ const (
 	CreditOperation
 )
 
+var _operationTypes = []string{"invalid_op_type", "debit", "credit"}
+
 func (ot OperationType) String() string {
-	return [...]string{"invalid_op_type", "debit", "credit"}[ot]
+	return _operationTypes[ot]
 }
 
 func OperationTypeFromString(opType string) OperationType {

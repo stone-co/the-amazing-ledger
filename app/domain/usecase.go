@@ -8,9 +8,9 @@ import (
 )
 
 type UseCase interface {
-	CreateTransaction(ctx context.Context, transaction entities.Transaction) error
-	LoadObjectsIntoCache(ctx context.Context) error
-	GetAccountBalance(ctx context.Context, accountName vos.AccountName) (*vos.AccountBalance, error)
-	GetAnalyticalData(ctx context.Context, path vos.AccountPath, fn func(vos.Statement) error) error
-	GetAccountHistory(ctx context.Context, accountName vos.AccountName, fn func(vos.EntryHistory) error) error
+	CreateTransaction(context.Context, entities.Transaction) error
+	LoadObjectsIntoCache(context.Context) error
+	GetAccountBalance(context.Context, vos.AccountPath) (vos.AccountBalance, error)
+	GetAnalyticalData(context.Context, vos.AccountQuery, func(vos.Statement) error) error
+	GetAccountHistory(context.Context, vos.AccountPath, func(vos.EntryHistory) error) error
 }
