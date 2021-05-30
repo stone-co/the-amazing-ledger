@@ -1,10 +1,10 @@
-When deciding how to handle transaction guarantee for each account, when desirable, a possible solution would be
+When deciding how to handle transactional guarantees (when desirable) for each account, a possible solution would be
 to have a table with only two columns: account and version.
 
 This table would need to handle a lot of inserts at first, but as time goes on, it is expected that the number of
 updates become higher than the number of inserts, so this table should be designed for handling numerous updates.
 
-One the solution that postgres provides us is using [**HOT**](https://www.cybertec-postgresql.com/en/hot-updates-in-postgresql-for-better-performance/)
+One of the solutions that postgres provides us is using [**HOT**](https://www.cybertec-postgresql.com/en/hot-updates-in-postgresql-for-better-performance/)
 updates. Here we try to do a synthetic benchmark to see how (and if) this strategy suits our needs.
 
 Our table should look something like this:
@@ -17,7 +17,7 @@ create table account_version (
 ```
 
 With a little of [column tetris](https://www.2ndquadrant.com/en/blog/on-rocks-and-sand/) we can see that reordering
-the columns gives us free 4 extra bytes for each entry :).
+the columns gives us free 4 extra bytes for each entry (yay).
 
 To use **HOT** updates, we should set a `fillfactor` lower than 100 (postgres default). In the end, we have this schema:
 
