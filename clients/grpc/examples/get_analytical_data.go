@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
 )
@@ -45,8 +46,8 @@ func getAnalyticalDataWithOneEntry(log *logrus.Entry, conn *ledger.Connection) {
 
 	// Define a new transaction.
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), account1, vos.NewAccountVersion, vos.CreditOperation, 1000)
-	t.AddEntry(uuid.New(), account2, vos.NewAccountVersion, vos.DebitOperation, 1000)
+	t.AddEntry(uuid.New(), account1, vos.NextAccountVersion, vos.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), account2, vos.NextAccountVersion, vos.DebitOperation, 1000)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
@@ -71,16 +72,16 @@ func getAnalyticalDataWithThreeEntries(log *logrus.Entry, conn *ledger.Connectio
 
 	// Create a new transaction.
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), account1, vos.NewAccountVersion, vos.CreditOperation, 1000)
-	t.AddEntry(uuid.New(), account2, vos.NewAccountVersion, vos.DebitOperation, 1000)
+	t.AddEntry(uuid.New(), account1, vos.NextAccountVersion, vos.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), account2, vos.NextAccountVersion, vos.DebitOperation, 1000)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
 	// Create a new transaction.
 	t = conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), account1, vos.AnyAccountVersion, vos.DebitOperation, 2000)
-	t.AddEntry(uuid.New(), account2, vos.AnyAccountVersion, vos.CreditOperation, 1500)
-	t.AddEntry(uuid.New(), account3, vos.AnyAccountVersion, vos.CreditOperation, 500)
+	t.AddEntry(uuid.New(), account1, vos.NextAccountVersion, vos.DebitOperation, 2000)
+	t.AddEntry(uuid.New(), account2, vos.NextAccountVersion, vos.CreditOperation, 1500)
+	t.AddEntry(uuid.New(), account3, vos.NextAccountVersion, vos.CreditOperation, 500)
 	err = conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
@@ -114,9 +115,9 @@ func getAnalyticalDataWithPartialPath(log *logrus.Entry, conn *ledger.Connection
 
 	// Create a new transaction.
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), account1, vos.AnyAccountVersion, vos.CreditOperation, 2000)
-	t.AddEntry(uuid.New(), account2, vos.AnyAccountVersion, vos.DebitOperation, 1500)
-	t.AddEntry(uuid.New(), account3, vos.AnyAccountVersion, vos.DebitOperation, 500)
+	t.AddEntry(uuid.New(), account1, vos.NextAccountVersion, vos.CreditOperation, 2000)
+	t.AddEntry(uuid.New(), account2, vos.NextAccountVersion, vos.DebitOperation, 1500)
+	t.AddEntry(uuid.New(), account3, vos.NextAccountVersion, vos.DebitOperation, 500)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 

@@ -30,8 +30,8 @@ func transactionWithInvalidIdReturnsInvalidTransactionID(log *logrus.Entry, conn
 	accountID1 := "liability:clients:available:" + uuid.New().String()
 	accountID2 := "liability:clients:available:" + uuid.New().String()
 
-	t.AddEntry(uuid.New(), accountID1, vos.NewAccountVersion, vos.DebitOperation, 15000)
-	t.AddEntry(uuid.New(), accountID2, vos.NewAccountVersion, vos.CreditOperation, 15000)
+	t.AddEntry(uuid.New(), accountID1, vos.NextAccountVersion, vos.DebitOperation, 15000)
+	t.AddEntry(uuid.New(), accountID2, vos.NextAccountVersion, vos.CreditOperation, 15000)
 
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertTrue(ledger.ErrInvalidTransactionID.Is(err))
@@ -47,8 +47,8 @@ func entryWithInvalidIdReturnsInvalidEntryID(log *logrus.Entry, conn *ledger.Con
 	accountID2 := "liability:clients:available:" + uuid.New().String()
 
 	invalidUUID := uuid.Nil
-	t.AddEntry(uuid.New(), accountID1, vos.NewAccountVersion, vos.DebitOperation, 15000)
-	t.AddEntry(invalidUUID, accountID2, vos.NewAccountVersion, vos.CreditOperation, 15000)
+	t.AddEntry(uuid.New(), accountID1, vos.NextAccountVersion, vos.DebitOperation, 15000)
+	t.AddEntry(invalidUUID, accountID2, vos.NextAccountVersion, vos.CreditOperation, 15000)
 
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertTrue(ledger.ErrInvalidEntryID.Is(err))
@@ -73,14 +73,14 @@ func entryWithInvalidVersion(log *logrus.Entry, conn *ledger.Connection) {
 	accountID1 := "liability:clients:available:" + uuid.New().String()
 	accountID2 := "liability:clients:available:" + uuid.New().String()
 
-	t1.AddEntry(uuid.New(), accountID1, vos.NewAccountVersion, vos.DebitOperation, 15000)
-	t1.AddEntry(uuid.New(), accountID2, vos.NewAccountVersion, vos.CreditOperation, 15000)
+	t1.AddEntry(uuid.New(), accountID1, vos.NextAccountVersion, vos.DebitOperation, 15000)
+	t1.AddEntry(uuid.New(), accountID2, vos.NextAccountVersion, vos.CreditOperation, 15000)
 	err := conn.SaveTransaction(context.Background(), t1)
 
 	t2 := conn.NewTransaction(uuid.New())
-	invalidVersion := vos.NewAccountVersion
+	invalidVersion := vos.Version(-2)
 	t2.AddEntry(uuid.New(), accountID1, invalidVersion, vos.DebitOperation, 7500)
-	t2.AddEntry(uuid.New(), accountID2, vos.AnyAccountVersion, vos.CreditOperation, 7500)
+	t2.AddEntry(uuid.New(), accountID2, vos.NextAccountVersion, vos.CreditOperation, 7500)
 	err = conn.SaveTransaction(context.Background(), t2)
 
 	AssertTrue(ledger.ErrInvalidVersion.Is(err))
@@ -95,8 +95,8 @@ func entryWithInvalidAccountStructure(log *logrus.Entry, conn *ledger.Connection
 	invalidAccountID := "liability/clients/available/" + uuid.New().String()
 	accountID2 := "liability:clients:available:" + uuid.New().String()
 
-	t.AddEntry(uuid.New(), invalidAccountID, vos.NewAccountVersion, vos.DebitOperation, 15000)
-	t.AddEntry(uuid.New(), accountID2, vos.NewAccountVersion, vos.CreditOperation, 15000)
+	t.AddEntry(uuid.New(), invalidAccountID, vos.NextAccountVersion, vos.DebitOperation, 15000)
+	t.AddEntry(uuid.New(), accountID2, vos.NextAccountVersion, vos.CreditOperation, 15000)
 	err := conn.SaveTransaction(context.Background(), t)
 
 	AssertTrue(ledger.ErrInvalidAccountStructure.Is(err))
@@ -110,8 +110,8 @@ func transactionWithInvalidBalanceReturnsErrInvalidBalance(log *logrus.Entry, co
 	accountID2 := "liability:clients:available:" + uuid.New().String()
 
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), accountID1, vos.NewAccountVersion, vos.DebitOperation, 15000)
-	t.AddEntry(uuid.New(), accountID2, vos.NewAccountVersion, vos.CreditOperation, 25000)
+	t.AddEntry(uuid.New(), accountID1, vos.NextAccountVersion, vos.DebitOperation, 15000)
+	t.AddEntry(uuid.New(), accountID2, vos.NextAccountVersion, vos.CreditOperation, 25000)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertTrue(ledger.ErrInvalidBalance.Is(err))
 }
@@ -126,8 +126,8 @@ func transactionWithInvalidIdempotencyKeyReturnsErrIdempotencyKeyViolation(log *
 	idempotencyKey := uuid.New()
 
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(idempotencyKey, accountID1, vos.NewAccountVersion, vos.DebitOperation, 15000)
-	t.AddEntry(idempotencyKey, accountID2, vos.NewAccountVersion, vos.CreditOperation, 15000)
+	t.AddEntry(idempotencyKey, accountID1, vos.NextAccountVersion, vos.DebitOperation, 15000)
+	t.AddEntry(idempotencyKey, accountID2, vos.NextAccountVersion, vos.CreditOperation, 15000)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertTrue(ledger.ErrIdempotencyKeyViolation.Is(err))
 }

@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/sirupsen/logrus"
+
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/usecases"
 	"github.com/stone-co/the-amazing-ledger/app/gateways/db/postgres"
@@ -45,9 +46,6 @@ func main() {
 	ledgerRepository := postgres.NewLedgerRepository(conn, log)
 
 	ledgerUseCase := usecases.NewLedgerUseCase(log, ledgerRepository)
-	if err = ledgerUseCase.LoadObjectsIntoCache(context.Background()); err != nil {
-		log.WithError(err).Fatal("failed to populate cache")
-	}
 
 	httpServer := server.NewHttpServer(cfg.HttpServer, BuildGitCommit, BuildTime, log)
 	defer func() {

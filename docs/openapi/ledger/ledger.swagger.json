@@ -236,7 +236,7 @@
         },
         "expectedVersion": {
           "type": "string",
-          "format": "uint64",
+          "format": "int64",
           "description": "To deal with optimistic lock."
         },
         "operation": {
@@ -260,7 +260,7 @@
         },
         "currentVersion": {
           "type": "string",
-          "format": "uint64",
+          "format": "int64",
           "title": "The account version"
         },
         "totalCredit": {

@@ -55,7 +55,7 @@ message Entry  {
   // Account involved in the operation.
   string account_id = 2;
   // To deal with optimistic lock.
-  uint64 expected_version = 3;
+  int64 expected_version = 3;
   // Operation: debit or credit.
   Operation operation = 4;
   // Amount (in cents).
@@ -83,7 +83,7 @@ message GetAccountBalanceResponse {
   // The account name
   string account_path = 1;
   // The account version
-  uint64 current_version = 2;
+  int64 current_version = 2;
   // All credit accumulated
   int64 total_credit = 3;
   // All debit accumulated

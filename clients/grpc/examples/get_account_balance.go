@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
 )
@@ -20,8 +21,8 @@ func getAccountBalance(log *logrus.Entry, conn *ledger.Connection) {
 
 	// Define a new transaction with 2 entries
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), accountPathOne, vos.NewAccountVersion, vos.CreditOperation, 1000)
-	t.AddEntry(uuid.New(), accountPathTwo, vos.NewAccountVersion, vos.DebitOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathOne, vos.NextAccountVersion, vos.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NextAccountVersion, vos.DebitOperation, 1000)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
@@ -41,8 +42,8 @@ func getAccountBalanceWithMoreEntries(log *logrus.Entry, conn *ledger.Connection
 	accountPathTwo := "liability:stone:clients:" + uuid.New().String()
 
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), accountPathOne, vos.NewAccountVersion, vos.CreditOperation, 1000)
-	t.AddEntry(uuid.New(), accountPathTwo, vos.NewAccountVersion, vos.DebitOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathOne, vos.NextAccountVersion, vos.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NextAccountVersion, vos.DebitOperation, 1000)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
@@ -50,7 +51,7 @@ func getAccountBalanceWithMoreEntries(log *logrus.Entry, conn *ledger.Connection
 
 	t = conn.NewTransaction(uuid.New())
 	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), vos.DebitOperation, 250)
-	t.AddEntry(uuid.New(), accountPathTwo, vos.AnyAccountVersion, vos.CreditOperation, 250)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NextAccountVersion, vos.CreditOperation, 250)
 	err = conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
@@ -89,8 +90,8 @@ func getAccountBalanceWithWildcard(log *logrus.Entry, conn *ledger.Connection) {
 	accountPathFour := "liability:stone:clients:" + uuid.New().String()
 
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), accountPathOne, vos.NewAccountVersion, vos.CreditOperation, transactionOne)
-	t.AddEntry(uuid.New(), accountPathFour, vos.NewAccountVersion, vos.DebitOperation, transactionOne)
+	t.AddEntry(uuid.New(), accountPathOne, vos.NextAccountVersion, vos.CreditOperation, transactionOne)
+	t.AddEntry(uuid.New(), accountPathFour, vos.NextAccountVersion, vos.DebitOperation, transactionOne)
 
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
@@ -99,7 +100,7 @@ func getAccountBalanceWithWildcard(log *logrus.Entry, conn *ledger.Connection) {
 	AssertEqual(nil, err)
 
 	t = conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), accountPathTwo, vos.NewAccountVersion, vos.CreditOperation, transactionTwo)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NextAccountVersion, vos.CreditOperation, transactionTwo)
 	t.AddEntry(uuid.New(), accountPathFour, accountFour.CurrentVersion(), vos.DebitOperation, transactionTwo)
 
 	err = conn.SaveTransaction(context.Background(), t)
@@ -109,7 +110,7 @@ func getAccountBalanceWithWildcard(log *logrus.Entry, conn *ledger.Connection) {
 	AssertEqual(nil, err)
 
 	t = conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), accountPathThree, vos.NewAccountVersion, vos.CreditOperation, transactionThree)
+	t.AddEntry(uuid.New(), accountPathThree, vos.NextAccountVersion, vos.CreditOperation, transactionThree)
 	t.AddEntry(uuid.New(), accountPathFour, accountFour.CurrentVersion(), vos.DebitOperation, transactionThree)
 
 	err = conn.SaveTransaction(context.Background(), t)

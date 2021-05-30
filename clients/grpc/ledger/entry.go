@@ -2,6 +2,7 @@ package ledger
 
 import (
 	"github.com/google/uuid"
+
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 )
@@ -18,7 +19,7 @@ func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion v
 	t.Message.Entries = append(t.Message.Entries, &proto.Entry{
 		Id:              id.String(),
 		AccountId:       accountId,
-		ExpectedVersion: uint64(expectedVersion),
+		ExpectedVersion: expectedVersion.AsInt(),
 		Operation:       pbOperation,
 		Amount:          int32(amount),
 	})

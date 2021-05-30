@@ -11,19 +11,14 @@ import (
 var _ domain.Repository = &Repository{}
 
 type Repository struct {
-	OnCreateTransaction    func(context.Context, entities.Transaction) error
-	OnLoadObjectsIntoCache func(ctx context.Context, cachedAccounts *entities.CachedAccounts) (vos.Version, error)
-	OnGetAccountBalance    func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
-	OnGetAnalyticalData    func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
-	OnGetAccountHistory    func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
+	OnCreateTransaction func(context.Context, entities.Transaction) error
+	OnGetAccountBalance func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
+	OnGetAnalyticalData func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
+	OnGetAccountHistory func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
 }
 
 func (s Repository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
 	return s.OnCreateTransaction(ctx, transaction)
-}
-
-func (s Repository) LoadObjectsIntoCache(ctx context.Context, cachedAccounts *entities.CachedAccounts) (vos.Version, error) {
-	return s.OnLoadObjectsIntoCache(ctx, cachedAccounts)
 }
 
 func (s Repository) GetAccountBalance(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {

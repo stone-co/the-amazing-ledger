@@ -1,17 +1,16 @@
 begin;
 
-drop index idx_entry_account_gist;
-drop index idx_entry_company;
-drop index idx_entry_event;
-drop index idx_created_at;
-drop index idx_competence_date;
+drop index if exists idx_entry_account_gist;
+drop index if exists idx_entry_tx;
+drop index if exists idx_entry_company;
+drop index if exists idx_entry_event;
+drop index if exists idx_created_at;
 
-drop table entry;
-drop table event;
-drop table company;
+drop table if exists entry;
+drop table if exists event;
 
-drop type operation;
+drop table if exists account_version_fillfactor;
 
-drop extension ltree;
+drop extension if exists ltree;
 
 commit;
