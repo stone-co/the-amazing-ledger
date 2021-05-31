@@ -2,7 +2,10 @@ package postgres
 
 import (
 	"context"
+	"errors"
 
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v4"
 
 	"github.com/stone-co/the-amazing-ledger/app"
@@ -47,15 +50,21 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 
 	br := tx.SendBatch(ctx, &batch)
 	err = br.Close()
-	if err != nil {
-		// TODO: assuming that is duplicate key.
-		return app.ErrIdempotencyKeyViolation
-	}
-
-	err = tx.Commit(ctx)
-	if err != nil {
+	if err == nil {
+		tx.Commit(ctx) // TODO: double check
 		return err
 	}
 
-	return nil
+	var pgErr *pgconn.PgError
+	if ok := errors.As(err, &pgErr); !ok {
+		return err
+	}
+
+	if pgErr.Code == pgerrcode.RaiseException {
+		return app.ErrInvalidVersion
+	} else if pgErr.Code == pgerrcode.UniqueViolation {
+		return app.ErrIdempotencyKeyViolation
+	}
+
+	return err
 }

@@ -21,7 +21,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 	t.Run("Successfully creates a transaction with minimum inputs", func(t *testing.T) {
 		e1, _ := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NextAccountVersion, 123)
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NextAccountVersion, 123)
-		entries := []entities.Entry{*e1, *e2}
+		entries := []entities.Entry{e1, e2}
 
 		tx, err := entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -29,14 +29,14 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = newFakeCreateTransactionUseCase(nil).CreateTransaction(context.Background(), *tx)
+		err = newFakeCreateTransactionUseCase(nil).CreateTransaction(context.Background(), tx)
 		assert.Nil(t, err)
 	})
 
 	t.Run("Successfully creates a transaction with new accounts", func(t *testing.T) {
 		e1, _ := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NextAccountVersion, 123)
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NextAccountVersion, 123)
-		entries := []entities.Entry{*e1, *e2}
+		entries := []entities.Entry{e1, e2}
 
 		tx, err := entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -44,7 +44,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = newFakeCreateTransactionUseCase(nil).CreateTransaction(context.Background(), *tx)
+		err = newFakeCreateTransactionUseCase(nil).CreateTransaction(context.Background(), tx)
 		assert.Nil(t, err)
 	})
 
@@ -53,7 +53,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		e1, _ := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NextAccountVersion, 123)
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NextAccountVersion, 123)
-		entries := []entities.Entry{*e1, *e2}
+		entries := []entities.Entry{e1, e2}
 
 		tx, err := entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -61,12 +61,12 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.Nil(t, err)
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 2, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 3, 123)
-		entries = []entities.Entry{*e1, *e2}
+		entries = []entities.Entry{e1, e2}
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -74,7 +74,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.Nil(t, err)
 	})
 
@@ -83,7 +83,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		e1, _ := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NextAccountVersion, 123)
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NextAccountVersion, 123)
-		entries := []entities.Entry{*e1, *e2}
+		entries := []entities.Entry{e1, e2}
 
 		tx, err := entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -91,12 +91,12 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.Nil(t, err)
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 1, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 1, 123)
-		entries = []entities.Entry{*e1, *e2}
+		entries = []entities.Entry{e1, e2}
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -104,7 +104,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.True(t, app.ErrInvalidVersion.Is(err))
 	})
 
@@ -113,7 +113,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		e1, _ := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NextAccountVersion, 123)
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NextAccountVersion, 123)
-		entries := []entities.Entry{*e1, *e2}
+		entries := []entities.Entry{e1, e2}
 
 		tx, err := entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -121,13 +121,13 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 
 		assert.Nil(t, err)
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 1, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 1, 123)
-		entries = []entities.Entry{*e1, *e2}
+		entries = []entities.Entry{e1, e2}
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -135,7 +135,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.True(t, app.ErrInvalidVersion.Is(err))
 	})
 
@@ -144,7 +144,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		e1, _ := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NextAccountVersion, 123)
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NextAccountVersion, 123)
-		entries := []entities.Entry{*e1, *e2}
+		entries := []entities.Entry{e1, e2}
 
 		tx, err := entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -152,12 +152,12 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.Nil(t, err)
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 1, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 1, 123)
-		entries = []entities.Entry{*e1, *e2}
+		entries = []entities.Entry{e1, e2}
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -165,12 +165,12 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.Nil(t, err)
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 2, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 3, 123)
-		entries = []entities.Entry{*e1, *e2}
+		entries = []entities.Entry{e1, e2}
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -178,12 +178,12 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.True(t, app.ErrInvalidVersion.Is(err))
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 4, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 5, 123)
-		entries = []entities.Entry{*e1, *e2}
+		entries = []entities.Entry{e1, e2}
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -191,7 +191,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.Nil(t, err)
 	})
 
@@ -200,7 +200,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		e1, _ := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NextAccountVersion, 123)
 		e2, _ := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NextAccountVersion, 123)
-		entries := []entities.Entry{*e1, *e2}
+		entries := []entities.Entry{e1, e2}
 
 		tx, err := entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -208,12 +208,12 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.Nil(t, err)
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 2, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 3, 123)
-		entries = []entities.Entry{*e1, *e2}
+		entries = []entities.Entry{e1, e2}
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -221,13 +221,13 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.Nil(t, err)
 
 		idempotencyKey := uuid.New()
 		e1, _ = entities.NewEntry(idempotencyKey, vos.DebitOperation, accountID1, 4, 123)
 		e2, _ = entities.NewEntry(idempotencyKey, vos.CreditOperation, accountID2, 5, 123)
-		entries = []entities.Entry{*e1, *e2}
+		entries = []entities.Entry{e1, e2}
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -240,12 +240,12 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 				return app.ErrIdempotencyKeyViolation
 			},
 		}
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.True(t, app.ErrIdempotencyKeyViolation.Is(err))
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 4, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 5, 123)
-		entries = []entities.Entry{*e1, *e2}
+		entries = []entities.Entry{e1, e2}
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
@@ -258,7 +258,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 				return nil
 			},
 		}
-		err = useCase.CreateTransaction(context.Background(), *tx)
+		err = useCase.CreateTransaction(context.Background(), tx)
 		assert.Nil(t, err)
 	})
 }

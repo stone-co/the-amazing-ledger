@@ -15,25 +15,25 @@ type Entry struct {
 	Amount    int
 }
 
-func NewEntry(id uuid.UUID, operation vos.OperationType, accountID string, version vos.Version, amount int) (*Entry, error) {
+func NewEntry(id uuid.UUID, operation vos.OperationType, accountID string, version vos.Version, amount int) (Entry, error) {
 	if id == uuid.Nil {
-		return nil, app.ErrInvalidEntryID
+		return Entry{}, app.ErrInvalidEntryID
 	}
 
 	if operation == vos.InvalidOperation {
-		return nil, app.ErrInvalidOperation
+		return Entry{}, app.ErrInvalidOperation
 	}
 
 	if amount <= 0 {
-		return nil, app.ErrInvalidAmount
+		return Entry{}, app.ErrInvalidAmount
 	}
 
 	acc, err := vos.NewAccountPath(accountID)
 	if err != nil {
-		return nil, err
+		return Entry{}, err
 	}
 
-	return &Entry{
+	return Entry{
 		ID:        id,
 		Operation: operation,
 		Account:   acc,

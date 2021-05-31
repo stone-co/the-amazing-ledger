@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
@@ -11,18 +12,18 @@ import (
 type Transaction struct {
 	ID             uuid.UUID
 	Entries        []Entry
-	Company        uint32
 	Event          uint32
+	Company        string
 	CompetenceDate time.Time
 }
 
-func NewTransaction(id uuid.UUID, entries ...Entry) (*Transaction, error) {
+func NewTransaction(id uuid.UUID, entries ...Entry) (Transaction, error) {
 	if id == uuid.Nil {
-		return nil, app.ErrInvalidTransactionID
+		return Transaction{}, app.ErrInvalidTransactionID
 	}
 
 	if len(entries) <= 1 {
-		return nil, app.ErrInvalidEntriesNumber
+		return Transaction{}, app.ErrInvalidEntriesNumber
 	}
 
 	balance := 0
@@ -35,10 +36,10 @@ func NewTransaction(id uuid.UUID, entries ...Entry) (*Transaction, error) {
 	}
 
 	if balance != 0 {
-		return nil, app.ErrInvalidBalance
+		return Transaction{}, app.ErrInvalidBalance
 	}
 
-	t := &Transaction{
+	t := Transaction{
 		ID:      id,
 		Entries: entries,
 	}
