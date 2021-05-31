@@ -7,11 +7,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactionRequest) (*empty.Empty, error) {
@@ -50,7 +51,7 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 			return nil, status.Error(codes.InvalidArgument, domainErr.Error())
 		}
 
-		domainEntries[i] = *domainEntry
+		domainEntries[i] = domainEntry
 	}
 
 	tx, err := entities.NewTransaction(tid, domainEntries...)
@@ -61,7 +62,7 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 	tx.Event = req.Event
 	tx.CompetenceDate = req.CompetenceDate.AsTime()
 
-	if err := a.UseCase.CreateTransaction(ctx, *tx); err != nil {
+	if err := a.UseCase.CreateTransaction(ctx, tx); err != nil {
 		log.WithError(err).Error("creating transaction")
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}

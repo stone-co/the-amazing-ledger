@@ -6,12 +6,13 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/app/domain/mocks"
-	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/stone-co/the-amazing-ledger/app/domain/mocks"
+	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 )
 
 func TestAPI_CreateTransaction_Success(t *testing.T) {
@@ -41,7 +42,7 @@ func TestAPI_CreateTransaction_Success(t *testing.T) {
 						Amount:          123,
 					},
 				},
-				Company:        1,
+				Company:        "abc",
 				Event:          1,
 				CompetenceDate: timestamppb.Now(),
 			},
@@ -90,7 +91,7 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 						Amount:          123,
 					},
 				},
-				Company:        1,
+				Company:        "abc",
 				Event:          1,
 				CompetenceDate: timestamppb.Now(),
 			},
@@ -110,7 +111,7 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 						Amount:          123,
 					},
 				},
-				Company:        1,
+				Company:        "abc",
 				Event:          1,
 				CompetenceDate: timestamppb.Now(),
 			},
@@ -130,7 +131,7 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 						Amount:          -3,
 					},
 				},
-				Company:        1,
+				Company:        "abc",
 				Event:          1,
 				CompetenceDate: timestamppb.Now(),
 			},

@@ -211,8 +211,7 @@
           "description": "The transaction competence date (execution date)."
         },
         "company": {
-          "type": "integer",
-          "format": "int64",
+          "type": "string",
           "title": "The ledgers owner. Eg.: company name"
         },
         "event": {
