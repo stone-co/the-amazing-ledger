@@ -20,7 +20,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
 
-	t.Run("insert transaction successfully with no previous versions", func(t *testing.T) {
+	t.Run("insert transaction successfully with no previous versions - auto version", func(t *testing.T) {
 		e1, _ := entities.NewEntry(
 			uuid.New(),
 			vos.DebitOperation,
@@ -32,6 +32,45 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			uuid.New(),
 			vos.CreditOperation,
 			"liability.abc.account2",
+			vos.IgnoreAccountVersion,
+			100,
+		)
+
+		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		assert.NoError(t, err)
+
+		err = r.CreateTransaction(ctx, tx)
+		assert.NoError(t, err)
+
+		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, vos.Version(1), ev1)
+
+		ev2, err := fetchEntryVersion(ctx, pgDocker.DB, e2.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, vos.IgnoreAccountVersion, ev2)
+
+		v1, err := fetchAccountVersion(ctx, pgDocker.DB, e1.Account)
+		assert.NoError(t, err)
+		assert.Equal(t, vos.Version(1), v1)
+
+		v2, err := fetchAccountVersion(ctx, pgDocker.DB, e2.Account)
+		assert.NoError(t, err)
+		assert.Equal(t, vos.Version(0), v2)
+	})
+
+	t.Run("insert transaction successfully with no previous versions - manual version", func(t *testing.T) {
+		e1, _ := entities.NewEntry(
+			uuid.New(),
+			vos.DebitOperation,
+			"liability.abc.account3",
+			vos.Version(3),
+			100,
+		)
+		e2, _ := entities.NewEntry(
+			uuid.New(),
+			vos.CreditOperation,
+			"liability.abc.account4",
 			vos.IgnoreAccountVersion,
 			100,
 		)
