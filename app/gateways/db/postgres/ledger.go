@@ -3,11 +3,12 @@ package postgres
 import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/sirupsen/logrus"
+
 	"github.com/stone-co/the-amazing-ledger/app/domain"
 )
 
 const (
-	collection = "entries"
+	collection = "entry"
 )
 
 var _ domain.Repository = &LedgerRepository{}
