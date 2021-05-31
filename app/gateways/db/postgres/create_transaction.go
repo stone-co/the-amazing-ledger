@@ -51,7 +51,7 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 	br := tx.SendBatch(ctx, &batch)
 	err = br.Close()
 	if err == nil {
-		tx.Commit(ctx) // TODO: double check
+		_ = tx.Commit(ctx) // TODO: double check
 		return err
 	}
 

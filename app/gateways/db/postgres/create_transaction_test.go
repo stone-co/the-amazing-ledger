@@ -154,6 +154,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		assert.NoError(t, err)
 		err = r.CreateTransaction(ctx, tx)
 		assert.ErrorIs(t, err, app.ErrInvalidVersion)
 
@@ -183,6 +184,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		assert.NoError(t, err)
 		err = r.CreateTransaction(ctx, tx)
 		assert.ErrorIs(t, err, app.ErrInvalidVersion)
 
@@ -212,6 +214,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		assert.NoError(t, err)
 		err = r.CreateTransaction(ctx, tx)
 		assert.ErrorIs(t, err, app.ErrInvalidVersion)
 
@@ -241,6 +244,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		assert.NoError(t, err)
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
 

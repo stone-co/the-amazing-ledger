@@ -43,15 +43,15 @@ func SetupTest(migrationsPath string) *PostgresDocker {
 		database)
 
 	if err = pool.Retry(func() error {
-		var err error
+		var rErr error
 		ctx := context.Background()
-		conn, err = pgxpool.Connect(ctx, connString)
-		if err != nil {
-			return err
+		conn, rErr = pgxpool.Connect(ctx, connString)
+		if rErr != nil {
+			return rErr
 		}
-		_, err = conn.Acquire(ctx)
-		if err != nil {
-			return err
+		_, rErr = conn.Acquire(ctx)
+		if rErr != nil {
+			return rErr
 		}
 
 		return nil

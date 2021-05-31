@@ -14,6 +14,8 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
+const _company = "abc"
+
 func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 	accountID1 := "liability.clients.available." + uuid.New().String()
 	accountID2 := "liability.clients.available." + uuid.New().String()
@@ -25,7 +27,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		tx, err := entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
-		tx.Company = "abc"
+		tx.Company = _company
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
@@ -40,7 +42,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		tx, err := entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
-		tx.Company = "abc"
+		tx.Company = _company
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
@@ -57,7 +59,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		tx, err := entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
-		tx.Company = "abc"
+		tx.Company = _company
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
@@ -70,7 +72,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
-		tx.Company = "abc"
+		tx.Company = _company
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
@@ -87,7 +89,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		tx, err := entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
-		tx.Company = "abc"
+		tx.Company = _company
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
@@ -100,7 +102,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
-		tx.Company = "abc"
+		tx.Company = _company
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
@@ -114,7 +116,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
-		tx.Company = "abc"
+		tx.Company = _company
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
@@ -132,7 +134,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 		tx, err = entities.NewTransaction(uuid.New(), entries...)
 		assert.Nil(t, err)
-		tx.Company = "abc"
+		tx.Company = _company
 		tx.Event = 1
 		tx.CompetenceDate = time.Now()
 
