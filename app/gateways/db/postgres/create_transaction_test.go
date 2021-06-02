@@ -20,6 +20,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
 
+	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('default');`)
+	assert.NoError(t, err)
+
 	t.Run("insert transaction successfully with no previous versions - auto version", func(t *testing.T) {
 		e1, _ := entities.NewEntry(
 			uuid.New(),
@@ -37,6 +40,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		tx.Event = 1
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)
@@ -76,6 +80,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		tx.Event = 1
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)
@@ -115,6 +120,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		tx.Event = 1
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)
@@ -154,6 +160,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		tx.Event = 1
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)
@@ -193,6 +200,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		tx.Event = 1
 		assert.NoError(t, err)
 		err = r.CreateTransaction(ctx, tx)
 		assert.ErrorIs(t, err, app.ErrInvalidVersion)
@@ -223,6 +231,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		tx.Event = 1
 		assert.NoError(t, err)
 		err = r.CreateTransaction(ctx, tx)
 		assert.ErrorIs(t, err, app.ErrInvalidVersion)
@@ -253,6 +262,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		tx.Event = 1
 		assert.NoError(t, err)
 		err = r.CreateTransaction(ctx, tx)
 		assert.ErrorIs(t, err, app.ErrInvalidVersion)
@@ -283,6 +293,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+		tx.Event = 1
 		assert.NoError(t, err)
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)

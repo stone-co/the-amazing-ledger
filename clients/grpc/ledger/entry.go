@@ -19,7 +19,7 @@ func (t *Transaction) AddEntry(id uuid.UUID, accountId string, expectedVersion v
 	t.Message.Entries = append(t.Message.Entries, &proto.Entry{
 		Id:              id.String(),
 		AccountId:       accountId,
-		ExpectedVersion: expectedVersion.AsInt(),
+		ExpectedVersion: expectedVersion.AsInt64(),
 		Operation:       pbOperation,
 		Amount:          int32(amount),
 	})
