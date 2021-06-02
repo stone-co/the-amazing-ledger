@@ -21,18 +21,6 @@ func newFakeCreateTransactionUseCase(result error) *LedgerUseCase {
 	return NewLedgerUseCase(log, mockRepository)
 }
 
-func newFakeLoadObjectsIntoCacheUseCase(maxVersion vos.Version, result error) *LedgerUseCase {
-	log := logrus.New()
-
-	mockRepository := &mocks.Repository{
-		OnLoadObjectsIntoCache: func(ctx context.Context, cachedAccounts *entities.CachedAccounts) (vos.Version, error) {
-			return maxVersion, result
-		},
-	}
-
-	return NewLedgerUseCase(log, mockRepository)
-}
-
 func newFakeGetAccountBalance(accountBalance vos.AccountBalance, result error) *LedgerUseCase {
 	log := logrus.New()
 

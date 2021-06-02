@@ -21,9 +21,9 @@ func defineTransactionWithThreeEntries(log *logrus.Entry, conn *ledger.Connectio
 	accountID2 := "liability:clients:available:" + uuid.New().String()
 	accountID3 := "liability:clients:available:" + uuid.New().String()
 
-	t.AddEntry(uuid.New(), accountID1, vos.NewAccountVersion, vos.DebitOperation, 15000)
-	t.AddEntry(uuid.New(), accountID2, vos.NewAccountVersion, vos.CreditOperation, 10000)
-	t.AddEntry(uuid.New(), accountID3, vos.NewAccountVersion, vos.CreditOperation, 5000)
+	t.AddEntry(uuid.New(), accountID1, vos.NextAccountVersion, vos.DebitOperation, 15000)
+	t.AddEntry(uuid.New(), accountID2, vos.NextAccountVersion, vos.CreditOperation, 10000)
+	t.AddEntry(uuid.New(), accountID3, vos.NextAccountVersion, vos.CreditOperation, 5000)
 
 	// Save transaction
 	err := conn.SaveTransaction(context.Background(), t)

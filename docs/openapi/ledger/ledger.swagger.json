@@ -211,8 +211,7 @@
           "description": "The transaction competence date (execution date)."
         },
         "company": {
-          "type": "integer",
-          "format": "int64",
+          "type": "string",
           "title": "The ledgers owner. Eg.: company name"
         },
         "event": {
@@ -236,7 +235,7 @@
         },
         "expectedVersion": {
           "type": "string",
-          "format": "uint64",
+          "format": "int64",
           "description": "To deal with optimistic lock."
         },
         "operation": {
@@ -260,7 +259,7 @@
         },
         "currentVersion": {
           "type": "string",
-          "format": "uint64",
+          "format": "int64",
           "title": "The account version"
         },
         "totalCredit": {

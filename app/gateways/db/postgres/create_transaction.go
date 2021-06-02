@@ -2,7 +2,10 @@ package postgres
 
 import (
 	"context"
+	"errors"
 
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v4"
 
 	"github.com/stone-co/the-amazing-ledger/app"
@@ -11,7 +14,7 @@ import (
 )
 
 const createTransactionQuery = `
-insert into entry (id, tx_id, version, operation, company, event, amount, competence_date, account)
+insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
 values ($1, $2, $3, $4, $5, $6, $7, $8, $9);
 `
 
@@ -35,27 +38,33 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 			createTransactionQuery,
 			entry.ID,
 			transaction.ID,
-			entry.Version,
-			entry.Operation.String(),
-			transaction.Company,
 			transaction.Event,
+			entry.Operation,
+			entry.Version,
 			entry.Amount,
 			transaction.CompetenceDate,
 			entry.Account.Name(),
+			transaction.Company,
 		)
 	}
 
 	br := tx.SendBatch(ctx, &batch)
 	err = br.Close()
-	if err != nil {
-		// TODO: assuming that is duplicate key.
-		return app.ErrIdempotencyKeyViolation
-	}
-
-	err = tx.Commit(ctx)
-	if err != nil {
+	if err == nil {
+		_ = tx.Commit(ctx) // TODO: double check
 		return err
 	}
 
-	return nil
+	var pgErr *pgconn.PgError
+	if ok := errors.As(err, &pgErr); !ok {
+		return err
+	}
+
+	if pgErr.Code == pgerrcode.RaiseException {
+		return app.ErrInvalidVersion
+	} else if pgErr.Code == pgerrcode.UniqueViolation {
+		return app.ErrIdempotencyKeyViolation
+	}
+
+	return err
 }

@@ -41,7 +41,7 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 
 	return &proto.GetAccountBalanceResponse{
 		AccountPath:    accountBalance.Account.Name(),
-		CurrentVersion: accountBalance.CurrentVersion.ToUInt64(),
+		CurrentVersion: accountBalance.CurrentVersion.AsInt64(),
 		TotalCredit:    int64(accountBalance.TotalCredit),
 		TotalDebit:     int64(accountBalance.TotalDebit),
 		Balance:        int64(accountBalance.Balance()),

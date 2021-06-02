@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/clients/grpc/ledger"
 )
@@ -17,8 +18,8 @@ func getAccountHistory(log *logrus.Entry, conn *ledger.Connection) {
 	accountPathTwo := "liability:stone:clients:" + uuid.New().String()
 
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), accountPathOne, vos.NewAccountVersion, vos.CreditOperation, 1000)
-	t.AddEntry(uuid.New(), accountPathTwo, vos.NewAccountVersion, vos.DebitOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathOne, vos.NextAccountVersion, vos.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NextAccountVersion, vos.DebitOperation, 1000)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
@@ -26,7 +27,7 @@ func getAccountHistory(log *logrus.Entry, conn *ledger.Connection) {
 
 	t = conn.NewTransaction(uuid.New())
 	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), vos.DebitOperation, 500)
-	t.AddEntry(uuid.New(), accountPathTwo, vos.AnyAccountVersion, vos.CreditOperation, 500)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NextAccountVersion, vos.CreditOperation, 500)
 	err = conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
@@ -61,8 +62,8 @@ func getAccountHistoryWithForEntries(log *logrus.Entry, conn *ledger.Connection)
 	accountPathTwo := "liability:stone:clients:" + uuid.New().String()
 
 	t := conn.NewTransaction(uuid.New())
-	t.AddEntry(uuid.New(), accountPathOne, vos.NewAccountVersion, vos.CreditOperation, 1000)
-	t.AddEntry(uuid.New(), accountPathTwo, vos.NewAccountVersion, vos.DebitOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathOne, vos.NextAccountVersion, vos.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NextAccountVersion, vos.DebitOperation, 1000)
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
@@ -70,7 +71,7 @@ func getAccountHistoryWithForEntries(log *logrus.Entry, conn *ledger.Connection)
 
 	t = conn.NewTransaction(uuid.New())
 	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), vos.CreditOperation, 500)
-	t.AddEntry(uuid.New(), accountPathTwo, vos.AnyAccountVersion, vos.DebitOperation, 500)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NextAccountVersion, vos.DebitOperation, 500)
 	err = conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
@@ -78,7 +79,7 @@ func getAccountHistoryWithForEntries(log *logrus.Entry, conn *ledger.Connection)
 
 	t = conn.NewTransaction(uuid.New())
 	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), vos.DebitOperation, 500)
-	t.AddEntry(uuid.New(), accountPathTwo, vos.AnyAccountVersion, vos.CreditOperation, 500)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NextAccountVersion, vos.CreditOperation, 500)
 	err = conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
@@ -86,7 +87,7 @@ func getAccountHistoryWithForEntries(log *logrus.Entry, conn *ledger.Connection)
 
 	t = conn.NewTransaction(uuid.New())
 	t.AddEntry(uuid.New(), accountPathOne, accountOne.CurrentVersion(), vos.DebitOperation, 1000)
-	t.AddEntry(uuid.New(), accountPathTwo, vos.AnyAccountVersion, vos.CreditOperation, 1000)
+	t.AddEntry(uuid.New(), accountPathTwo, vos.NextAccountVersion, vos.CreditOperation, 1000)
 	err = conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
