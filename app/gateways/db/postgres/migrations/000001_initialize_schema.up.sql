@@ -12,7 +12,7 @@ create table if not exists entry
 (
     id              uuid primary key,
     tx_id           uuid        not null,
-    event           smallint    not null,
+    event           smallint    not null references event(id),
     operation       smallint    not null check (operation = 1 or operation = 2),
     version         int         not null,
     amount          bigint      not null,

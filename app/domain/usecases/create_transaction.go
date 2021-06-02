@@ -7,9 +7,5 @@ import (
 )
 
 func (l *LedgerUseCase) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
-	if err := l.repository.CreateTransaction(ctx, transaction); err != nil {
-		return err
-	}
-
-	return nil
+	return l.repository.CreateTransaction(ctx, transaction)
 }

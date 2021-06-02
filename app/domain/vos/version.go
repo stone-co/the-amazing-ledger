@@ -7,6 +7,6 @@ const (
 	NextAccountVersion   Version = 0
 )
 
-func (v Version) AsInt() int64 {
+func (v Version) AsInt64() int64 {
 	return int64(v)
 }

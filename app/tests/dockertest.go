@@ -77,7 +77,7 @@ func RemoveContainer(pgDocker *PostgresDocker) {
 }
 
 func TruncateTables(ctx context.Context, db *pgx.Conn, tables ...string) {
-	if _, err := db.Exec(ctx, "truncate transfers, accounts"); err != nil {
+	if _, err := db.Exec(ctx, "truncate entry, event, account_version"); err != nil {
 		panic(fmt.Errorf("failed to truncate table(s) %v: %w", tables, err))
 	}
 }
