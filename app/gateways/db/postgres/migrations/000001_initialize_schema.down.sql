@@ -9,8 +9,6 @@ drop index if exists idx_created_at;
 drop table if exists entry;
 drop table if exists event;
 
-drop table if exists account_version_fillfactor;
-
 drop extension if exists ltree;
 
 commit;
