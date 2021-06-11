@@ -12,23 +12,11 @@ import (
 
 const getAccountBalanceQuery = `
 select
-    max(version) as current_version,
-    SUM(
-        CASE operation
-        WHEN 'credit' THEN amount
-        ELSE 0
-        END
-    ) AS total_credit,
-    SUM(
-        CASE operation
-        WHEN 'debit' THEN amount
-        ELSE 0
-        END
-    ) AS total_debit
+    credit_balance as credit,
+    debit_balance as debit
 from
-     entry
-where account = $1
-group by account;
+    get_account_balance($1)
+;
 `
 
 func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
