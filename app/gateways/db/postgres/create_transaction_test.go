@@ -40,8 +40,8 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
-		tx.Event = 1
 		assert.NoError(t, err)
+		tx.Event = 1
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
@@ -80,8 +80,8 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
-		tx.Event = 1
 		assert.NoError(t, err)
+		tx.Event = 1
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
@@ -120,8 +120,8 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
-		tx.Event = 1
 		assert.NoError(t, err)
+		tx.Event = 1
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
@@ -160,8 +160,8 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
-		tx.Event = 1
 		assert.NoError(t, err)
+		tx.Event = 1
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
@@ -200,8 +200,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
-		tx.Event = 1
 		assert.NoError(t, err)
+		tx.Event = 1
+
 		err = r.CreateTransaction(ctx, tx)
 		assert.ErrorIs(t, err, app.ErrInvalidVersion)
 
@@ -231,8 +232,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
-		tx.Event = 1
 		assert.NoError(t, err)
+		tx.Event = 1
+
 		err = r.CreateTransaction(ctx, tx)
 		assert.ErrorIs(t, err, app.ErrInvalidVersion)
 
@@ -262,8 +264,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
-		tx.Event = 1
 		assert.NoError(t, err)
+		tx.Event = 1
+
 		err = r.CreateTransaction(ctx, tx)
 		assert.ErrorIs(t, err, app.ErrInvalidVersion)
 
@@ -293,8 +296,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), e1, e2)
-		tx.Event = 1
 		assert.NoError(t, err)
+		tx.Event = 1
+
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
 

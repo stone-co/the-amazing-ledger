@@ -15,8 +15,7 @@ create or replace function _get_account_balance(_account ltree)
             credit      bigint,
             debit       bigint,
             tx_dt       timestamptz,
-            tx_version  int,
-            min_version int
+            tx_version  int
         )
     language sql
 as
@@ -25,8 +24,7 @@ $$
         sub.total_debit,
         sub.total_credit,
         to_timestamp(sub.recent[1]) as last_tx_date,
-        sub.recent[2]::int as last_tx_version,
-        sub.min_version
+        sub.recent[2]::int as last_tx_version
     from (
         select
             sum(
@@ -41,8 +39,7 @@ $$
                     else 0
                 end
             ) as total_debit,
-            (max(array[extract('epoch' from created_at), version])) as recent,
-            (min(array[version]))[1] as min_version
+            (max(array[extract('epoch' from created_at), version])) as recent
         from entry
         where account = _account
     ) sub;
@@ -55,8 +52,7 @@ create or replace function _get_account_balance_since(_account ltree, _dt timest
             credit      bigint,
             debit       bigint,
             tx_dt       timestamptz,
-            tx_version  int,
-            min_version int
+            tx_version  int
         )
     language sql
 as
@@ -65,8 +61,7 @@ $$
     sub.total_debit,
     sub.total_credit,
     to_timestamp(sub.recent[1]) as last_tx_date,
-    sub.recent[2]::int as last_tx_version,
-    sub.min_version
+    sub.recent[2]::int as last_tx_version
     from (
         select
             sum(
@@ -81,8 +76,7 @@ $$
                     else 0
                 end
             ) as total_debit,
-            (max(array[extract('epoch' from created_at), version])) as recent,
-            (min(array[version]))[1] as min_version
+            (max(array[extract('epoch' from created_at), version])) as recent
         from entry
         where
             account = _account
@@ -130,7 +124,7 @@ declare
     _current_debit   bigint;
     _last_tx_date    timestamptz;
     _last_tx_version int;
-    _min_tx_version  int;
+    _has_new bool;
 begin
     select
         credit,
@@ -152,22 +146,18 @@ begin
             credit,
             debit,
             tx_dt,
-            tx_version,
-            min_version
+            tx_version
         into
             credit_balance,
             debit_balance,
             dt,
-            version,
-            _min_tx_version
+            version
         from
             _get_account_balance(_account);
 
         if (version is null) then
             raise no_data_found;
-        end if;
-
-        if (_min_tx_version <= 0) then
+        elsif (version <= 0) then
             return;
         end if;
 
@@ -187,17 +177,20 @@ begin
         coalesce(debit + _current_debit, _current_debit),
         coalesce(tx_dt, _last_tx_date),
         coalesce(tx_version, _last_tx_version),
-        min_version
+        case
+            when tx_version is null then false
+            else true
+        end
     into
         credit_balance,
         debit_balance,
         dt,
         version,
-        _min_tx_version
+        _has_new
     from
         _get_account_balance_since(_account, _last_tx_date, _last_tx_version);
 
-    if (version is null or _min_tx_version <= 0) then
+    if (_has_new is false or version <= 0) then
         return;
     end if;
 
