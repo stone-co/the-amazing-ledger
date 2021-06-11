@@ -15,7 +15,7 @@ const getAccountBalanceQuery = `
 select
     credit_balance  as credit,
     debit_balance   as debit,
-	dt              as tx_date,
+    dt              as tx_date,
     version         as tx_version
 from
     get_account_balance($1)
