@@ -26,7 +26,6 @@ begin
 end;
 $$;
 
-drop trigger if exists tg_update_account_version on entry;
 create trigger tg_update_account_version
     before insert
     on entry

@@ -1,18 +1,22 @@
 package vos
 
+import "time"
+
 type AccountBalance struct {
-	Account        AccountPath
-	CurrentVersion Version
-	TotalCredit    int
-	TotalDebit     int
+	Account           AccountPath
+	CurrentVersion    Version
+	LastTransactionAt time.Time
+	TotalCredit       int
+	TotalDebit        int
 }
 
-func NewAccountBalance(account AccountPath, version Version, totalCredit, totalDebit int) AccountBalance {
+func NewAccountBalance(account AccountPath, version Version, totalCredit, totalDebit int, timestamp time.Time) AccountBalance {
 	return AccountBalance{
-		Account:        account,
-		CurrentVersion: version,
-		TotalCredit:    totalCredit,
-		TotalDebit:     totalDebit,
+		Account:           account,
+		CurrentVersion:    version,
+		LastTransactionAt: timestamp,
+		TotalCredit:       totalCredit,
+		TotalDebit:        totalDebit,
 	}
 }
 

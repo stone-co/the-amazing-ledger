@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 
@@ -12,8 +13,10 @@ import (
 
 const getAccountBalanceQuery = `
 select
-    credit_balance as credit,
-    debit_balance as debit
+    credit_balance 	as credit,
+    debit_balance  	as debit,
+	dt 				as tx_date,
+    version 		as tx_version
 from
     get_account_balance($1)
 ;
@@ -29,14 +32,16 @@ func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.Acc
 		getAccountBalanceQuery,
 		account.Name(),
 	)
-	var currentVersion uint64
 	var totalCredit int
 	var totalDebit int
+	var lastTransactionTime time.Time
+	var currentVersion int64
 
 	err := row.Scan(
-		&currentVersion,
 		&totalCredit,
 		&totalDebit,
+		&lastTransactionTime,
+		&currentVersion,
 	)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -45,7 +50,14 @@ func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.Acc
 		return vos.AccountBalance{}, err
 	}
 
-	accountBalance := vos.NewAccountBalance(account, vos.Version(currentVersion), totalCredit, totalDebit)
+	accountBalance := vos.NewAccountBalance(
+		account,
+		vos.Version(currentVersion),
+		totalCredit,
+		totalDebit,
+		lastTransactionTime,
+	)
+
 	return accountBalance, nil
 
 }
