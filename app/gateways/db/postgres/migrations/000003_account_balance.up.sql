@@ -163,6 +163,10 @@ begin
         from
             _get_account_balance(_account);
 
+        if (version is null) then
+            raise no_data_found;
+        end if;
+
         if (_min_tx_version <= 0) then
             return;
         end if;

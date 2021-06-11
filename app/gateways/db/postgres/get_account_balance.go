@@ -2,9 +2,11 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"time"
 
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgerrcode"
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
@@ -27,37 +29,36 @@ func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.Acc
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, getAccountBalanceQuery).End()
 
-	row := r.db.QueryRow(
-		context.Background(),
-		getAccountBalanceQuery,
-		account.Name(),
-	)
 	var totalCredit int
 	var totalDebit int
 	var lastTransactionTime time.Time
 	var currentVersion int64
 
-	err := row.Scan(
+	err := r.db.QueryRow(ctx, getAccountBalanceQuery, account.Name()).Scan(
 		&totalCredit,
 		&totalDebit,
 		&lastTransactionTime,
 		&currentVersion,
 	)
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return vos.AccountBalance{}, app.ErrAccountNotFound
-		}
+
+	if err == nil {
+		return vos.NewAccountBalance(
+			account,
+			vos.Version(currentVersion),
+			totalCredit,
+			totalDebit,
+			lastTransactionTime,
+		), nil
+	}
+
+	var pgErr *pgconn.PgError
+	if !errors.As(err, &pgErr) {
 		return vos.AccountBalance{}, err
 	}
 
-	accountBalance := vos.NewAccountBalance(
-		account,
-		vos.Version(currentVersion),
-		totalCredit,
-		totalDebit,
-		lastTransactionTime,
-	)
+	if pgErr.Code == pgerrcode.NoDataFound {
+		return vos.AccountBalance{}, app.ErrAccountNotFound
+	}
 
-	return accountBalance, nil
-
+	return vos.AccountBalance{}, err
 }
