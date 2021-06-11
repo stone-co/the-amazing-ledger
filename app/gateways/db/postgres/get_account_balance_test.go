@@ -19,13 +19,13 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
 
-	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('default');`)
+	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('defaults');`)
 	assert.NoError(t, err)
 
-	acc1, err := vos.NewAccountPath("liability.abc.account1")
+	acc1, err := vos.NewAccountPath("liability.123.account1")
 	assert.NoError(t, err)
 
-	acc2, err := vos.NewAccountPath("liability.abc.account2")
+	acc2, err := vos.NewAccountPath("liability.123.account2")
 	assert.NoError(t, err)
 
 	e1, _ := entities.NewEntry(
