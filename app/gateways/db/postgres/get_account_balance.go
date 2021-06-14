@@ -27,9 +27,9 @@ func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.Acc
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, getAccountBalanceQuery).End()
 
-	var totalCredit *int
-	var totalDebit *int
-	var currentVersion *int64
+	var totalCredit int
+	var totalDebit int
+	var currentVersion int64
 
 	err := r.db.QueryRow(ctx, getAccountBalanceQuery, account.Name()).Scan(
 		&totalCredit,
@@ -37,23 +37,23 @@ func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.Acc
 		&currentVersion,
 	)
 
-	if err == nil {
-		return vos.NewAccountBalance(
-			account,
-			vos.Version(*currentVersion),
-			*totalCredit,
-			*totalDebit,
-		), nil
-	}
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if !errors.As(err, &pgErr) {
+			return vos.AccountBalance{}, err
+		}
 
-	var pgErr *pgconn.PgError
-	if !errors.As(err, &pgErr) {
+		if pgErr.Code == pgerrcode.NoDataFound {
+			return vos.AccountBalance{}, app.ErrAccountNotFound
+		}
+
 		return vos.AccountBalance{}, err
 	}
 
-	if pgErr.Code == pgerrcode.NoDataFound {
-		return vos.AccountBalance{}, app.ErrAccountNotFound
-	}
-
-	return vos.AccountBalance{}, err
+	return vos.NewAccountBalance(
+		account,
+		vos.Version(currentVersion),
+		totalCredit,
+		totalDebit,
+	), nil
 }
