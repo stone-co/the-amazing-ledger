@@ -29,7 +29,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	acc2, err := vos.NewAccountPath("liability.123.account22")
 	assert.NoError(t, err)
 
-	balance, err := r.GetAccountBalance(ctx, acc1)
+	_, err = r.GetAccountBalance(ctx, acc1)
 	assert.ErrorIs(t, app.ErrAccountNotFound, err)
 
 	e1, _ := entities.NewEntry(
@@ -54,7 +54,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	err = r.CreateTransaction(ctx, tx)
 	assert.NoError(t, err)
 
-	balance, err = r.GetAccountBalance(ctx, acc1)
+	balance, err := r.GetAccountBalance(ctx, acc1)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, balance.TotalCredit)
 	assert.Equal(t, 100, balance.TotalDebit)
