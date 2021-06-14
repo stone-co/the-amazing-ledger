@@ -3,7 +3,6 @@ package usecases
 import (
 	"context"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -19,7 +18,7 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 		account, err := vos.NewAccountPath("liability.stone.clients.user-1")
 		assert.Nil(t, err)
 
-		accountBalance := vos.NewAccountBalance(account, 3, totalCredit, totalDebit, time.Now())
+		accountBalance := vos.NewAccountBalance(account, 3, totalCredit, totalDebit)
 
 		useCase := newFakeGetAccountBalance(accountBalance, nil)
 		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.Account)
@@ -35,7 +34,7 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 		account, err := vos.NewAccountPath("liability.stone.clients.user-1")
 		assert.Nil(t, err)
 
-		accountBalance := vos.NewAccountBalance(account, expectedVersion, 0, 0, time.Now())
+		accountBalance := vos.NewAccountBalance(account, expectedVersion, 0, 0)
 
 		useCase := newFakeGetAccountBalance(accountBalance, nil)
 		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.Account)

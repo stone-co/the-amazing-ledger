@@ -22,10 +22,10 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('defaults');`)
 	assert.NoError(t, err)
 
-	acc1, err := vos.NewAccountPath("liability.123.account1")
+	acc1, err := vos.NewAccountPath("liability.123.account11")
 	assert.NoError(t, err)
 
-	acc2, err := vos.NewAccountPath("liability.123.account2")
+	acc2, err := vos.NewAccountPath("liability.123.account22")
 	assert.NoError(t, err)
 
 	e1, _ := entities.NewEntry(
@@ -56,10 +56,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	assert.Equal(t, 100, balance.TotalDebit)
 
 	snap, err := fetchSnapshot(ctx, pgDocker.DB, acc1)
-	assert.NoError(t, err)
-	assert.Equal(t, 0, snap.credit)
-	assert.Equal(t, 100, snap.debit)
-	assert.Equal(t, 1, snap.version)
+	assert.ErrorIs(t, pgx.ErrNoRows, err)
 
 	balance, err = r.GetAccountBalance(ctx, acc2)
 	assert.NoError(t, err)
@@ -100,7 +97,6 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 0, snap.credit)
 	assert.Equal(t, 100, snap.debit)
-	assert.Equal(t, 1, snap.version)
 
 	balance, err = r.GetAccountBalance(ctx, acc2)
 	assert.NoError(t, err)
@@ -109,9 +105,8 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 
 	snap, err = fetchSnapshot(ctx, pgDocker.DB, acc2)
 	assert.NoError(t, err)
-	assert.Equal(t, 200, snap.credit)
+	assert.Equal(t, 100, snap.credit)
 	assert.Equal(t, 0, snap.debit)
-	assert.Equal(t, 1, snap.version)
 
 	e1, _ = entities.NewEntry(
 		uuid.New(),
@@ -143,8 +138,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	snap, err = fetchSnapshot(ctx, pgDocker.DB, acc1)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, snap.credit)
-	assert.Equal(t, 300, snap.debit)
-	assert.Equal(t, 2, snap.version)
+	assert.Equal(t, 200, snap.debit)
 
 	balance, err = r.GetAccountBalance(ctx, acc2)
 	assert.NoError(t, err)
@@ -153,20 +147,18 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 
 	snap, err = fetchSnapshot(ctx, pgDocker.DB, acc2)
 	assert.NoError(t, err)
-	assert.Equal(t, 300, snap.credit)
+	assert.Equal(t, 200, snap.credit)
 	assert.Equal(t, 0, snap.debit)
-	assert.Equal(t, 2, snap.version)
 }
 
 type snapshot struct {
-	credit  int
-	debit   int
-	version int
-	date    time.Time
+	credit int
+	debit  int
+	date   time.Time
 }
 
 func fetchSnapshot(ctx context.Context, db *pgxpool.Pool, account vos.AccountPath) (snapshot, error) {
-	const query = "select credit, debit, tx_date, tx_version from account_balance where account = $1;"
+	const query = "select credit, debit, tx_date from account_balance where account = $1;"
 
 	var snap snapshot
 
@@ -174,7 +166,6 @@ func fetchSnapshot(ctx context.Context, db *pgxpool.Pool, account vos.AccountPat
 		&snap.credit,
 		&snap.debit,
 		&snap.date,
-		&snap.version,
 	)
 
 	return snap, err
