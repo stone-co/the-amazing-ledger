@@ -3,7 +3,7 @@ begin;
 create table if not exists account_version (
     version int,
     account ltree primary key
-) with (fillfactor = 50);
+) with (fillfactor = 70);
 
 create or replace function update_account_version()
     returns trigger

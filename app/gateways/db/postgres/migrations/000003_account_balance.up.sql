@@ -7,7 +7,7 @@ create table if not exists account_balance
     tx_date     timestamptz not null,
     tx_version  int         not null,
     account     ltree primary key
-) with (fillfactor = 50);
+) with (fillfactor = 70);
 
 create or replace function _get_account_balance(_account ltree)
     returns table
@@ -21,8 +21,8 @@ create or replace function _get_account_balance(_account ltree)
 as
 $$
     select
-        sub.total_debit,
         sub.total_credit,
+        sub.total_debit,
         to_timestamp(sub.recent[1]) as last_tx_date,
         sub.recent[2]::int as last_tx_version
     from (
@@ -58,10 +58,10 @@ create or replace function _get_account_balance_since(_account ltree, _dt timest
 as
 $$
     select
-    sub.total_debit,
-    sub.total_credit,
-    to_timestamp(sub.recent[1]) as last_tx_date,
-    sub.recent[2]::int as last_tx_version
+        sub.total_credit,
+        sub.total_debit,
+        to_timestamp(sub.recent[1]) as last_tx_date,
+        sub.recent[2]::int as last_tx_version
     from (
         select
             sum(
@@ -139,7 +139,8 @@ begin
     from
         account_balance
     where
-        account = _account;
+        account = _account
+    for update;
 
     if (_last_tx_version is null) then
         select

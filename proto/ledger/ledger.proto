@@ -66,10 +66,10 @@ message Entry  {
 enum Operation {
   // Don't use. It's just the default value.
   OPERATION_UNSPECIFIED = 0;
-  // Debit operation.
-  OPERATION_DEBIT = 1;
   // Credit operation.
-  OPERATION_CREDIT = 2;
+  OPERATION_CREDIT = 1;
+  // Debit operation.
+  OPERATION_DEBIT = 2;
 };
 
 // GetAccountBalance Request

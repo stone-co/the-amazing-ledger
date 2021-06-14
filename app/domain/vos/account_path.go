@@ -56,9 +56,9 @@ var _defaultConfig = AccountConfig{
 //
 // Some examples:
 //   - assets.account.treasury
-//   - liability.available.96a131a8-c4ac-495e-8971-fcecdbdd003a
-//   - liability.available.96a131a8-c4ac-495e-8971-fcecdbdd003a.some_detail
-//   - liability.clients.available.96a131a8-c4ac-495e-8971-fcecdbdd003a.detail1.detail2
+//   - liability.available.96a131a8_c4ac_495e_8971_fcecdbdd003a
+//   - liability.available.96a131a8_c4ac_495e_8971_fcecdbdd003a.some_detail
+//   - liability.clients.available.96a131a8_c4ac_495e_8971_fcecdbdd003a.detail1.detail2
 type AccountPath struct {
 	path string
 }
