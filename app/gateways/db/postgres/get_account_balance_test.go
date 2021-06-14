@@ -11,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
@@ -27,6 +28,9 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 
 	acc2, err := vos.NewAccountPath("liability.123.account22")
 	assert.NoError(t, err)
+
+	balance, err := r.GetAccountBalance(ctx, acc1)
+	assert.ErrorIs(t, app.ErrAccountNotFound, err)
 
 	e1, _ := entities.NewEntry(
 		uuid.New(),
@@ -50,7 +54,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	err = r.CreateTransaction(ctx, tx)
 	assert.NoError(t, err)
 
-	balance, err := r.GetAccountBalance(ctx, acc1)
+	balance, err = r.GetAccountBalance(ctx, acc1)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, balance.TotalCredit)
 	assert.Equal(t, 100, balance.TotalDebit)
