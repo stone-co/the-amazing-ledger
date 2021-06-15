@@ -38,7 +38,7 @@ func (r LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos
 
 	for rows.Next() {
 		var amount int
-		var operation string
+		var operation int8
 		var createdAt time.Time
 
 		if err = rows.Scan(
@@ -51,7 +51,7 @@ func (r LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos
 
 		err = fn(vos.EntryHistory{
 			Amount:    amount,
-			Operation: vos.OperationTypeFromString(operation),
+			Operation: vos.OperationType(operation),
 			CreatedAt: createdAt,
 		})
 

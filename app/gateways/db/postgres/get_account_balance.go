@@ -2,8 +2,10 @@ package postgres
 
 import (
 	"context"
+	"errors"
 
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgerrcode"
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
@@ -12,23 +14,12 @@ import (
 
 const getAccountBalanceQuery = `
 select
-    max(version) as current_version,
-    SUM(
-        CASE operation
-        WHEN 'credit' THEN amount
-        ELSE 0
-        END
-    ) AS total_credit,
-    SUM(
-        CASE operation
-        WHEN 'debit' THEN amount
-        ELSE 0
-        END
-    ) AS total_debit
+    credit_balance  as credit,
+    debit_balance   as debit,
+    version         as tx_version
 from
-     entry
-where account = $1
-group by account;
+    get_account_balance($1)
+;
 `
 
 func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
@@ -36,28 +27,33 @@ func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.Acc
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, getAccountBalanceQuery).End()
 
-	row := r.db.QueryRow(
-		context.Background(),
-		getAccountBalanceQuery,
-		account.Name(),
-	)
-	var currentVersion uint64
 	var totalCredit int
 	var totalDebit int
+	var currentVersion int64
 
-	err := row.Scan(
-		&currentVersion,
+	err := r.db.QueryRow(ctx, getAccountBalanceQuery, account.Name()).Scan(
 		&totalCredit,
 		&totalDebit,
+		&currentVersion,
 	)
+
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		var pgErr *pgconn.PgError
+		if !errors.As(err, &pgErr) {
+			return vos.AccountBalance{}, err
+		}
+
+		if pgErr.Code == pgerrcode.NoDataFound {
 			return vos.AccountBalance{}, app.ErrAccountNotFound
 		}
+
 		return vos.AccountBalance{}, err
 	}
 
-	accountBalance := vos.NewAccountBalance(account, vos.Version(currentVersion), totalCredit, totalDebit)
-	return accountBalance, nil
-
+	return vos.NewAccountBalance(
+		account,
+		vos.Version(currentVersion),
+		totalCredit,
+		totalDebit,
+	), nil
 }

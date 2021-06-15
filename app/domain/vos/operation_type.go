@@ -6,11 +6,11 @@ type OperationType int8
 
 const (
 	InvalidOperation OperationType = iota
-	DebitOperation
 	CreditOperation
+	DebitOperation
 )
 
-var _operationTypes = []string{"invalid_op_type", "debit", "credit"}
+var _operationTypes = []string{"invalid_op_type", "credit", "debit"}
 
 func (ot OperationType) String() string {
 	return _operationTypes[ot]
