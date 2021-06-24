@@ -29,34 +29,28 @@ func TestNewTransaction(t *testing.T) {
 	testCases := []struct {
 		name                string
 		id                  uuid.UUID
-		entries             func() []Entry
+		entries             []Entry
 		expectedTransaction Transaction
 		expectedErr         error
 	}{
 		{
-			name: "Invalid entries number when the transaction has no entries",
-			id:   id,
-			entries: func() []Entry {
-				return []Entry{}
-			},
+			name:                "Invalid entries number when the transaction has no entries",
+			id:                  id,
+			entries:             []Entry{},
 			expectedTransaction: Transaction{},
 			expectedErr:         app.ErrInvalidEntriesNumber,
 		},
 		{
-			name: "Invalid entries number when the transaction has 1 entry",
-			id:   id,
-			entries: func() []Entry {
-				return []Entry{e11}
-			},
+			name:                "Invalid entries number when the transaction has 1 entry",
+			id:                  id,
+			entries:             []Entry{e11},
 			expectedTransaction: Transaction{},
 			expectedErr:         app.ErrInvalidEntriesNumber,
 		},
 		{
-			name: "Valid transaction with 2 entries",
-			id:   id,
-			entries: func() []Entry {
-				return validTwoEntries
-			},
+			name:    "Valid transaction with 2 entries",
+			id:      id,
+			entries: validTwoEntries,
 			expectedTransaction: Transaction{
 				ID:             id,
 				Entries:        validTwoEntries,
@@ -67,11 +61,9 @@ func TestNewTransaction(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			name: "Valid transaction with 3 entries",
-			id:   id,
-			entries: func() []Entry {
-				return validThreeEntries
-			},
+			name:    "Valid transaction with 3 entries",
+			id:      id,
+			entries: validThreeEntries,
 			expectedTransaction: Transaction{
 				ID:             id,
 				Entries:        validThreeEntries,
@@ -82,29 +74,23 @@ func TestNewTransaction(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			name: "Invalid transaction with 2 entries and balance != 0",
-			id:   id,
-			entries: func() []Entry {
-				return []Entry{e11, e22}
-			},
+			name:                "Invalid transaction with 2 entries and balance != 0",
+			id:                  id,
+			entries:             []Entry{e11, e22},
 			expectedTransaction: Transaction{},
 			expectedErr:         app.ErrInvalidBalance,
 		},
 		{
-			name: "Invalid transaction with 3 entries and balance != 0",
-			id:   id,
-			entries: func() []Entry {
-				return []Entry{e11, e12, e21}
-			},
+			name:                "Invalid transaction with 3 entries and balance != 0",
+			id:                  id,
+			entries:             []Entry{e11, e12, e21},
 			expectedTransaction: Transaction{},
 			expectedErr:         app.ErrInvalidBalance,
 		},
 		{
-			name: "Invalid transaction with empty ID",
-			id:   uuid.Nil,
-			entries: func() []Entry {
-				return validTwoEntries
-			},
+			name:                "Invalid transaction with empty ID",
+			id:                  uuid.Nil,
+			entries:             validTwoEntries,
 			expectedTransaction: Transaction{},
 			expectedErr:         app.ErrInvalidTransactionID,
 		},
@@ -112,7 +98,7 @@ func TestNewTransaction(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewTransaction(tt.id, event, company, competenceDate, tt.entries()...)
+			got, err := NewTransaction(tt.id, event, company, competenceDate, tt.entries...)
 
 			assert.ErrorIs(t, err, tt.expectedErr)
 			assert.Equal(t, tt.expectedTransaction, got)
