@@ -11,10 +11,11 @@ import (
 var _ domain.Repository = &Repository{}
 
 type Repository struct {
-	OnCreateTransaction func(context.Context, entities.Transaction) error
-	OnGetAccountBalance func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
-	OnGetAnalyticalData func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
-	OnGetAccountHistory func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
+	OnCreateTransaction      func(context.Context, entities.Transaction) error
+	OnGetAccountBalance      func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
+	OnQueryAggregatedBalance func(ctx context.Context, query vos.AccountQuery) (vos.QueryBalance, error)
+	OnGetAnalyticalData      func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
+	OnGetAccountHistory      func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
 }
 
 func (s Repository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
@@ -23,6 +24,10 @@ func (s Repository) CreateTransaction(ctx context.Context, transaction entities.
 
 func (s Repository) GetAccountBalance(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
 	return s.OnGetAccountBalance(ctx, account)
+}
+
+func (s Repository) QueryAggregatedBalance(ctx context.Context, query vos.AccountQuery) (vos.QueryBalance, error) {
+	return s.OnQueryAggregatedBalance(ctx, query)
 }
 
 func (s Repository) GetAnalyticalData(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error {

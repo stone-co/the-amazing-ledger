@@ -33,6 +33,18 @@ func newFakeGetAccountBalance(accountBalance vos.AccountBalance, result error) *
 	return NewLedgerUseCase(log, mockRepository)
 }
 
+func newFakeQueryAggregatedBalance(queryBalance vos.QueryBalance, result error) *LedgerUseCase {
+	log := logrus.New()
+
+	mockRepository := &mocks.Repository{
+		OnQueryAggregatedBalance: func(ctx context.Context, query vos.AccountQuery) (vos.QueryBalance, error) {
+			return queryBalance, result
+		},
+	}
+
+	return NewLedgerUseCase(log, mockRepository)
+}
+
 func newFakeGetAnalyticalData(entries []vos.Statement, result error) *LedgerUseCase {
 	log := logrus.New()
 

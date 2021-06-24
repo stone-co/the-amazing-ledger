@@ -1,8 +1,6 @@
 package app
 
-import (
-	"errors"
-)
+import "errors"
 
 const (
 	ErrInvalidTransactionID    = DomainError("invalid transaction id")
