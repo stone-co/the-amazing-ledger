@@ -82,6 +82,37 @@
         ]
       }
     },
+    "/api/v1/aggregated/{query}/balance": {
+      "get": {
+        "operationId": "LedgerService_QueryAggregatedBalance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ledgerQueryAggregatedBalanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "description": "The account name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
     "/api/v1/analytical-data/{accountPath}": {
       "get": {
         "operationId": "LedgerService_GetAnalyticalData",
@@ -338,6 +369,21 @@
       ],
       "default": "OPERATION_UNSPECIFIED",
       "description": "Operation has the possible operations to be used in Entry.\n\n - OPERATION_UNSPECIFIED: Don't use. It's just the default value.\n - OPERATION_CREDIT: Credit operation.\n - OPERATION_DEBIT: Debit operation."
+    },
+    "ledgerQueryAggregatedBalanceResponse": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "title": "The query path"
+        },
+        "balance": {
+          "type": "string",
+          "format": "int64",
+          "title": "The query balance"
+        }
+      },
+      "title": "GetAccountBalance Response"
     },
     "protobufAny": {
       "type": "object",

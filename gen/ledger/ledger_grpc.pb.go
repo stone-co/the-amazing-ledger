@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type LedgerServiceClient interface {
 	CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	GetAccountBalance(ctx context.Context, in *GetAccountBalanceRequest, opts ...grpc.CallOption) (*GetAccountBalanceResponse, error)
+	QueryAggregatedBalance(ctx context.Context, in *QueryAggregatedBalanceRequest, opts ...grpc.CallOption) (*QueryAggregatedBalanceResponse, error)
 	GetAnalyticalData(ctx context.Context, in *GetAnalyticalDataRequest, opts ...grpc.CallOption) (LedgerService_GetAnalyticalDataClient, error)
 	GetAccountHistory(ctx context.Context, in *GetAccountHistoryRequest, opts ...grpc.CallOption) (LedgerService_GetAccountHistoryClient, error)
 }
@@ -44,6 +45,15 @@ func (c *ledgerServiceClient) CreateTransaction(ctx context.Context, in *CreateT
 func (c *ledgerServiceClient) GetAccountBalance(ctx context.Context, in *GetAccountBalanceRequest, opts ...grpc.CallOption) (*GetAccountBalanceResponse, error) {
 	out := new(GetAccountBalanceResponse)
 	err := c.cc.Invoke(ctx, "/ledger.LedgerService/GetAccountBalance", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ledgerServiceClient) QueryAggregatedBalance(ctx context.Context, in *QueryAggregatedBalanceRequest, opts ...grpc.CallOption) (*QueryAggregatedBalanceResponse, error) {
+	out := new(QueryAggregatedBalanceResponse)
+	err := c.cc.Invoke(ctx, "/ledger.LedgerService/QueryAggregatedBalance", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -120,6 +130,7 @@ func (x *ledgerServiceGetAccountHistoryClient) Recv() (*GetAccountHistoryRespons
 type LedgerServiceServer interface {
 	CreateTransaction(context.Context, *CreateTransactionRequest) (*empty.Empty, error)
 	GetAccountBalance(context.Context, *GetAccountBalanceRequest) (*GetAccountBalanceResponse, error)
+	QueryAggregatedBalance(context.Context, *QueryAggregatedBalanceRequest) (*QueryAggregatedBalanceResponse, error)
 	GetAnalyticalData(*GetAnalyticalDataRequest, LedgerService_GetAnalyticalDataServer) error
 	GetAccountHistory(*GetAccountHistoryRequest, LedgerService_GetAccountHistoryServer) error
 }
@@ -133,6 +144,9 @@ func (UnimplementedLedgerServiceServer) CreateTransaction(context.Context, *Crea
 }
 func (UnimplementedLedgerServiceServer) GetAccountBalance(context.Context, *GetAccountBalanceRequest) (*GetAccountBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountBalance not implemented")
+}
+func (UnimplementedLedgerServiceServer) QueryAggregatedBalance(context.Context, *QueryAggregatedBalanceRequest) (*QueryAggregatedBalanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAggregatedBalance not implemented")
 }
 func (UnimplementedLedgerServiceServer) GetAnalyticalData(*GetAnalyticalDataRequest, LedgerService_GetAnalyticalDataServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetAnalyticalData not implemented")
@@ -184,6 +198,24 @@ func _LedgerService_GetAccountBalance_Handler(srv interface{}, ctx context.Conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LedgerServiceServer).GetAccountBalance(ctx, req.(*GetAccountBalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LedgerService_QueryAggregatedBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAggregatedBalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LedgerServiceServer).QueryAggregatedBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ledger.LedgerService/QueryAggregatedBalance",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LedgerServiceServer).QueryAggregatedBalance(ctx, req.(*QueryAggregatedBalanceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -241,6 +273,10 @@ var _LedgerService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAccountBalance",
 			Handler:    _LedgerService_GetAccountBalance_Handler,
+		},
+		{
+			MethodName: "QueryAggregatedBalance",
+			Handler:    _LedgerService_QueryAggregatedBalance_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

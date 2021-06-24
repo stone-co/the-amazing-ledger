@@ -20,6 +20,11 @@ service LedgerService {
       get: "/api/v1/accounts/{account_path}/balance"
     };
   };
+  rpc QueryAggregatedBalance(QueryAggregatedBalanceRequest) returns (QueryAggregatedBalanceResponse){
+    option (google.api.http) = {
+      get: "/api/v1/aggregated/{query}/balance"
+    };
+  };
   rpc GetAnalyticalData(GetAnalyticalDataRequest) returns (stream GetAnalyticalDataResponse){
     option (google.api.http) = {
       get: "/api/v1/analytical-data/{account_path}"
@@ -90,6 +95,20 @@ message GetAccountBalanceResponse {
   int64 total_debit = 4;
   // The Account balance
   int64 balance = 5;
+}
+
+// QueryAggregatedBalance Request
+message QueryAggregatedBalanceRequest {
+  // The account name
+  string query = 1;
+}
+
+// GetAccountBalance Response
+message QueryAggregatedBalanceResponse {
+  // The query path
+  string query = 1;
+  // The query balance
+  int64 balance = 2;
 }
 
 // GetAnalyticalDataRequest contains the filters to be used to get data from the accounts.
