@@ -11,50 +11,101 @@ import (
 )
 
 func TestNewEntry(t *testing.T) {
-	newUUID := uuid.New()
+	type args struct {
+		id        uuid.UUID
+		operation vos.OperationType
+		account   string
+		version   vos.Version
+		amount    int
+	}
 
-	t.Run("Successfully creates an entry with minimum inputs", func(t *testing.T) {
-		acc, err := vos.NewAccountPath("assets.bacen.conta_liquidacao.tesouraria")
-		assert.Nil(t, err)
-		expected := Entry{
-			ID:        newUUID,
-			Operation: vos.CreditOperation,
-			Account:   acc,
-			Version:   vos.NextAccountVersion,
-			Amount:    123,
-		}
-		entry, err := NewEntry(newUUID, vos.CreditOperation, "assets.bacen.conta_liquidacao.tesouraria", vos.NextAccountVersion, 123)
-		assert.Equal(t, expected, entry)
-		assert.Nil(t, err)
-	})
+	testCases := []struct {
+		name        string
+		args        args
+		expectedErr error
+	}{
+		{
+			name: "Successfully creates an entry with minimum inputs",
+			args: args{
+				id:        uuid.New(),
+				operation: vos.CreditOperation,
+				account:   "assets.bacen.conta_liquidacao.tesouraria",
+				version:   vos.NextAccountVersion,
+				amount:    123,
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "Invalid when entry id is invalid",
+			args: args{
+				id:        uuid.Nil,
+				operation: vos.CreditOperation,
+				account:   "assets.bacen.conta_liquidacao.tesouraria",
+				version:   vos.NextAccountVersion,
+				amount:    123,
+			},
+			expectedErr: app.ErrInvalidEntryID,
+		},
+		{
+			name: "Invalid when operation is invalid",
+			args: args{
+				id:        uuid.New(),
+				operation: vos.InvalidOperation,
+				account:   "assets.bacen.conta_liquidacao.tesouraria",
+				version:   vos.NextAccountVersion,
+				amount:    123,
+			},
+			expectedErr: app.ErrInvalidOperation,
+		},
+		{
+			name: "Invalid when amount is zero",
+			args: args{
+				id:        uuid.New(),
+				operation: vos.CreditOperation,
+				account:   "assets.bacen.conta_liquidacao.tesouraria",
+				version:   vos.NextAccountVersion,
+				amount:    0,
+			},
+			expectedErr: app.ErrInvalidAmount,
+		},
+		{
+			name: "Invalid when amount < zero",
+			args: args{
+				id:        uuid.New(),
+				operation: vos.CreditOperation,
+				account:   "assets.bacen.conta_liquidacao.tesouraria",
+				version:   vos.NextAccountVersion,
+				amount:    -1,
+			},
+			expectedErr: app.ErrInvalidAmount,
+		},
+		{
+			name: "Invalid when account structure has less than 3 levels",
+			args: args{
+				id:        uuid.New(),
+				operation: vos.CreditOperation,
+				account:   "assets.bacen",
+				version:   vos.NextAccountVersion,
+				amount:    123,
+			},
+			expectedErr: app.ErrInvalidAccountStructure,
+		},
+	}
 
-	t.Run("Invalid when entry id is invalid", func(t *testing.T) {
-		entry, err := NewEntry(uuid.Nil, vos.CreditOperation, "assets.bacen.conta_liquidacao.tesouraria", vos.NextAccountVersion, 123)
-		assert.Empty(t, entry)
-		assert.True(t, app.ErrInvalidEntryID.Is(err))
-	})
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			entry, err := NewEntry(tt.args.id, tt.args.operation, tt.args.account, tt.args.version, tt.args.amount)
+			assert.ErrorIs(t, err, tt.expectedErr)
 
-	t.Run("Invalid when operation is invalid", func(t *testing.T) {
-		entry, err := NewEntry(newUUID, vos.InvalidOperation, "assets.bacen.conta_liquidacao.tesouraria", vos.NextAccountVersion, 123)
-		assert.Empty(t, entry)
-		assert.True(t, app.ErrInvalidOperation.Is(err))
-	})
-
-	t.Run("Invalid when amount is zero", func(t *testing.T) {
-		entry, err := NewEntry(newUUID, vos.CreditOperation, "assets.bacen.conta_liquidacao.tesouraria", vos.NextAccountVersion, 0)
-		assert.Empty(t, entry)
-		assert.True(t, app.ErrInvalidAmount.Is(err))
-	})
-
-	t.Run("Invalid when amount < zero", func(t *testing.T) {
-		entry, err := NewEntry(newUUID, vos.CreditOperation, "assets.bacen.conta_liquidacao.tesouraria", vos.NextAccountVersion, -1)
-		assert.Empty(t, entry)
-		assert.True(t, app.ErrInvalidAmount.Is(err))
-	})
-
-	t.Run("Invalid when account structure has less than 3 levels", func(t *testing.T) {
-		entry, err := NewEntry(newUUID, vos.CreditOperation, "assets.bacen", vos.NextAccountVersion, 123)
-		assert.Empty(t, entry)
-		assert.True(t, app.ErrInvalidAccountStructure.Is(err))
-	})
+			if err != nil {
+				assert.Empty(t, entry)
+			} else {
+				assert.Equal(t, tt.args.id, entry.ID)
+				assert.Equal(t, tt.args.operation, entry.Operation)
+				assert.Equal(t, tt.args.account, entry.Account.Name())
+				assert.Equal(t, tt.args.version, entry.Version)
+				assert.Equal(t, tt.args.amount, entry.Amount)
+			}
+		})
+	}
 }
