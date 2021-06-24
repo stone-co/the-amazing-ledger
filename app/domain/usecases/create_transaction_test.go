@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 
@@ -17,8 +18,8 @@ import (
 const _company = "abc"
 
 func TestLedgerUseCase_CreateTransaction(t *testing.T) {
-	accountID1 := "liability.clients.available." + uuid.New().String()
-	accountID2 := "liability.clients.available." + uuid.New().String()
+	accountID1 := "liability.clients.available." + strings.ReplaceAll(uuid.New().String(), "-", "_")
+	accountID2 := "liability.clients.available." + strings.ReplaceAll(uuid.New().String(), "-", "_")
 
 	t.Run("Successfully creates a transaction with minimum inputs", func(t *testing.T) {
 		e1, _ := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NextAccountVersion, 123)

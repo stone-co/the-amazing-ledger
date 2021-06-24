@@ -61,9 +61,9 @@ func TestNewTransaction(t *testing.T) {
 	})
 
 	t.Run("Invalid transaction with 3 entries and balance != 0", func(t *testing.T) {
-		e1, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability.clients:available.111", vos.NextAccountVersion, 400)
-		e2, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients:available.222", vos.NextAccountVersion, 200)
-		e3, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients:available.333", vos.NextAccountVersion, 100)
+		e1, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability.clients.available.111", vos.NextAccountVersion, 400)
+		e2, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.222", vos.NextAccountVersion, 200)
+		e3, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.333", vos.NextAccountVersion, 100)
 		got, err := NewTransaction(id, e1, e2, e3)
 		assert.True(t, app.ErrInvalidBalance.Is(err))
 		assert.Empty(t, got)

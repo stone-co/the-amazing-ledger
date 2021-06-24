@@ -1,6 +1,7 @@
 package vos
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -10,6 +11,8 @@ import (
 )
 
 func TestNewAccount(t *testing.T) {
+	id := strings.ReplaceAll(uuid.New().String(), "-", "_")
+
 	type args struct {
 		name string
 	}
@@ -28,21 +31,21 @@ func TestNewAccount(t *testing.T) {
 		{
 			name: "Successfully creates an account name with depth 4",
 			args: args{
-				name: "liability.clients.available." + uuid.New().String(),
+				name: "liability.clients.available." + id,
 			},
 			err: nil,
 		},
 		{
 			name: "Successfully creates an account name with depth 5",
 			args: args{
-				name: "liability.clients.available." + uuid.New().String() + ".mydetail",
+				name: "liability.clients.available." + id + ".mydetail",
 			},
 			err: nil,
 		},
 		{
-			name: "Successfully creates an account name with depth 5",
+			name: "Successfully creates an account name with depth 6",
 			args: args{
-				name: "liability.clients.available." + uuid.New().String() + "/mydetail1/mydetail2/mydetail3",
+				name: "liability.clients.available." + id + ".mydetail1.mydetail2_mydetail3",
 			},
 			err: nil,
 		},
@@ -68,13 +71,6 @@ func TestNewAccount(t *testing.T) {
 			err: app.ErrInvalidAccountStructure,
 		},
 		{
-			name: "Error when account omits level 2",
-			args: args{
-				name: "assets..tesouraria",
-			},
-			err: app.ErrInvalidAccountStructure,
-		},
-		{
 			name: "Error when account omits level 3",
 			args: args{
 				name: "assets.conta_liquidacao.",
@@ -88,12 +84,27 @@ func TestNewAccount(t *testing.T) {
 			},
 			err: app.ErrInvalidAccountStructure,
 		},
+		{
+			name: "Error when account has invalid characters",
+			args: args{
+				name: "assets.conta_liquidacao." + uuid.New().String(),
+			},
+			err: app.ErrInvalidAccountStructure,
+		},
+		{
+			name: "Error when label has more thant 255 characters characters",
+			args: args{
+				name: "assets.bacen.conta_liquidacao." + strings.Repeat("a", maxLabelLength+1),
+			},
+			err: app.ErrInvalidAccountStructure,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewAccountPath(tt.args.name)
-			assert.Equal(t, tt.err, err)
+			assert.ErrorIs(t, err, tt.err)
+
 			if err == nil {
 				assert.Equal(t, tt.args.name, got.Name())
 			}
