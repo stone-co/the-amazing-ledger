@@ -46,7 +46,8 @@ const maxLabelLength = 255
 // TODO: better docs
 
 // AccountPath can be as deep as needed, limited by AccountConfig MinimumDepth and MaximumDepth.
-// None of the values can be '' (empty string), '*' or more than 255 characters.
+// None of the values can be '' (empty string), more than 255 characters or characteres other than
+// alphanumeric and underscore (_).
 // Depth restrictions can be applied by using DepthConfig. The default configuration for example:
 //	- the first depth is called class
 // 	- it can only be one of the following:
@@ -87,7 +88,7 @@ func NewAccountPath(path string) (AccountPath, error) {
 	}
 
 	for i, component := range components {
-		if component == "" || component == "*" || len(component) > maxLabelLength {
+		if component == "" || len(component) > maxLabelLength {
 			return AccountPath{}, app.ErrInvalidAccountStructure
 		}
 
