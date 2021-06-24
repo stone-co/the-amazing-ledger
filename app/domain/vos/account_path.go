@@ -1,6 +1,7 @@
 package vos
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/stone-co/the-amazing-ledger/app"
@@ -38,10 +39,14 @@ var _defaultConfig = AccountConfig{
 	DepthSeparator: ".",
 }
 
+var regexOnlyAlphanumericAndUnderscore = regexp.MustCompile(`^[a-zA-Z0-9_]*$`)
+
+const maxLabelLength = 255
+
 // TODO: better docs
 
 // AccountPath can be as deep as needed, limited by AccountConfig MinimumDepth and MaximumDepth.
-// None of the values can be '' (empty string) or '*'.
+// None of the values can be '' (empty string), '*' or more than 255 characters.
 // Depth restrictions can be applied by using DepthConfig. The default configuration for example:
 //	- the first depth is called class
 // 	- it can only be one of the following:
@@ -82,7 +87,11 @@ func NewAccountPath(path string) (AccountPath, error) {
 	}
 
 	for i, component := range components {
-		if component == "" || component == "*" {
+		if component == "" || component == "*" || len(component) > maxLabelLength {
+			return AccountPath{}, app.ErrInvalidAccountStructure
+		}
+
+		if !regexOnlyAlphanumericAndUnderscore.MatchString(component) {
 			return AccountPath{}, app.ErrInvalidAccountStructure
 		}
 
