@@ -53,9 +53,8 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		100,
 	)
 
-	tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+	tx, err := entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e2)
 	assert.NoError(t, err)
-	tx.Event = 1
 
 	err = r.CreateTransaction(ctx, tx)
 	assert.NoError(t, err)
@@ -82,7 +81,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		100,
 	)
 
-	tx, err = entities.NewTransaction(uuid.New(), e1, e3)
+	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e3)
 	assert.NoError(t, err)
 	tx.Event = 1
 
@@ -112,7 +111,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		200,
 	)
 
-	tx, err = entities.NewTransaction(uuid.New(), e1, e3)
+	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e3)
 	assert.NoError(t, err)
 	tx.Event = 1
 
