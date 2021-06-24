@@ -48,6 +48,36 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 	}, nil
 }
 
+func (a *API) QueryAggregatedBalance(ctx context.Context, request *proto.QueryAggregatedBalanceRequest) (*proto.QueryAggregatedBalanceResponse, error) {
+	defer newrelic.FromContext(ctx).StartSegment("QueryAggregatedBalance").End()
+
+	log := a.log.WithFields(logrus.Fields{
+		"handler": "QueryAggregatedBalance",
+	})
+
+	query, err := vos.NewAccountQuery(request.Query)
+	if err != nil {
+		log.WithError(err).Error("can't create account name")
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	queryBalance, err := a.UseCase.QueryAggregatedBalance(ctx, query)
+	if err != nil {
+		if err == app.ErrAccountNotFound {
+			log.WithError(err).Error("accounts for the given query do not exist")
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+
+		log.WithError(err).Error("can't get account")
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	return &proto.QueryAggregatedBalanceResponse{
+		Query:   query.Value(),
+		Balance: int64(queryBalance.Balance),
+	}, nil
+}
+
 func (a *API) GetAccountHistory(request *proto.GetAccountHistoryRequest, stream proto.LedgerService_GetAccountHistoryServer) error {
 	defer newrelic.FromContext(stream.Context()).StartSegment("GetAccountHistory").End()
 
