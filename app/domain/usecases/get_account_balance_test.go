@@ -15,7 +15,7 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 		totalDebit := 130
 		expectedBalance := totalCredit - totalDebit
 
-		account, err := vos.NewAccountPath("liability.stone.clients.user-1")
+		account, err := vos.NewAccountPath("liability.stone.clients.user_1")
 		assert.Nil(t, err)
 
 		accountBalance := vos.NewAccountBalance(account, 3, totalCredit, totalDebit)
@@ -31,7 +31,7 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 	t.Run("The max version for account path must be version in account balance", func(t *testing.T) {
 		expectedVersion := vos.Version(5)
 
-		account, err := vos.NewAccountPath("liability.stone.clients.user-1")
+		account, err := vos.NewAccountPath("liability.stone.clients.user_1")
 		assert.Nil(t, err)
 
 		accountBalance := vos.NewAccountBalance(account, expectedVersion, 0, 0)
