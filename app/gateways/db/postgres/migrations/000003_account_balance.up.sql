@@ -197,8 +197,8 @@ begin
         _existing_debit + partial_debit,
         partial_date,
 
-        _existing_credit + coalesce(partial_credit + recent_credit, 0),
-        _existing_debit + coalesce(partial_debit + recent_debit, 0),
+        _existing_credit + coalesce(partial_credit, 0) + coalesce(recent_credit, 0),
+        _existing_debit + coalesce(partial_debit, 0) + coalesce(recent_debit, 0),
         recent_version
     into
         _partial_credit,
