@@ -17,6 +17,10 @@ import (
 )
 
 func TestLedgerRepository_GetAccountBalance(t *testing.T) {
+	event := uint32(1)
+	company := "abc"
+	competenceDate := time.Now()
+
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
 
@@ -47,9 +51,8 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		100,
 	)
 
-	tx, err := entities.NewTransaction(uuid.New(), e1, e2)
+	tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 	assert.NoError(t, err)
-	tx.Event = 1
 
 	err = r.CreateTransaction(ctx, tx)
 	assert.NoError(t, err)
@@ -85,9 +88,8 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		100,
 	)
 
-	tx, err = entities.NewTransaction(uuid.New(), e1, e2)
+	tx, err = entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 	assert.NoError(t, err)
-	tx.Event = 1
 
 	err = r.CreateTransaction(ctx, tx)
 	assert.NoError(t, err)
@@ -127,9 +129,8 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		100,
 	)
 
-	tx, err = entities.NewTransaction(uuid.New(), e1, e2)
+	tx, err = entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 	assert.NoError(t, err)
-	tx.Event = 1
 
 	err = r.CreateTransaction(ctx, tx)
 	assert.NoError(t, err)

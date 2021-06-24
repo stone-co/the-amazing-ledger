@@ -54,13 +54,10 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 		domainEntries[i] = domainEntry
 	}
 
-	tx, err := entities.NewTransaction(tid, domainEntries...)
+	tx, err := entities.NewTransaction(tid, req.Event, req.Company, req.CompetenceDate.AsTime(), domainEntries...)
 	if err != nil {
 		return nil, status.Error(codes.Aborted, err.Error())
 	}
-	tx.Company = req.Company
-	tx.Event = req.Event
-	tx.CompetenceDate = req.CompetenceDate.AsTime()
 
 	if err := a.UseCase.CreateTransaction(ctx, tx); err != nil {
 		log.WithError(err).Error("creating transaction")
