@@ -17,7 +17,7 @@ type Transaction struct {
 	CompetenceDate time.Time
 }
 
-func NewTransaction(id uuid.UUID, entries ...Entry) (Transaction, error) {
+func NewTransaction(id uuid.UUID, event uint32, company string, competenceDate time.Time, entries ...Entry) (Transaction, error) {
 	if id == uuid.Nil {
 		return Transaction{}, app.ErrInvalidTransactionID
 	}
@@ -40,8 +40,11 @@ func NewTransaction(id uuid.UUID, entries ...Entry) (Transaction, error) {
 	}
 
 	t := Transaction{
-		ID:      id,
-		Entries: entries,
+		ID:             id,
+		Entries:        entries,
+		Event:          event,
+		Company:        company,
+		CompetenceDate: competenceDate,
 	}
 
 	return t, nil
