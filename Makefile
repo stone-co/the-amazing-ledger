@@ -78,7 +78,7 @@ test-coverage:
 generate:
 	@echo "Go Generating"
 	@rm -rf gen/*
-	@buf generate --file ./proto/ledger/ledger.proto
+	@buf generate --path ./proto/ledger/ledger.proto
 	@go generate ./...
 
 .PHONY: goimports

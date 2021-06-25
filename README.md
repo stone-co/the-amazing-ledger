@@ -29,6 +29,14 @@ The system supports the following account types:
 - **expense**: Represents the money you spent, where money goes. The values of theses accounts are naturally positive.
 - **income**: Represents the money you have earned, where money comes from. The values of theses accounts are naturally negative.
 
+# Dependencies
+## buf-build (v)
+- download & install it
+GO111MODULE=on go install github.com/bufbuild/buf/cmd/buf@v0.36.0
+
+## protobuf
+$ sudo apt install protobuf-compiler
+
 # Development
 
 To init development environment and run the amazing ledger, flow these steps.
@@ -73,3 +81,7 @@ curl -i -X POST localhost:3000/api/v1/transactions -d \
 "account_id":"liability:clients:available:16b23084-686b-434a-8323-db483ce1e581", "version": 0, "amount":
 123}]}'
 ```
+
+# Grpc
+$ go mod tidy
+$ make generate
