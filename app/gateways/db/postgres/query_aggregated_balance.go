@@ -24,7 +24,6 @@ func (r LedgerRepository) QueryAggregatedBalance(ctx context.Context, query vos.
 	var balance int
 
 	err := r.db.QueryRow(ctx, queryAggregatedBalanceQuery, query.Value()).Scan(&balance)
-
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if !errors.As(err, &pgErr) {
