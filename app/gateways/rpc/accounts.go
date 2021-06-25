@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"errors"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/newrelic/go-agent/v3/newrelic"
@@ -30,7 +31,7 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 
 	accountBalance, err := a.UseCase.GetAccountBalance(ctx, accountName)
 	if err != nil {
-		if err == app.ErrAccountNotFound {
+		if errors.Is(err, app.ErrAccountNotFound) {
 			log.WithError(err).Error("account name does not exist")
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
@@ -57,18 +58,18 @@ func (a *API) QueryAggregatedBalance(ctx context.Context, request *proto.QueryAg
 
 	query, err := vos.NewAccountQuery(request.Query)
 	if err != nil {
-		log.WithError(err).Error("can't create account name")
+		log.WithError(err).Error("failed to create account query")
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	queryBalance, err := a.UseCase.QueryAggregatedBalance(ctx, query)
 	if err != nil {
-		if err == app.ErrAccountNotFound {
+		if errors.Is(err, app.ErrAccountNotFound) {
 			log.WithError(err).Error("accounts for the given query do not exist")
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 
-		log.WithError(err).Error("can't get account")
+		log.WithError(err).Error("failed to query aggregated account balance")
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 

@@ -16,13 +16,13 @@ func TestLedgerUseCase_QueryAggregatedBalance(t *testing.T) {
 		expectedBalance := totalCredit - totalDebit
 
 		query, err := vos.NewAccountQuery("liability.stone.clients.*")
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 
 		queryBalance := vos.NewQueryBalance(query, 20)
 
 		useCase := newFakeQueryAggregatedBalance(queryBalance, nil)
 		a, err := useCase.QueryAggregatedBalance(context.Background(), query)
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Equal(t, expectedBalance, a.Balance)
 	})
 }
