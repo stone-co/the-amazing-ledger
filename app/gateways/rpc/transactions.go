@@ -55,8 +55,8 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 		domainEntries[i] = domainEntry
 	}
 
-	competenceDate := time.Unix(req.CompetenceDate.Seconds, 0)
-	if competenceDate.After(time.Now()) {
+	competenceDate := time.Unix(req.CompetenceDate.Seconds, 0).UTC()
+	if competenceDate.After(time.Now().UTC()) {
 		return nil, status.Error(codes.InvalidArgument, "competence date set to the future")
 	}
 
