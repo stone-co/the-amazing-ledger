@@ -11,27 +11,22 @@ RICHGO_FORCE_COLOR=1
 GIT_COMMIT=$(shell git rev-parse HEAD)
 GIT_BUILD_TIME=$(shell date '+%Y-%m-%d__%I:%M:%S%p')
 
+BUF_VERSION=v0.43.2
+
 .PHONY: setup
 setup:
-	@echo "==> Setup: Getting tools"
+	@echo "==> Setup: Tidying modules"
 	go mod tidy
-	GO111MODULE=on go install \
-	github.com/bufbuild/buf/cmd/buf \
-	github.com/bufbuild/buf/cmd/protoc-gen-buf-check-breaking \
-	github.com/bufbuild/buf/cmd/protoc-gen-buf-check-lint \
-	github.com/golang/protobuf/protoc-gen-go \
-	github.com/golangci/golangci-lint/cmd/golangci-lint \
-	google.golang.org/grpc/cmd/protoc-gen-go-grpc \
-	github.com/kyoh86/richgo \
-	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
-	github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
-	golang.org/x/tools/cmd/goimports \
-	github.com/resotto/gochk/cmd/gochk
+	@echo "==> Setup: Getting dependencies"
+	go mod download
+	@echo "==> Setup: Getting tools"
+	@cat tools/tools.go | grep _ | awk -F'"' '{print $$2}' | xargs -tI % go install %
+
 
 .PHONY: test
 test:
-	@echo "==> Running Tests"
-	go test -v ./...
+	@echo "==> Test: Running Tests"
+	gotest -v ./...
 
 .PHONY: compile
 compile: clean
