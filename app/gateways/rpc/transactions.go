@@ -4,19 +4,19 @@ import (
 	"context"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 )
 
-func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactionRequest) (*empty.Empty, error) {
+func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactionRequest) (*emptypb.Empty, error) {
 
 	defer newrelic.FromContext(ctx).StartSegment("CreateTransaction").End()
 
@@ -70,5 +70,5 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	return &empty.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }

@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
@@ -62,7 +62,7 @@ func TestAPI_CreateTransaction_Success(t *testing.T) {
 
 			got, err := api.CreateTransaction(context.Background(), tt.request)
 			assert.NoError(t, err)
-			assert.Equal(t, &empty.Empty{}, got)
+			assert.Equal(t, &emptypb.Empty{}, got)
 		})
 	}
 }
