@@ -4,6 +4,14 @@
     "title": "ledger/ledger.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "LedgerService"
+    },
+    {
+      "name": "Health"
+    }
+  ],
   "consumes": [
     "application/json"
   ],
