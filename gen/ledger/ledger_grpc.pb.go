@@ -4,10 +4,10 @@ package ledger
 
 import (
 	context "context"
-	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LedgerServiceClient interface {
-	CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetAccountBalance(ctx context.Context, in *GetAccountBalanceRequest, opts ...grpc.CallOption) (*GetAccountBalanceResponse, error)
 	QueryAggregatedBalance(ctx context.Context, in *QueryAggregatedBalanceRequest, opts ...grpc.CallOption) (*QueryAggregatedBalanceResponse, error)
 	GetAnalyticalData(ctx context.Context, in *GetAnalyticalDataRequest, opts ...grpc.CallOption) (LedgerService_GetAnalyticalDataClient, error)
@@ -33,8 +33,8 @@ func NewLedgerServiceClient(cc grpc.ClientConnInterface) LedgerServiceClient {
 	return &ledgerServiceClient{cc}
 }
 
-func (c *ledgerServiceClient) CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
-	out := new(empty.Empty)
+func (c *ledgerServiceClient) CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/ledger.LedgerService/CreateTransaction", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,7 @@ func (x *ledgerServiceGetAccountHistoryClient) Recv() (*GetAccountHistoryRespons
 // All implementations should embed UnimplementedLedgerServiceServer
 // for forward compatibility
 type LedgerServiceServer interface {
-	CreateTransaction(context.Context, *CreateTransactionRequest) (*empty.Empty, error)
+	CreateTransaction(context.Context, *CreateTransactionRequest) (*emptypb.Empty, error)
 	GetAccountBalance(context.Context, *GetAccountBalanceRequest) (*GetAccountBalanceResponse, error)
 	QueryAggregatedBalance(context.Context, *QueryAggregatedBalanceRequest) (*QueryAggregatedBalanceResponse, error)
 	GetAnalyticalData(*GetAnalyticalDataRequest, LedgerService_GetAnalyticalDataServer) error
@@ -139,7 +139,7 @@ type LedgerServiceServer interface {
 type UnimplementedLedgerServiceServer struct {
 }
 
-func (UnimplementedLedgerServiceServer) CreateTransaction(context.Context, *CreateTransactionRequest) (*empty.Empty, error) {
+func (UnimplementedLedgerServiceServer) CreateTransaction(context.Context, *CreateTransactionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTransaction not implemented")
 }
 func (UnimplementedLedgerServiceServer) GetAccountBalance(context.Context, *GetAccountBalanceRequest) (*GetAccountBalanceResponse, error) {
@@ -299,7 +299,7 @@ var _LedgerService_serviceDesc = grpc.ServiceDesc{
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HealthClient interface {
 	// Check - checks the system health.
-	Check(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
+	Check(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 }
 
 type healthClient struct {
@@ -310,7 +310,7 @@ func NewHealthClient(cc grpc.ClientConnInterface) HealthClient {
 	return &healthClient{cc}
 }
 
-func (c *healthClient) Check(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
+func (c *healthClient) Check(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
 	out := new(HealthCheckResponse)
 	err := c.cc.Invoke(ctx, "/ledger.Health/Check", in, out, opts...)
 	if err != nil {
@@ -324,14 +324,14 @@ func (c *healthClient) Check(ctx context.Context, in *empty.Empty, opts ...grpc.
 // for forward compatibility
 type HealthServer interface {
 	// Check - checks the system health.
-	Check(context.Context, *empty.Empty) (*HealthCheckResponse, error)
+	Check(context.Context, *emptypb.Empty) (*HealthCheckResponse, error)
 }
 
 // UnimplementedHealthServer should be embedded to have forward compatible implementations.
 type UnimplementedHealthServer struct {
 }
 
-func (UnimplementedHealthServer) Check(context.Context, *empty.Empty) (*HealthCheckResponse, error) {
+func (UnimplementedHealthServer) Check(context.Context, *emptypb.Empty) (*HealthCheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
 }
 
@@ -347,7 +347,7 @@ func RegisterHealthServer(s grpc.ServiceRegistrar, srv HealthServer) {
 }
 
 func _Health_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(empty.Empty)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -359,7 +359,7 @@ func _Health_Check_Handler(srv interface{}, ctx context.Context, dec func(interf
 		FullMethod: "/ledger.Health/Check",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HealthServer).Check(ctx, req.(*empty.Empty))
+		return srv.(HealthServer).Check(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
