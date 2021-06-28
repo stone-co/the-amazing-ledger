@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
@@ -54,7 +55,12 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 		domainEntries[i] = domainEntry
 	}
 
-	tx, err := entities.NewTransaction(tid, req.Event, req.Company, req.CompetenceDate.AsTime(), domainEntries...)
+	competenceDate := time.Unix(req.CompetenceDate.Seconds, 0)
+	if competenceDate.After(time.Now()) {
+		return nil, status.Error(codes.InvalidArgument, "competence date set to the future")
+	}
+
+	tx, err := entities.NewTransaction(tid, req.Event, req.Company, competenceDate, domainEntries...)
 	if err != nil {
 		return nil, status.Error(codes.Aborted, err.Error())
 	}
