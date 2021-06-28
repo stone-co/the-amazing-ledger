@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
@@ -93,17 +92,12 @@ func (a *API) GetAccountHistory(request *proto.GetAccountHistoryRequest, stream 
 	}
 
 	fn := func(et vos.EntryHistory) error {
-		var timestamp *timestamppb.Timestamp
-		timestamp, err = ptypes.TimestampProto(et.CreatedAt)
-		if err != nil {
-			log.WithError(err).Error("can't convert time.Time to proto timestamp")
-			return err
-		}
+		ts := timestamppb.New(et.CreatedAt)
 
 		if err = stream.Send(&proto.GetAccountHistoryResponse{
 			Amount:    int64(et.Amount),
 			Operation: proto.Operation(et.Operation),
-			CreatedAt: timestamp,
+			CreatedAt: ts,
 		}); err != nil {
 			return err
 		}
