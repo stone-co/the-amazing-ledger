@@ -9,13 +9,14 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
+	"google.golang.org/grpc"
+
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/usecases"
 	"github.com/stone-co/the-amazing-ledger/app/gateways/rpc"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
-	"google.golang.org/grpc"
 )
 
 func NewGRPCServer(useCase *usecases.LedgerUseCase, nr *newrelic.Application, cfg app.RPCServerConfig, log *logrus.Logger) (*http.Server, error) {
