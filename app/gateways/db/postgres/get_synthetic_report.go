@@ -23,7 +23,7 @@ func (r *LedgerRepository) GetSyntheticReport(ctx context.Context, accountName s
 	params = append(params, debitOperation)
 
 	var columns string = ` SELECT account_class `
-	var query string = ` coalesce(MAX(version),0) as current_version, coalesce(SUM(CASE operation  WHEN $1 THEN amount  ELSE 0 END),0) AS credit, coalesce(SUM(CASE operation WHEN $2 THEN amount ELSE 0 END),0) AS debit FROM entries WHERE 1=1 `
+	var query string = ` coalesce(MAX(version),0) as current_version, coalesce(SUM(CASE operation  WHEN $1 THEN amount  ELSE 0 END),0) AS credit, coalesce(SUM(CASE operation WHEN $2 THEN amount ELSE 0 END),0) AS debit FROM entries WHERE 1=1 ` //TODO remove 1=1
 	var groupBy string = " GROUP BY 1 "
 
 	var paths []string

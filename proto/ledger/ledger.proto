@@ -30,12 +30,12 @@ service LedgerService {
       get: "/api/v1/accounts/{account_path}/history"
     };
   };
-  // rpc GetSyntheticReport(GetSyntheticReportRequest) returns (GetSyntheticReportResponse){
-  //   option (google.api.http) = {
-  //     //get: "/api/v1/accounts/{account_path}/{start_time}/{end_time}/report"
-  //     get: "/api/v1/reports/{account_path}/{start_time}/{end_time}/synthetic"
-  //   };
-  // };
+  rpc GetSyntheticReport(GetSyntheticReportRequest) returns (GetSyntheticReportResponse){
+    option (google.api.http) = {
+      //get: "/api/v1/accounts/{account_path}/{start_time}/{end_time}/report"
+      get: "/api/v1/reports/{account_path}/{start_time}/{end_time}/synthetic"
+    };
+  };
 }
 
 // CreateTransactionRequest represents a transaction to be saved. A transaction must
@@ -98,34 +98,34 @@ message GetAccountBalanceResponse {
   int64 balance = 5;
 }
 
-// // GetSyntheticReport Request
-// message GetSyntheticReportRequest {
-//   // The account name
-//   string account_path = 1;
-//   int64 start_time = 2;
-//   int64 end_time = 3;
-// }
+// GetSyntheticReport Request
+message GetSyntheticReportRequest {
+  // The account name
+  string account_path = 1;
+  int64 start_time = 2;
+  int64 end_time = 3;
+}
 
-// // GetSyntheticReport Response
-// message GetSyntheticReportResponse {
-//   // The account version
-//   uint64 current_version = 1;
-//   // All credit accumulated
-//   int64 total_credit = 2;
-//   // All debit accumulated
-//   int64 total_debit = 3;
-//   // The paths
-//   repeated Path paths = 4;
-// }
+// GetSyntheticReport Response
+message GetSyntheticReportResponse {
+  // The account version
+  uint64 current_version = 1;
+  // All credit accumulated
+  int64 total_credit = 2;
+  // All debit accumulated
+  int64 total_debit = 3;
+  // The paths
+  repeated Path paths = 4;
+}
 
-// message Path {
-// // The account name
-//   string account = 1;
-//   // credit 
-//   int64 credit = 2;
-//   // debit 
-//   int64 debit = 3;
-// }
+message Path {
+// The account name
+  string account = 1;
+  // credit 
+  int64 credit = 2;
+  // debit 
+  int64 debit = 3;
+}
 
 // GetAnalyticalDataRequest contains the filters to be used to get data from the accounts.
 message GetAnalyticalDataRequest {
