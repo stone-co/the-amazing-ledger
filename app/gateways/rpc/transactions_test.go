@@ -5,38 +5,45 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/stone-co/the-amazing-ledger/app/domain/mocks"
+	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
+	"github.com/stone-co/the-amazing-ledger/app/tests/mocks"
+	"github.com/stone-co/the-amazing-ledger/app/tests/testdata"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 )
 
 func TestAPI_CreateTransaction_Success(t *testing.T) {
-	ctx := context.Background()
-	logger := logrus.New()
 	tests := []*struct {
-		name    string
-		request proto.CreateTransactionRequest
+		name         string
+		useCaseSetup *mocks.UseCaseMock
+		request      *proto.CreateTransactionRequest
 	}{
 		{
 			name: "should succeed when create a transaction",
-			request: proto.CreateTransactionRequest{
-				Id: ValidTransactionID,
+			useCaseSetup: &mocks.UseCaseMock{
+				CreateTransactionFunc: func(ctx context.Context, transaction entities.Transaction) error {
+					return nil
+				},
+			},
+			request: &proto.CreateTransactionRequest{
+				Id: uuid.New().String(),
 				Entries: []*proto.Entry{
 					{
-						Id:              "f6162a96-efa3-4d8b-8636-851a9c1a2cd4",
-						AccountId:       ValidAccountID,
+						Id:              uuid.New().String(),
+						AccountId:       testdata.GenerateAccountPath(),
 						ExpectedVersion: 3,
 						Operation:       proto.Operation_OPERATION_DEBIT,
 						Amount:          123,
 					},
 					{
-						Id:              "f6162a96-efa3-4d8b-8636-851a9c1a2cd4",
-						AccountId:       ValidAccountID,
+						Id:              uuid.New().String(),
+						AccountId:       testdata.GenerateAccountPath(),
 						ExpectedVersion: 3,
 						Operation:       proto.Operation_OPERATION_CREDIT,
 						Amount:          123,
@@ -48,46 +55,53 @@ func TestAPI_CreateTransaction_Success(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &API{
-				log:     logger,
-				UseCase: mocks.SuccessfulTransactionMock(),
-			}
-			actual, err := a.CreateTransaction(ctx, &tt.request)
-			require.NoError(t, err)
-			require.Equal(t, actual, &empty.Empty{})
+			api := NewAPI(logrus.New(), tt.useCaseSetup)
+
+			got, err := api.CreateTransaction(context.Background(), tt.request)
+			assert.NoError(t, err)
+			assert.Equal(t, &empty.Empty{}, got)
 		})
 	}
 }
 
 func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
-	ctx := context.Background()
-	logger := logrus.New()
 	tests := []*struct {
 		name            string
-		request         proto.CreateTransactionRequest
+		useCaseSetup    *mocks.UseCaseMock
+		request         *proto.CreateTransactionRequest
 		expectedCode    codes.Code
 		expectedMessage string
 	}{
 		{
-			name: "should not create transaction when invalid ID",
-			request: proto.CreateTransactionRequest{
+			name:         "should not create transaction when invalid ID",
+			useCaseSetup: &mocks.UseCaseMock{},
+			request: &proto.CreateTransactionRequest{
 				Id: "invalid UUID",
 			},
 			expectedCode:    codes.InvalidArgument,
 			expectedMessage: "error parsing transaction id",
 		},
 		{
-			name: "should not create transaction when invalid entry ID",
-			request: proto.CreateTransactionRequest{
-				Id: ValidTransactionID,
+			name:         "should not create transaction when invalid entry ID",
+			useCaseSetup: &mocks.UseCaseMock{},
+			request: &proto.CreateTransactionRequest{
+				Id: uuid.New().String(),
 				Entries: []*proto.Entry{
 					{
 						Id:              "invalid-entry-id",
-						AccountId:       ValidAccountID,
+						AccountId:       testdata.GenerateAccountPath(),
 						ExpectedVersion: 3,
 						Operation:       proto.Operation_OPERATION_DEBIT,
+						Amount:          123,
+					},
+					{
+						Id:              uuid.New().String(),
+						AccountId:       testdata.GenerateAccountPath(),
+						ExpectedVersion: 3,
+						Operation:       proto.Operation_OPERATION_CREDIT,
 						Amount:          123,
 					},
 				},
@@ -99,15 +113,23 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 			expectedMessage: "error parsing entry id",
 		},
 		{
-			name: "should not create transaction when invalid operation",
-			request: proto.CreateTransactionRequest{
-				Id: ValidTransactionID,
+			name:         "should not create transaction when invalid operation",
+			useCaseSetup: &mocks.UseCaseMock{},
+			request: &proto.CreateTransactionRequest{
+				Id: uuid.New().String(),
 				Entries: []*proto.Entry{
 					{
-						Id:              "f6162a96-efa3-4d8b-8636-851a9c1a2cd4",
-						AccountId:       ValidAccountID,
+						Id:              uuid.New().String(),
+						AccountId:       testdata.GenerateAccountPath(),
 						ExpectedVersion: 2,
 						Operation:       proto.Operation_OPERATION_UNSPECIFIED,
+						Amount:          123,
+					},
+					{
+						Id:              uuid.New().String(),
+						AccountId:       testdata.GenerateAccountPath(),
+						ExpectedVersion: 3,
+						Operation:       proto.Operation_OPERATION_CREDIT,
 						Amount:          123,
 					},
 				},
@@ -119,16 +141,24 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 			expectedMessage: "invalid operation",
 		},
 		{
-			name: "should not create transaction when invalid amount",
-			request: proto.CreateTransactionRequest{
-				Id: ValidTransactionID,
+			name:         "should not create transaction when invalid amount",
+			useCaseSetup: &mocks.UseCaseMock{},
+			request: &proto.CreateTransactionRequest{
+				Id: uuid.New().String(),
 				Entries: []*proto.Entry{
 					{
-						Id:              "f6162a96-efa3-4d8b-8636-851a9c1a2cd4",
-						AccountId:       ValidAccountID,
+						Id:              uuid.New().String(),
+						AccountId:       testdata.GenerateAccountPath(),
 						ExpectedVersion: 2,
 						Operation:       proto.Operation_OPERATION_CREDIT,
 						Amount:          -3,
+					},
+					{
+						Id:              uuid.New().String(),
+						AccountId:       testdata.GenerateAccountPath(),
+						ExpectedVersion: 3,
+						Operation:       proto.Operation_OPERATION_DEBIT,
+						Amount:          123,
 					},
 				},
 				Company:        "abc",
@@ -138,18 +168,39 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 			expectedCode:    codes.InvalidArgument,
 			expectedMessage: "invalid amount",
 		},
+		{
+			name:         "should not create transaction when number of entries is less than two",
+			useCaseSetup: &mocks.UseCaseMock{},
+			request: &proto.CreateTransactionRequest{
+				Id: uuid.New().String(),
+				Entries: []*proto.Entry{
+					{
+						Id:              uuid.New().String(),
+						AccountId:       testdata.GenerateAccountPath(),
+						ExpectedVersion: 2,
+						Operation:       proto.Operation_OPERATION_CREDIT,
+						Amount:          100,
+					},
+				},
+				Company:        "abc",
+				Event:          1,
+				CompetenceDate: timestamppb.Now(),
+			},
+			expectedCode:    codes.Aborted,
+			expectedMessage: "invalid entries number",
+		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := &API{
-				log:     logger,
-				UseCase: mocks.SuccessfulTransactionMock(),
-			}
-			_, err := a.CreateTransaction(ctx, &tt.request)
+			api := NewAPI(logrus.New(), tt.useCaseSetup)
+
+			_, err := api.CreateTransaction(context.Background(), tt.request)
 			respStatus, ok := status.FromError(err)
-			require.True(t, ok)
-			require.Equal(t, tt.expectedCode.String(), respStatus.Code().String())
-			require.Equal(t, tt.expectedMessage, respStatus.Message())
+
+			assert.True(t, ok)
+			assert.Equal(t, tt.expectedCode, respStatus.Code())
+			assert.Equal(t, tt.expectedMessage, respStatus.Message())
 		})
 	}
 }
