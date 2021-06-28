@@ -39,6 +39,3 @@ jobs:
           username: ${{ secrets.REGISTRY_USER }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: make REGISTRY=stoneopenbank VERSION=$RELEASE_VERSION push
-
-
-
