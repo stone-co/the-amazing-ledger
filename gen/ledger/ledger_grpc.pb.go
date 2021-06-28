@@ -12,6 +12,7 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
+// Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
 // LedgerServiceClient is the client API for LedgerService service.
@@ -61,7 +62,7 @@ func (c *ledgerServiceClient) QueryAggregatedBalance(ctx context.Context, in *Qu
 }
 
 func (c *ledgerServiceClient) GetAnalyticalData(ctx context.Context, in *GetAnalyticalDataRequest, opts ...grpc.CallOption) (LedgerService_GetAnalyticalDataClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_LedgerService_serviceDesc.Streams[0], "/ledger.LedgerService/GetAnalyticalData", opts...)
+	stream, err := c.cc.NewStream(ctx, &LedgerService_ServiceDesc.Streams[0], "/ledger.LedgerService/GetAnalyticalData", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +94,7 @@ func (x *ledgerServiceGetAnalyticalDataClient) Recv() (*GetAnalyticalDataRespons
 }
 
 func (c *ledgerServiceClient) GetAccountHistory(ctx context.Context, in *GetAccountHistoryRequest, opts ...grpc.CallOption) (LedgerService_GetAccountHistoryClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_LedgerService_serviceDesc.Streams[1], "/ledger.LedgerService/GetAccountHistory", opts...)
+	stream, err := c.cc.NewStream(ctx, &LedgerService_ServiceDesc.Streams[1], "/ledger.LedgerService/GetAccountHistory", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +164,7 @@ type UnsafeLedgerServiceServer interface {
 }
 
 func RegisterLedgerServiceServer(s grpc.ServiceRegistrar, srv LedgerServiceServer) {
-	s.RegisterService(&_LedgerService_serviceDesc, srv)
+	s.RegisterService(&LedgerService_ServiceDesc, srv)
 }
 
 func _LedgerService_CreateTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -262,7 +263,10 @@ func (x *ledgerServiceGetAccountHistoryServer) Send(m *GetAccountHistoryResponse
 	return x.ServerStream.SendMsg(m)
 }
 
-var _LedgerService_serviceDesc = grpc.ServiceDesc{
+// LedgerService_ServiceDesc is the grpc.ServiceDesc for LedgerService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var LedgerService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "ledger.LedgerService",
 	HandlerType: (*LedgerServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
@@ -343,7 +347,7 @@ type UnsafeHealthServer interface {
 }
 
 func RegisterHealthServer(s grpc.ServiceRegistrar, srv HealthServer) {
-	s.RegisterService(&_Health_serviceDesc, srv)
+	s.RegisterService(&Health_ServiceDesc, srv)
 }
 
 func _Health_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -364,7 +368,10 @@ func _Health_Check_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Health_serviceDesc = grpc.ServiceDesc{
+// Health_ServiceDesc is the grpc.ServiceDesc for Health service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Health_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "ledger.Health",
 	HandlerType: (*HealthServer)(nil),
 	Methods: []grpc.MethodDesc{
