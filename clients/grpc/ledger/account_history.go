@@ -6,10 +6,10 @@ import (
 	"io"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/grpc/status"
+
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
-	"google.golang.org/grpc/status"
 )
 
 type EntryHistory struct {
@@ -65,15 +65,16 @@ func (c *Connection) GetAccountHistory(ctx context.Context, accountPath string) 
 			operation = vos.DebitOperation
 		}
 
-		time, err := ptypes.Timestamp(result.CreatedAt)
-		if err != nil {
-			return nil, fmt.Errorf("%w: can't convert time.Time to proto timestamp", err)
-
+		ok := result.CreatedAt.IsValid()
+		if !ok {
+			return nil, fmt.Errorf("invalid timestamp received")
 		}
+
+		ts := result.CreatedAt.AsTime()
 		entriesHistory = append(entriesHistory, EntryHistory{
 			amount:    int(result.Amount),
 			operation: operation,
-			createAt:  time,
+			createAt:  ts,
 		})
 	}
 
