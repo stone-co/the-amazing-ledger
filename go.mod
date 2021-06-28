@@ -7,6 +7,7 @@ require (
 	github.com/bojand/ghz v0.70.0
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/continuity v0.1.0 // indirect
+	github.com/fatih/color v1.12.0 // indirect
 	github.com/golang-migrate/migrate/v4 v4.12.2
 	github.com/google/uuid v1.1.2
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
@@ -16,13 +17,14 @@ require (
 	github.com/jackc/pgerrcode v0.0.0-20201024163028-a0d42d470451
 	github.com/jackc/pgx/v4 v4.8.1
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/kyoh86/richgo v0.3.3
+	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/newrelic/go-agent/v3 v3.10.0
 	github.com/newrelic/go-agent/v3/integrations/nrgrpc v1.1.0
 	github.com/newrelic/go-agent/v3/integrations/nrlogrus v1.0.0
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.5+incompatible
 	github.com/prometheus/client_golang v1.7.1
+	github.com/rakyll/gotest v0.0.6
 	github.com/resotto/gochk v1.2.0
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.7.0
