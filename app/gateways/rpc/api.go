@@ -8,11 +8,12 @@ import (
 	"github.com/newrelic/go-agent/v3/integrations/nrgrpc"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/app/domain"
-	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/stone-co/the-amazing-ledger/app/domain"
+	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 )
 
 var _ proto.LedgerServiceServer = &API{}
