@@ -30,7 +30,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: golangci/golangci-lint-action@v2
       with:
-        version: v1.31
+        version: v1.41.1
 
   Build:
     name: Build Job
