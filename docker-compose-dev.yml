@@ -4,7 +4,7 @@ volumes:
     driver: local
 services:
   postgres:
-    image: postgres:13.2
+    image: postgres:9.6-alpine
     ports:
       - 5432:5432
     volumes:
@@ -13,7 +13,6 @@ services:
       POSTGRES_DB: dev
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    # command: postgres -c logging_collector=on -c log_destination=stderr -c log_statement='all'
 
   prometheus:
     image: prom/prometheus
@@ -21,4 +20,4 @@ services:
       - 9090:9090
     volumes:
       - ./prometheus/:/etc/prometheus/
-    # network_mode: host
+    network_mode: host
