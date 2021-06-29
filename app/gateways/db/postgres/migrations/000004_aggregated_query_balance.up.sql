@@ -21,9 +21,10 @@ select sum(sub.balance) filter (where sub.row_number > 1) as partial_balance,
        max(created_at) filter (where sub.row_number = 2)  as partial_date,
        sum(sub.balance) filter (where sub.row_number = 1) as recent_balance
 from (
-         select coalesce(sum(amount) filter (where operation = 1), 0) - coalesce(sum(amount) filter (where operation = 2), 0) as balance,
+         select coalesce(sum(amount) filter (where operation = 1), 0) -
+                coalesce(sum(amount) filter (where operation = 2), 0) as balance,
                 created_at,
-                row_number() over (order by created_at desc)                                        as row_number
+                row_number() over (order by created_at desc)          as row_number
          from entry
          where account ~ _query
          group by created_at
@@ -47,9 +48,10 @@ select sum(sub.balance) filter (where sub.row_number > 1) as partial_balance,
        max(created_at) filter (where sub.row_number = 2)  as partial_date,
        sum(sub.balance) filter (where sub.row_number = 1) as recent_credit
 from (
-         select coalesce(sum(amount) filter (where operation = 1), 0) - coalesce(sum(amount) filter (where operation = 2), 0) as balance,
+         select coalesce(sum(amount) filter (where operation = 1), 0) -
+                coalesce(sum(amount) filter (where operation = 2), 0) as balance,
                 created_at,
-                row_number() over (order by created_at desc)                                        as row_number
+                row_number() over (order by created_at desc)          as row_number
          from entry
          where account ~ _query
            and created_at > _dt

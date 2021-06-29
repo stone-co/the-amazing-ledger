@@ -13,7 +13,7 @@ import (
 )
 
 func TestLedgerUseCase_QueryAggregatedBalance(t *testing.T) {
-	t.Run("should return aggegated balance successfully", func(t *testing.T) {
+	t.Run("should return aggregated balance successfully", func(t *testing.T) {
 		query, err := vos.NewAccountQuery("liability.stone.clients.*")
 		assert.NoError(t, err)
 
