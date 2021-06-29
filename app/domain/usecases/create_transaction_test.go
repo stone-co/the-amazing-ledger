@@ -45,7 +45,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			name: "Should return an error if entry version is invalid",
+			name: "Should return an error if entry tries to skip one version",
 			repoSetup: &mocks.RepositoryMock{
 				CreateTransactionFunc: func(ctx context.Context, transaction entities.Transaction) error {
 					return app.ErrInvalidVersion
