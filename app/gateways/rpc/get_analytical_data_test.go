@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/app/tests/mocks"
 	"github.com/stone-co/the-amazing-ledger/app/tests/testdata"
@@ -64,6 +65,6 @@ func TestAPI_GetAnalyticalData(t *testing.T) {
 
 		assert.True(t, ok)
 		assert.Equal(t, codes.InvalidArgument, respStatus.Code())
-		assert.Equal(t, "invalid account structure", respStatus.Message())
+		assert.Equal(t, app.ErrInvalidAccountComponentSize.Error(), respStatus.Message())
 	})
 }
