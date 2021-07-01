@@ -64,7 +64,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	assert.Equal(t, 100, balance.TotalDebit)
 
 	_, err = fetchSnapshot(ctx, pgDocker.DB, acc1)
-	assert.ErrorIs(t, pgx.ErrNoRows, err)
+	assert.ErrorIs(t, err, pgx.ErrNoRows)
 
 	balance, err = r.GetAccountBalance(ctx, acc2)
 	assert.NoError(t, err)
@@ -72,7 +72,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	assert.Equal(t, 0, balance.TotalDebit)
 
 	_, err = fetchSnapshot(ctx, pgDocker.DB, acc2)
-	assert.ErrorIs(t, pgx.ErrNoRows, err)
+	assert.ErrorIs(t, err, pgx.ErrNoRows)
 
 	e1, _ = entities.NewEntry(
 		uuid.New(),
