@@ -86,11 +86,11 @@ func runMigrations(migrationsPath, connString string) error {
 	if migrationsPath != "" {
 		mig, err := migrate.New("file://"+migrationsPath, connString)
 		if err != nil {
-			return fmt.Errorf("failed to start migrate struct: %s", err.Error())
+			return fmt.Errorf("failed to start migrate struct: %w", err)
 		}
 		defer mig.Close()
 		if err = mig.Up(); err != nil {
-			return fmt.Errorf("failed to run migration: %s", err.Error())
+			return fmt.Errorf("failed to run migration: %w", err)
 		}
 	}
 

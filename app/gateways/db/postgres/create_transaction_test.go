@@ -333,7 +333,7 @@ func fetchAccountVersion(ctx context.Context, db *pgxpool.Pool, account vos.Acco
 
 	var version int64
 	err := db.QueryRow(ctx, query, account.Name()).Scan(&version)
-	if err != nil && err != pgx.ErrNoRows {
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return vos.Version(0), err
 	} else if errors.Is(err, pgx.ErrNoRows) {
 		return vos.Version(0), nil
