@@ -40,6 +40,18 @@ func TestNewPartialAccountName(t *testing.T) {
 			err:          nil,
 		},
 		{
+			name:         "Successfully creates a query with star symbol (*)",
+			path:         "*.clients.available.sub1",
+			expectedName: "*.clients.available.sub1",
+			err:          nil,
+		},
+		{
+			name:         "Error when query has no special characters, but doesn't follow the depth restrictions",
+			path:         "asset.clients.available.sub1",
+			expectedName: "",
+			err:          app.ErrAccountPathViolation,
+		},
+		{
 			name:         "Error when creating an empty query",
 			path:         "",
 			expectedName: "",

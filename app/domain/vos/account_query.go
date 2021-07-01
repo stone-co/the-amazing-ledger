@@ -31,9 +31,22 @@ func NewAccountQuery(query string) (AccountQuery, error) {
 		return AccountQuery{}, app.ErrInvalidAccountStructure
 	}
 
-	for _, component := range components {
+	for i, component := range components {
 		if component == "" {
 			return AccountQuery{}, app.ErrInvalidAccountComponentSize
+		}
+
+		if !regexOnlyAlphanumericAndUnderscore.MatchString(component) {
+			continue
+		}
+
+		config, ok := _defaultConfig.DepthConfigs[i]
+		if !ok {
+			continue
+		}
+
+		if _, ok = config.Restrictions[component]; !ok {
+			return AccountQuery{}, app.ErrAccountPathViolation
 		}
 	}
 
