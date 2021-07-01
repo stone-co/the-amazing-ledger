@@ -36,12 +36,12 @@ func NewAccountQuery(query string) (AccountQuery, error) {
 			return AccountQuery{}, app.ErrInvalidAccountComponentSize
 		}
 
-		if !regexOnlyAlphanumericAndUnderscore.MatchString(component) {
+		config, ok := _defaultConfig.DepthConfigs[i]
+		if !ok {
 			continue
 		}
 
-		config, ok := _defaultConfig.DepthConfigs[i]
-		if !ok {
+		if !regexOnlyAlphanumericAndUnderscore.MatchString(component) {
 			continue
 		}
 
