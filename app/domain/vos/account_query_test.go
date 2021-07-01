@@ -40,41 +40,48 @@ func TestNewPartialAccountName(t *testing.T) {
 			err:          nil,
 		},
 		{
+			name:         "Successfully creates a query with star symbol (*)",
+			path:         "*.clients.available.sub1",
+			expectedName: "*.clients.available.sub1",
+			err:          nil,
+		},
+		{
+			name:         "Error when query has no special characters, but doesn't follow the depth restrictions",
+			path:         "asset.clients.available.sub1",
+			expectedName: "",
+			err:          app.ErrAccountPathViolation,
+		},
+		{
 			name:         "Error when creating an empty query",
 			path:         "",
 			expectedName: "",
-			err:          app.ErrInvalidAccountStructure,
+			err:          app.ErrInvalidAccountComponentSize,
 		},
 		{
 			name:         "Error when account omits level 1",
 			path:         ".bacen.conta_liquidacao",
 			expectedName: "",
-			err:          app.ErrInvalidAccountStructure,
+			err:          app.ErrInvalidAccountComponentSize,
 		},
 		{
 			name:         "Error when account omits level 2",
 			path:         "assets..conta_liquidacao",
 			expectedName: "",
-			err:          app.ErrInvalidAccountStructure,
+			err:          app.ErrInvalidAccountComponentSize,
 		},
 		{
 			name:         "Error when account omits level 3",
 			path:         "assets.bacen.",
 			expectedName: "",
-			err:          app.ErrInvalidAccountStructure,
-		},
-		{
-			name:         "Error when level 1 is not one of the predefined values (assets, liability, ...)",
-			path:         "xpto.bacen.conta_liquidacao",
-			expectedName: "",
-			err:          app.ErrInvalidAccountStructure,
+			err:          app.ErrInvalidAccountComponentSize,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewAccountQuery(tt.path)
-			assert.Equal(t, tt.err, err)
+			assert.ErrorIs(t, err, tt.err)
+
 			if err == nil {
 				assert.Equal(t, tt.expectedName, got.Value())
 			}

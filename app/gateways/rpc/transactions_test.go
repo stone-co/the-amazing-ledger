@@ -13,6 +13,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/tests/mocks"
 	"github.com/stone-co/the-amazing-ledger/app/tests/testdata"
@@ -198,6 +199,34 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 			},
 			expectedCode:    codes.Aborted,
 			expectedMessage: "invalid entries number",
+		},
+		{
+			name:         "should not create transaction when account is invalid",
+			useCaseSetup: &mocks.UseCaseMock{},
+			request: &proto.CreateTransactionRequest{
+				Id: uuid.New().String(),
+				Entries: []*proto.Entry{
+					{
+						Id:              uuid.New().String(),
+						AccountId:       "assets",
+						ExpectedVersion: 2,
+						Operation:       proto.Operation_OPERATION_CREDIT,
+						Amount:          123,
+					},
+					{
+						Id:              uuid.New().String(),
+						AccountId:       testdata.GenerateAccountPath(),
+						ExpectedVersion: 3,
+						Operation:       proto.Operation_OPERATION_DEBIT,
+						Amount:          123,
+					},
+				},
+				Company:        "abc",
+				Event:          1,
+				CompetenceDate: timestamppb.Now(),
+			},
+			expectedCode:    codes.InvalidArgument,
+			expectedMessage: app.ErrInvalidAccountStructure.Error(),
 		},
 	}
 

@@ -61,7 +61,7 @@ func TestAPI_GetAccountBalance_InvalidRequest(t *testing.T) {
 				AccountPath: "liability.clients",
 			},
 			expectedCode:    codes.InvalidArgument,
-			expectedMessage: "invalid account structure",
+			expectedMessage: app.ErrInvalidAccountStructure.Error(),
 		},
 		{
 			name: "should return an error if account does not exist",
@@ -136,7 +136,7 @@ func TestAPI_GetAccountHistory(t *testing.T) {
 
 		assert.True(t, ok)
 		assert.Equal(t, codes.InvalidArgument, respStatus.Code())
-		assert.Equal(t, "invalid account structure", respStatus.Message())
+		assert.Equal(t, app.ErrInvalidAccountStructure.Error(), respStatus.Message())
 	})
 }
 
@@ -181,7 +181,7 @@ func TestAPI_QueryAggregatedBalance_InvalidRequest(t *testing.T) {
 				Query: "liability.clients.",
 			},
 			expectedCode:    codes.InvalidArgument,
-			expectedMessage: "invalid account structure",
+			expectedMessage: app.ErrInvalidAccountComponentSize.Error(),
 		},
 		{
 			name: "should return an error if account does not exist",
