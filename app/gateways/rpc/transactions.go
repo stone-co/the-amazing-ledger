@@ -60,7 +60,12 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 		return nil, status.Error(codes.InvalidArgument, "competence date set to the future")
 	}
 
-	tx, err := entities.NewTransaction(tid, req.Event, req.Company, competenceDate, domainEntries...)
+	metadata, err := req.Metadata.MarshalJSON()
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "error marshaling metadata")
+	}
+
+	tx, err := entities.NewTransaction(tid, req.Event, req.Company, competenceDate, metadata, domainEntries...)
 	if err != nil {
 		return nil, status.Error(codes.Aborted, err.Error())
 	}

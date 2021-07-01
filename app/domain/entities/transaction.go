@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,9 +16,10 @@ type Transaction struct {
 	Event          uint32
 	Company        string
 	CompetenceDate time.Time
+	Metadata       json.RawMessage
 }
 
-func NewTransaction(id uuid.UUID, event uint32, company string, competenceDate time.Time, entries ...Entry) (Transaction, error) {
+func NewTransaction(id uuid.UUID, event uint32, company string, competenceDate time.Time, metadata json.RawMessage, entries ...Entry) (Transaction, error) {
 	if id == uuid.Nil {
 		return Transaction{}, app.ErrInvalidTransactionID
 	}
@@ -45,6 +47,7 @@ func NewTransaction(id uuid.UUID, event uint32, company string, competenceDate t
 		Event:          event,
 		Company:        company,
 		CompetenceDate: competenceDate,
+		Metadata:       metadata,
 	}
 
 	return t, nil

@@ -14,8 +14,8 @@ import (
 )
 
 const createTransactionQuery = `
-insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
-values ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company, metadata)
+values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 `
 
 func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
@@ -45,6 +45,7 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 			transaction.CompetenceDate,
 			entry.Account.Name(),
 			transaction.Company,
+			transaction.Metadata,
 		)
 	}
 
