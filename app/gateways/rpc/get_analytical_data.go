@@ -1,6 +1,8 @@
 package rpc
 
 import (
+	"fmt"
+
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
@@ -29,7 +31,7 @@ func (a *API) GetAnalyticalData(request *proto.GetAnalyticalDataRequest, stream 
 			Operation: proto.Operation(st.Operation),
 			Amount:    int32(st.Amount),
 		}); err != nil {
-			return err
+			return fmt.Errorf("failed to send data into stream: %w", err)
 		}
 
 		return nil

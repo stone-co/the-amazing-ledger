@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
@@ -27,14 +28,14 @@ func (r LedgerRepository) QueryAggregatedBalance(ctx context.Context, query vos.
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if !errors.As(err, &pgErr) {
-			return vos.QueryBalance{}, err
+			return vos.QueryBalance{}, fmt.Errorf("failed to query aggregated balance: %w", err)
 		}
 
 		if pgErr.Code == pgerrcode.NoDataFound {
 			return vos.QueryBalance{}, app.ErrAccountNotFound
 		}
 
-		return vos.QueryBalance{}, err
+		return vos.QueryBalance{}, fmt.Errorf("failed to query aggregated balance: %w", pgErr)
 	}
 
 	return vos.NewQueryBalance(query, balance), nil

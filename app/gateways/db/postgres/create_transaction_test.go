@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -347,7 +348,7 @@ func fetchEntryVersion(ctx context.Context, db *pgxpool.Pool, id uuid.UUID) (vos
 
 	var version int64
 	if err := db.QueryRow(ctx, query, id).Scan(&version); err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed to scan row: %w", err)
 	}
 
 	return vos.Version(version), nil

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -138,6 +139,9 @@ func fetchQuerySnapshot(ctx context.Context, db *pgxpool.Pool, query vos.Account
 	var snap querySnapshot
 
 	err := db.QueryRow(ctx, cmd, query.Value()).Scan(&snap.balance, &snap.date)
+	if err != nil {
+		return querySnapshot{}, fmt.Errorf("failed to fetch query snapshot: %w", err)
+	}
 
-	return snap, err
+	return snap, nil
 }
