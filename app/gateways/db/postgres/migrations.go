@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"embed"
+	"errors"
 	"net/http"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -29,7 +30,7 @@ func RunMigrations(dbUrl string) error {
 	}
 
 	defer m.Close()
-	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		return err
 	}
 	return nil
