@@ -257,10 +257,6 @@
           "type": "integer",
           "format": "int64",
           "description": "The event which triggered the transaction."
-        },
-        "metadata": {
-          "type": "object",
-          "description": "The transaction metadata."
         }
       },
       "title": "CreateTransactionRequest represents a transaction to be saved. A transaction must\nhave at least two entries, with a valid balance. More info here:\nhttps://en.wikipedia.org/wiki/Double-entry_bookkeeping"
@@ -289,6 +285,10 @@
           "type": "integer",
           "format": "int32",
           "description": "Amount (in cents)."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "The entry metadata."
         }
       },
       "description": "Entry represents a new entry on the Ledger."

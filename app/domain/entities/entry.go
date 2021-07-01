@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"encoding/json"
+
 	"github.com/google/uuid"
 
 	"github.com/stone-co/the-amazing-ledger/app"
@@ -13,9 +15,10 @@ type Entry struct {
 	Account   vos.AccountPath
 	Version   vos.Version
 	Amount    int
+	Metadata  json.RawMessage
 }
 
-func NewEntry(id uuid.UUID, operation vos.OperationType, accountID string, version vos.Version, amount int) (Entry, error) {
+func NewEntry(id uuid.UUID, operation vos.OperationType, accountID string, version vos.Version, amount int, metadata json.RawMessage) (Entry, error) {
 	if id == uuid.Nil {
 		return Entry{}, app.ErrInvalidEntryID
 	}
@@ -39,5 +42,6 @@ func NewEntry(id uuid.UUID, operation vos.OperationType, accountID string, versi
 		Account:   acc,
 		Version:   version,
 		Amount:    amount,
+		Metadata:  metadata,
 	}, nil
 }

@@ -52,8 +52,6 @@ message CreateTransactionRequest {
   string company = 4;
   // The event which triggered the transaction.
   uint32 event = 5;
-  // The transaction metadata.
-  google.protobuf.Struct metadata = 6;
 }
 
 // Entry represents a new entry on the Ledger.
@@ -68,6 +66,8 @@ message Entry  {
   Operation operation = 4;
   // Amount (in cents).
   int32 amount = 5;
+  // The entry metadata.
+  google.protobuf.Struct metadata = 6;
 }
 
 // Operation has the possible operations to be used in Entry.

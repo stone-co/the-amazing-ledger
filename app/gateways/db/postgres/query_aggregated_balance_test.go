@@ -47,6 +47,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc1.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 	e2, _ := entities.NewEntry(
 		uuid.New(),
@@ -54,9 +55,10 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc2.Name(),
 		vos.IgnoreAccountVersion,
 		100,
+		metadata,
 	)
 
-	tx, err := entities.NewTransaction(uuid.New(), 1, "company", time.Now(), metadata, e1, e2)
+	tx, err := entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e2)
 	assert.NoError(t, err)
 
 	err = r.CreateTransaction(ctx, tx)
@@ -75,6 +77,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc1.Name(),
 		vos.IgnoreAccountVersion,
 		100,
+		metadata,
 	)
 	e3, _ := entities.NewEntry(
 		uuid.New(),
@@ -82,9 +85,10 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc3.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 
-	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), metadata, e1, e3)
+	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e3)
 	assert.NoError(t, err)
 	tx.Event = 1
 
@@ -105,6 +109,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc1.Name(),
 		vos.NextAccountVersion,
 		200,
+		metadata,
 	)
 	e3, _ = entities.NewEntry(
 		uuid.New(),
@@ -112,9 +117,10 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc3.Name(),
 		vos.NextAccountVersion,
 		200,
+		metadata,
 	)
 
-	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), metadata, e1, e3)
+	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e3)
 	assert.NoError(t, err)
 	tx.Event = 1
 

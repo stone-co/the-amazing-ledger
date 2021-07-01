@@ -40,12 +40,18 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 			return nil, status.Error(codes.InvalidArgument, errMsg)
 		}
 
+		metadata, mErr := entry.Metadata.MarshalJSON()
+		if mErr != nil {
+			return nil, status.Error(codes.InvalidArgument, "error marshaling entry metadata")
+		}
+
 		domainEntry, domainErr := entities.NewEntry(
 			entryID,
 			vos.OperationType(proto.Operation_value[entry.Operation.String()]),
 			entry.AccountId,
 			vos.Version(entry.ExpectedVersion),
 			int(entry.Amount),
+			metadata,
 		)
 		if domainErr != nil {
 			log.WithError(err).Error("error creating entry")
@@ -60,12 +66,7 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 		return nil, status.Error(codes.InvalidArgument, "competence date set to the future")
 	}
 
-	metadata, err := req.Metadata.MarshalJSON()
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "error marshaling metadata")
-	}
-
-	tx, err := entities.NewTransaction(tid, req.Event, req.Company, competenceDate, metadata, domainEntries...)
+	tx, err := entities.NewTransaction(tid, req.Event, req.Company, competenceDate, domainEntries...)
 	if err != nil {
 		return nil, status.Error(codes.Aborted, err.Error())
 	}

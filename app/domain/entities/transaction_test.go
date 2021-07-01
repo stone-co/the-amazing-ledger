@@ -19,13 +19,13 @@ func TestNewTransaction(t *testing.T) {
 	competenceDate := time.Now()
 	metadata := json.RawMessage(`{}`)
 
-	e11, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability.clients.available.111", vos.NextAccountVersion, 123)
-	e12, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.222", vos.NextAccountVersion, 123)
+	e11, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability.clients.available.111", vos.NextAccountVersion, 123, metadata)
+	e12, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.222", vos.NextAccountVersion, 123, metadata)
 	validTwoEntries := []Entry{e11, e12}
 
-	e21, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability.clients.available.333", vos.NextAccountVersion, 400)
-	e22, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.444", vos.NextAccountVersion, 300)
-	e23, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.555", vos.NextAccountVersion, 100)
+	e21, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability.clients.available.333", vos.NextAccountVersion, 400, metadata)
+	e22, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.444", vos.NextAccountVersion, 300, metadata)
+	e23, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.555", vos.NextAccountVersion, 100, metadata)
 	validThreeEntries := []Entry{e21, e22, e23}
 
 	testCases := []struct {
@@ -59,7 +59,6 @@ func TestNewTransaction(t *testing.T) {
 				Event:          event,
 				Company:        company,
 				CompetenceDate: competenceDate,
-				Metadata:       metadata,
 			},
 			expectedErr: nil,
 		},
@@ -73,7 +72,6 @@ func TestNewTransaction(t *testing.T) {
 				Event:          event,
 				Company:        company,
 				CompetenceDate: competenceDate,
-				Metadata:       metadata,
 			},
 			expectedErr: nil,
 		},
@@ -102,7 +100,7 @@ func TestNewTransaction(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewTransaction(tt.id, event, company, competenceDate, metadata, tt.entries...)
+			got, err := NewTransaction(tt.id, event, company, competenceDate, tt.entries...)
 
 			assert.ErrorIs(t, err, tt.expectedErr)
 			assert.Equal(t, tt.expectedTransaction, got)

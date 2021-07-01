@@ -38,6 +38,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.NextAccountVersion,
 			100,
+			json.RawMessage(`{"requestID": "request-id-1"}`),
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -45,17 +46,17 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			json.RawMessage(`{"requestID": "request-id-2"}`),
 		)
 
-		md := json.RawMessage(`{"requestID": "request-id"}`)
-
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, md, e1, e2)
+		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
 
-		assertMetadata(t, ctx, pgDocker.DB, e1.ID, md)
+		assertMetadata(t, ctx, pgDocker.DB, e1.ID, e1.Metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, e2.Metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -81,6 +82,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account3",
 			vos.Version(3),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -88,15 +90,17 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account4",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, metadata, e1, e2)
+		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
 
 		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -122,6 +126,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.NextAccountVersion,
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -129,15 +134,17 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, metadata, e1, e2)
+		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
 
 		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -163,6 +170,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(3),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -170,15 +178,17 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, metadata, e1, e2)
+		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
 
 		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -204,6 +214,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(3),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -211,9 +222,10 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, metadata, e1, e2)
+		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)
@@ -235,6 +247,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(1),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -242,9 +255,10 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, metadata, e1, e2)
+		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)
@@ -266,6 +280,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(30),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -273,9 +288,10 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, metadata, e1, e2)
+		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)
@@ -297,6 +313,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.NextAccountVersion,
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -304,9 +321,10 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, metadata, e1, e2)
+		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 		assert.NoError(t, err)
 
 		err = r.CreateTransaction(ctx, tx)

@@ -20,6 +20,7 @@ import (
 func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 	accountID1 := testdata.GenerateAccountPath()
 	accountID2 := testdata.GenerateAccountPath()
+	metadata := json.RawMessage(`{}`)
 
 	testCases := []struct {
 		name        string
@@ -35,10 +36,10 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 				},
 			},
 			entries: func(t *testing.T) []entities.Entry {
-				e1, err := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NextAccountVersion, 123)
+				e1, err := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.NextAccountVersion, 123, metadata)
 				assert.NoError(t, err)
 
-				e2, err := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NextAccountVersion, 123)
+				e2, err := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.NextAccountVersion, 123, metadata)
 				assert.NoError(t, err)
 
 				return []entities.Entry{e1, e2}
@@ -53,10 +54,10 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 				},
 			},
 			entries: func(t *testing.T) []entities.Entry {
-				e1, err := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.Version(1), 123)
+				e1, err := entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, vos.Version(1), 123, metadata)
 				assert.NoError(t, err)
 
-				e2, err := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.Version(3), 123)
+				e2, err := entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, vos.Version(3), 123, metadata)
 				assert.NoError(t, err)
 
 				return []entities.Entry{e1, e2}
@@ -73,10 +74,10 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 			entries: func(t *testing.T) []entities.Entry {
 				idempotencyKey := uuid.New()
 
-				e1, err := entities.NewEntry(idempotencyKey, vos.DebitOperation, accountID1, vos.NextAccountVersion, 123)
+				e1, err := entities.NewEntry(idempotencyKey, vos.DebitOperation, accountID1, vos.NextAccountVersion, 123, metadata)
 				assert.NoError(t, err)
 
-				e2, err := entities.NewEntry(idempotencyKey, vos.CreditOperation, accountID2, vos.NextAccountVersion, 123)
+				e2, err := entities.NewEntry(idempotencyKey, vos.CreditOperation, accountID2, vos.NextAccountVersion, 123, metadata)
 				assert.NoError(t, err)
 
 				return []entities.Entry{e1, e2}
@@ -89,7 +90,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			usecase := NewLedgerUseCase(logrus.New(), tt.repoSetup)
 
-			tx, err := entities.NewTransaction(uuid.New(), 1, "abc", time.Now(), json.RawMessage(`{}`), tt.entries(t)...)
+			tx, err := entities.NewTransaction(uuid.New(), 1, "abc", time.Now(), tt.entries(t)...)
 			assert.NoError(t, err)
 
 			err = usecase.CreateTransaction(context.Background(), tx)
