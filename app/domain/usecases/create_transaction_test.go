@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -88,7 +89,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			usecase := NewLedgerUseCase(logrus.New(), tt.repoSetup)
 
-			tx, err := entities.NewTransaction(uuid.New(), 1, "abc", time.Now(), tt.entries(t)...)
+			tx, err := entities.NewTransaction(uuid.New(), 1, "abc", time.Now(), json.RawMessage(`{}`), tt.entries(t)...)
 			assert.NoError(t, err)
 
 			err = usecase.CreateTransaction(context.Background(), tx)

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -19,6 +20,8 @@ import (
 func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
+
+	metadata := json.RawMessage(`{}`)
 
 	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('query_aggregated_balance');`)
 	assert.NoError(t, err)
@@ -53,7 +56,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		100,
 	)
 
-	tx, err := entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e2)
+	tx, err := entities.NewTransaction(uuid.New(), 1, "company", time.Now(), metadata, e1, e2)
 	assert.NoError(t, err)
 
 	err = r.CreateTransaction(ctx, tx)
@@ -81,7 +84,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		100,
 	)
 
-	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e3)
+	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), metadata, e1, e3)
 	assert.NoError(t, err)
 	tx.Event = 1
 
@@ -111,7 +114,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		200,
 	)
 
-	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e3)
+	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), metadata, e1, e3)
 	assert.NoError(t, err)
 	tx.Event = 1
 

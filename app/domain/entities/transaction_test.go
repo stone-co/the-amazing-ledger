@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -16,6 +17,7 @@ func TestNewTransaction(t *testing.T) {
 	event := uint32(1)
 	company := "abc"
 	competenceDate := time.Now()
+	metadata := json.RawMessage(`{}`)
 
 	e11, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability.clients.available.111", vos.NextAccountVersion, 123)
 	e12, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.222", vos.NextAccountVersion, 123)
@@ -57,6 +59,7 @@ func TestNewTransaction(t *testing.T) {
 				Event:          event,
 				Company:        company,
 				CompetenceDate: competenceDate,
+				Metadata:       metadata,
 			},
 			expectedErr: nil,
 		},
@@ -70,6 +73,7 @@ func TestNewTransaction(t *testing.T) {
 				Event:          event,
 				Company:        company,
 				CompetenceDate: competenceDate,
+				Metadata:       metadata,
 			},
 			expectedErr: nil,
 		},
@@ -98,7 +102,7 @@ func TestNewTransaction(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewTransaction(tt.id, event, company, competenceDate, tt.entries...)
+			got, err := NewTransaction(tt.id, event, company, competenceDate, metadata, tt.entries...)
 
 			assert.ErrorIs(t, err, tt.expectedErr)
 			assert.Equal(t, tt.expectedTransaction, got)

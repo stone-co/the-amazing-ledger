@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -20,6 +21,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	event := uint32(1)
 	company := "abc"
 	competenceDate := time.Now()
+	metadata := json.RawMessage(`{}`)
 
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
@@ -51,7 +53,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		100,
 	)
 
-	tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
+	tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, metadata, e1, e2)
 	assert.NoError(t, err)
 
 	err = r.CreateTransaction(ctx, tx)
@@ -88,7 +90,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		100,
 	)
 
-	tx, err = entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
+	tx, err = entities.NewTransaction(uuid.New(), event, company, competenceDate, metadata, e1, e2)
 	assert.NoError(t, err)
 
 	err = r.CreateTransaction(ctx, tx)
@@ -129,7 +131,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		100,
 	)
 
-	tx, err = entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
+	tx, err = entities.NewTransaction(uuid.New(), event, company, competenceDate, metadata, e1, e2)
 	assert.NoError(t, err)
 
 	err = r.CreateTransaction(ctx, tx)

@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
@@ -52,6 +53,15 @@ func TestAPI_CreateTransaction_Success(t *testing.T) {
 				Company:        "abc",
 				Event:          1,
 				CompetenceDate: timestamppb.Now(),
+				Metadata: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"requestID": {
+							Kind: &structpb.Value_StringValue{
+								StringValue: "my-request-id",
+							},
+						},
+					},
+				},
 			},
 		},
 	}
