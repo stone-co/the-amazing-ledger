@@ -7,24 +7,28 @@ import (
 )
 
 func TestSyntheticReport(t *testing.T) {
-	version := Version(1)
 	accountPathLiability := "liability"
 	accountPathAssets := "assets"
 
+	accountPath1, err := NewAccountPath(accountPathLiability)
+	assert.NotNil(t, err)
+	accountPath2, err := NewAccountPath(accountPathAssets)
+	assert.NotNil(t, err)
+
 	paths := []Path{
 		{
-			*&accountPathLiability,
+			accountPath1,
 			200,
 			300,
 		},
 		{
-			*&accountPathAssets,
+			accountPath2,
 			400,
 			500,
 		},
 	}
 
-	syntheticReport, err := NewSyntheticReport(600, 800, paths, version)
+	syntheticReport, err := NewSyntheticReport(600, 800, paths)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 2, len(syntheticReport.Paths))

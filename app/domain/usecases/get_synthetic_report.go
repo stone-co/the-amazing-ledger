@@ -11,9 +11,9 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
-func (l *LedgerUseCase) GetSyntheticReport(ctx context.Context, accountName string, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+func (l *LedgerUseCase) GetSyntheticReport(ctx context.Context, accountPath vos.AccountPath, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
 
-	syntheticReport, err := l.repository.GetSyntheticReport(ctx, accountName, startTime, endTime)
+	syntheticReport, err := l.repository.GetSyntheticReport(ctx, accountPath, startTime, endTime)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, app.ErrAccountNotFound

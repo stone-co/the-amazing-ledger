@@ -16,7 +16,7 @@ type Repository struct {
 	OnGetAccountBalance  func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
 	OnGetAnalyticalData  func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
 	OnGetAccountHistory  func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
-	OnGetSyntheticReport func(ctx context.Context, accountName string, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
+	OnGetSyntheticReport func(ctx context.Context, accountPath vos.AccountPath, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
 }
 
 func (s Repository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
@@ -35,6 +35,6 @@ func (s Repository) GetAccountHistory(ctx context.Context, account vos.AccountPa
 	return s.OnGetAccountHistory(ctx, account, fn)
 }
 
-func (s Repository) GetSyntheticReport(ctx context.Context, accountName string, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
-	return s.OnGetSyntheticReport(ctx, accountName, startTime, endTime)
+func (s Repository) GetSyntheticReport(ctx context.Context, accountPath vos.AccountPath, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+	return s.OnGetSyntheticReport(ctx, accountPath, startTime, endTime)
 }

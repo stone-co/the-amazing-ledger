@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"google.golang.org/grpc/status"
 )
@@ -18,7 +19,6 @@ type SyntheticReport struct {
 	totalCredit int
 	totalDebit  int
 	paths       []*Path
-	//	CurrentVersion Version
 }
 
 func (a SyntheticReport) TotalCredit() int {
@@ -33,10 +33,15 @@ func (a SyntheticReport) Paths() []*Path {
 	return a.paths
 }
 
-func (c *Connection) GetSyntheticReport(ctx context.Context, accountPath string, startTime int64, endTime int64) (*SyntheticReport, error) {
+func (c *Connection) GetSyntheticReport(ctx context.Context, accountName string, startTime int64, endTime int64) (*SyntheticReport, error) {
+
+	accountPath, err := vos.NewAccountPath(accountName)
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
 
 	reportRequest := &proto.GetSyntheticReportRequest{
-		AccountPath: accountPath,
+		AccountPath: accountPath.Name(),
 		StartTime:   startTime,
 		EndTime:     endTime,
 	}

@@ -13,5 +13,5 @@ type Repository interface {
 	GetAccountBalance(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
 	GetAnalyticalData(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
 	GetAccountHistory(ctxt context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
-	GetSyntheticReport(ctx context.Context, accountName string, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
+	GetSyntheticReport(ctx context.Context, accountPath vos.AccountPath, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
 }

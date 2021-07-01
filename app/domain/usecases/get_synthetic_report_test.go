@@ -15,24 +15,24 @@ func TestLedgerUseCase_GetSyntheticReport(t *testing.T) {
 		totalCredit := 150
 		totalDebit := 130
 
-		version := vos.Version(1)
-		accountNameStr := "liability"
+		accountPath, err := vos.NewAccountPath("liability.credit_card.invoice")
+		assert.Nil(t, err)
 
 		paths := []vos.Path{{
-			Account: accountNameStr,
+			Account: accountPath,
 			Debit:   1000,
 			Credit:  2000,
 		}}
 
-		syntheticReport, err := vos.NewSyntheticReport(totalCredit, totalDebit, paths, version)
+		fakeSyntheticReport, err := vos.NewSyntheticReport(totalCredit, totalDebit, paths)
 		assert.Nil(t, err)
 
 		date := time.Now()
 
-		useCase := newFakeGetSyntheticReport(syntheticReport, date, nil)
-		a, err := useCase.GetSyntheticReport(context.Background(), *&accountNameStr, date, date)
+		useCase := newFakeGetSyntheticReport(fakeSyntheticReport, date, nil)
+		a, err := useCase.GetSyntheticReport(context.Background(), accountPath, date, date)
 
 		assert.Nil(t, err)
-		assert.Equal(t, syntheticReport.TotalDebit, a.TotalDebit)
+		assert.Equal(t, fakeSyntheticReport.TotalDebit, a.TotalDebit)
 	})
 }

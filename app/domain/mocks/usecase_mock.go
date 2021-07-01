@@ -2,6 +2,7 @@ package mocks
 
 import (
 	"context"
+	"time"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
@@ -11,10 +12,11 @@ import (
 var _ domain.UseCase = &UseCase{}
 
 type UseCase struct {
-	OnCreateTransaction func(ctx context.Context, transaction entities.Transaction) error
-	OnGetAccountBalance func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
-	OnGetAnalyticalData func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
-	OnGetAccountHistory func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
+	OnCreateTransaction  func(ctx context.Context, transaction entities.Transaction) error
+	OnGetAccountBalance  func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
+	OnGetAnalyticalData  func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
+	OnGetAccountHistory  func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
+	OnGetSyntheticReport func(ctx context.Context, accountPath vos.AccountPath, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
 }
 
 func (m UseCase) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
@@ -31,6 +33,10 @@ func (m UseCase) GetAnalyticalData(ctx context.Context, query vos.AccountQuery, 
 
 func (m UseCase) GetAccountHistory(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error {
 	return m.OnGetAccountHistory(ctx, account, fn)
+}
+
+func (m UseCase) GetSyntheticReport(ctx context.Context, accountPath vos.AccountPath, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+	return m.OnGetSyntheticReport(ctx, accountPath, startTime, endTime)
 }
 
 func SuccessfulTransactionMock() UseCase {

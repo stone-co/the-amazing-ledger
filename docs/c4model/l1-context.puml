@@ -1,0 +1,18 @@
+@startuml
+!include  <C4/C4_Context.puml>
+!include <office/Users/user.puml>
+
+LAYOUT_WITH_LEGEND()
+
+
+title Top level Context diagram for The Amazing Ledger
+
+
+System(Ledger, "Ledger", "Allow services to create transactions with entries, get account balance and reports")
+System_Ext(3dPartyService01, "External System", "Performs transactions between accounts")
+System_Ext(3dPartyService02, "Report System", "Performs reports by account or path")
+
+Rel_D(3dPartyService01, Ledger, "Generates entries, get account balance using")
+Rel_D(3dPartyService02, Ledger, "Get account reports")
+
+@enduml

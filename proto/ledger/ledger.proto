@@ -108,8 +108,6 @@ message GetSyntheticReportRequest {
 
 // GetSyntheticReport Response
 message GetSyntheticReportResponse {
-  // The account version
-  uint64 current_version = 1;
   // All credit accumulated
   int64 total_credit = 2;
   // All debit accumulated

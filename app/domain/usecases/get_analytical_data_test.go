@@ -33,17 +33,17 @@ func TestLedgerUseCase_GetAnalyticalData(t *testing.T) {
 		query, err := vos.NewAccountQuery("liability.stone.clients")
 		assert.Nil(t, err)
 
-		accountName1 := "liability.stone.clients.user_1"
-		accountName2 := "liability.stone.clients.user_2"
+		accountName1, err := vos.NewAccountPath("liability.stone.clients.user_1")
+		accountName2, err := vos.NewAccountPath("liability.stone.clients.user_2")
 
 		entries := []vos.Statement{
 			{
-				Account:   accountName1,
+				Account:   accountName1.Name(),
 				Operation: vos.CreditOperation,
 				Amount:    15000,
 			},
 			{
-				Account:   accountName2,
+				Account:   accountName2.Name(),
 				Operation: vos.CreditOperation,
 				Amount:    25000,
 			},
