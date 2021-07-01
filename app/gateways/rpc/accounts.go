@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
@@ -99,7 +100,7 @@ func (a *API) GetAccountHistory(request *proto.GetAccountHistoryRequest, stream 
 			Operation: proto.Operation(et.Operation),
 			CreatedAt: ts,
 		}); err != nil {
-			return err
+			return fmt.Errorf("failed to send data into stream: %w", err)
 		}
 
 		return nil

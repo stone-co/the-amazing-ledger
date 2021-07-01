@@ -47,11 +47,11 @@ func SetupTest(migrationsPath string) *PostgresDocker {
 		ctx := context.Background()
 		conn, rErr = pgxpool.Connect(ctx, connString)
 		if rErr != nil {
-			return rErr
+			return fmt.Errorf("failed to retry pgxpool connect: %w", rErr)
 		}
 		_, rErr = conn.Acquire(ctx)
 		if rErr != nil {
-			return rErr
+			return fmt.Errorf("failed to acquire pgxpool connection: %w", rErr)
 		}
 
 		return nil

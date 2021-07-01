@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 
 	"github.com/stone-co/the-amazing-ledger/app"
@@ -30,7 +32,7 @@ func NewEntry(id uuid.UUID, operation vos.OperationType, accountID string, versi
 
 	acc, err := vos.NewAccountPath(accountID)
 	if err != nil {
-		return Entry{}, err
+		return Entry{}, fmt.Errorf("failed to create account path: %w", err)
 	}
 
 	return Entry{

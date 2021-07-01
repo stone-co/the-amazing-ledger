@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -172,6 +173,9 @@ func fetchSnapshot(ctx context.Context, db *pgxpool.Pool, account vos.AccountPat
 		&snap.debit,
 		&snap.date,
 	)
+	if err != nil {
+		return snapshot{}, fmt.Errorf("failed to fetch snapshot: %w", err)
+	}
 
-	return snap, err
+	return snap, nil
 }
