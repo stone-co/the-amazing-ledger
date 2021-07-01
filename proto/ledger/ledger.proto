@@ -7,6 +7,7 @@ package ledger;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
 
 service LedgerService {
   rpc CreateTransaction(CreateTransactionRequest) returns (google.protobuf.Empty){
@@ -51,6 +52,8 @@ message CreateTransactionRequest {
   string company = 4;
   // The event which triggered the transaction.
   uint32 event = 5;
+  // The transaction metadata.
+  google.protobuf.Struct metadata = 6;
 }
 
 // Entry represents a new entry on the Ledger.
