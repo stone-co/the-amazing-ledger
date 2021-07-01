@@ -65,7 +65,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 	assert.Equal(t, 0, balance.Balance)
 
 	_, err = fetchQuerySnapshot(ctx, pgDocker.DB, query)
-	assert.ErrorIs(t, pgx.ErrNoRows, err)
+	assert.ErrorIs(t, err, pgx.ErrNoRows)
 
 	e1, _ = entities.NewEntry(
 		uuid.New(),
