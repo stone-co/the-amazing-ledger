@@ -89,11 +89,11 @@ func NewAccountPath(path string) (AccountPath, error) {
 
 	for i, component := range components {
 		if component == "" || len(component) > maxLabelLength {
-			return AccountPath{}, app.ErrInvalidAccountStructure
+			return AccountPath{}, app.ErrInvalidAccountComponentSize
 		}
 
 		if !regexOnlyAlphanumericAndUnderscore.MatchString(component) {
-			return AccountPath{}, app.ErrInvalidAccountStructure
+			return AccountPath{}, app.ErrInvalidAccountComponentCharacters
 		}
 
 		config, ok := _defaultConfig.DepthConfigs[i]
@@ -102,7 +102,7 @@ func NewAccountPath(path string) (AccountPath, error) {
 		}
 
 		if _, ok = config.Restrictions[component]; !ok {
-			return AccountPath{}, app.ErrInvalidAccountStructure
+			return AccountPath{}, app.ErrAccountPathViolation
 		}
 	}
 

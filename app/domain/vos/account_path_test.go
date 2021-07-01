@@ -68,35 +68,35 @@ func TestNewAccount(t *testing.T) {
 			args: args{
 				name: "liability..treasury",
 			},
-			err: app.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountComponentSize,
 		},
 		{
 			name: "Error when account omits level 3",
 			args: args{
 				name: "assets.conta_liquidacao.",
 			},
-			err: app.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountComponentSize,
 		},
 		{
 			name: "Error when depth 1 value is not one of the available",
 			args: args{
 				name: "xpto.conta_liquidacao.tesouraria",
 			},
-			err: app.ErrInvalidAccountStructure,
+			err: app.ErrAccountPathViolation,
 		},
 		{
 			name: "Error when account has invalid characters",
 			args: args{
 				name: "assets.conta_liquidacao." + uuid.New().String(),
 			},
-			err: app.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountComponentCharacters,
 		},
 		{
 			name: "Error when label has more thant 255 characters characters",
 			args: args{
 				name: "assets.bacen.conta_liquidacao." + strings.Repeat("a", maxLabelLength+1),
 			},
-			err: app.ErrInvalidAccountStructure,
+			err: app.ErrInvalidAccountComponentSize,
 		},
 	}
 
