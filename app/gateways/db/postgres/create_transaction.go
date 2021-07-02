@@ -1,11 +1,11 @@
 package postgres
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
@@ -16,17 +16,22 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
-const queryArgsLength = 9
+const (
+	queryArgsLength   = 9
+	maxQueriesDefault = 5
+)
 
-var createTransactionQueryMap = map[int]string{
-	// 2: `insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company) values ($1, $2, $3, $4, $5, $6, $7, $8, $9), ($10, $11, $12, $13, $14, $15, $16, $17, $18);`,
-}
+const createTransactionQuery = `
+insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
+values %s;
+`
+
+var createTransactionQueryMap map[int]string
 
 func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
 	const operation = "Repository.CreateTransaction"
 
-	query := getQuery1(len(transaction.Entries))
-	// query := getQuery2(len(transaction.Entries))
+	query := getQuery(len(transaction.Entries))
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
 
@@ -79,64 +84,41 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 	return nil
 }
 
-func getQuery1(entriesSize int) string {
+func getQuery(entriesSize int) string {
 	query, ok := createTransactionQueryMap[entriesSize]
 	if ok {
 		return query
 	}
 
-	maxArgs := entriesSize * queryArgsLength
-	query = `insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company) values ($1`
-
-	for i := 2; i <= maxArgs; i++ {
-		query += fmt.Sprintf(", $%d", i)
-
-		if i%queryArgsLength == 0 {
-			if i != maxArgs {
-				i += 1
-				query += fmt.Sprintf("), ($%d", i)
-			} else {
-				query += ");"
-			}
-		}
-	}
-
-	// update query map
+	query = buildQuery(entriesSize)
 	createTransactionQueryMap[entriesSize] = query
 
 	return query
 }
 
-func getQuery2(entriesSize int) string {
-	query, ok := createTransactionQueryMap[entriesSize]
-	if ok {
-		return query
-	}
-
-	query = `insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company) values %s`
-	buffer := bytes.Buffer{}
+func buildQuery(entriesSize int) string {
+	var sb strings.Builder
 
 	for i := 0; i < entriesSize; i++ {
 		n := i * queryArgsLength
 
-		buffer.WriteString("(")
+		sb.WriteString("(")
 
 		for j := 0; j < queryArgsLength; j++ {
-			buffer.WriteString("$")
-			buffer.WriteString(strconv.Itoa(n + j + 1))
-			buffer.WriteString(", ")
+			sb.WriteString("$")
+			sb.WriteString(strconv.Itoa(n + j + 1))
+
+			if j != queryArgsLength-1 {
+				sb.WriteString(", ")
+			}
 		}
 
-		buffer.Truncate(buffer.Len() - 2)
-		buffer.WriteString("), ")
+		if i != entriesSize-1 {
+			sb.WriteString("), ")
+		}
 	}
 
-	buffer.Truncate(buffer.Len() - 2)
+	sb.WriteString(")")
 
-	query = fmt.Sprintf(query, buffer.String())
-
-	// update query map
-	createTransactionQueryMap[entriesSize] = query
-
-	return query
+	return fmt.Sprintf(createTransactionQuery, sb.String())
 }
