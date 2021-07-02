@@ -31,10 +31,6 @@ var createTransactionQueryMap map[int]string
 func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
 	const operation = "Repository.CreateTransaction"
 
-	query := getQuery(len(transaction.Entries))
-
-	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
-
 	tx, err := r.db.Begin(ctx)
 	if err != nil {
 		return err
@@ -43,6 +39,8 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 	defer func(tx pgx.Tx, ctx context.Context) {
 		_ = tx.Rollback(ctx)
 	}(tx, ctx)
+
+	query := getQuery(len(transaction.Entries))
 
 	args := make([]interface{}, 0)
 
@@ -60,6 +58,8 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 			transaction.Company,
 		)
 	}
+
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
 
 	_, err = tx.Exec(ctx, query, args...)
 	if err != nil {
