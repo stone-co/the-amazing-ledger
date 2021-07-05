@@ -33,6 +33,7 @@ linters:
     - gomnd
     - ifshort
     - makezero
+    - gocyclo
     - goimports
     - gofmt
     - bodyclose
