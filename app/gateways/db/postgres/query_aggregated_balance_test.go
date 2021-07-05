@@ -20,7 +20,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
 
-	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('query_aggregated_balance');`)
+	_, err := pgDocker.DB.Exec(ctx, `insert into event (id, name) values (3, 'query_aggregated_balance');`)
 	assert.NoError(t, err)
 
 	query, err := vos.NewAccountQuery("liability.agg.*")
