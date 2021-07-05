@@ -4,7 +4,7 @@ create extension if not exists ltree;
 
 create table if not exists event
 (
-    id   smallint primary key generated always as identity,
+    id   smallint primary key,
     name text not null unique
 );
 
