@@ -25,7 +25,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
 
-	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('default');`)
+	_, err := pgDocker.DB.Exec(ctx, `insert into event (id, name) values (1, 'default');`)
 	assert.NoError(t, err)
 
 	t.Run("insert transaction successfully with no previous versions - auto version", func(t *testing.T) {

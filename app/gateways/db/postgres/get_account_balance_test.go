@@ -24,7 +24,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
 
-	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('defaults');`)
+	_, err := pgDocker.DB.Exec(ctx, `insert into event (id, name) values (2, 'defaults');`)
 	assert.NoError(t, err)
 
 	acc1, err := vos.NewAccountPath("liability.123.account11")
