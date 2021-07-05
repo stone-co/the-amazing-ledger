@@ -57,8 +57,9 @@ func (s *Scenario) defineSteps() {
 }
 
 func (s *Scenario) transferTransaction(toAccountID string) string {
-	e1 := entryAsString("{{newUUID}}", toAccountID, 0, "OPERATION_DEBIT", 20000)
-	e2 := entryAsString("{{newUUID}}", s.stoneAccount, 0, "OPERATION_CREDIT", 20000)
+	amount := 20000
+	e1 := entryAsString("{{newUUID}}", toAccountID, 0, "OPERATION_DEBIT", amount)
+	e2 := entryAsString("{{newUUID}}", s.stoneAccount, 0, "OPERATION_CREDIT", amount)
 	tr := fmt.Sprintf(`{"id":"{{newUUID}}", "entries":[%s,%s]}`, e1, e2)
 
 	return tr

@@ -21,9 +21,14 @@ type AccountConfig struct {
 
 var _empty = struct{}{}
 
+const (
+	minDepth = 3
+	maxDepth = 0
+)
+
 var _defaultConfig = AccountConfig{
-	MinimumDepth: 3,
-	MaximumDepth: 0,
+	MinimumDepth: minDepth,
+	MaximumDepth: maxDepth,
 	DepthConfigs: map[int]DepthConfig{
 		0: {
 			Restrictions: map[string]struct{}{

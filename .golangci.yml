@@ -30,6 +30,7 @@ linters:
     - forcetypeassert
     - godot
     - gofumpt
+    - gomnd
     - goimports
     - gofmt
     - bodyclose
