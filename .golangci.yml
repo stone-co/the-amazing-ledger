@@ -27,6 +27,7 @@ linters:
     - goerr113
     - nilerr
 #    - wrapcheck (https://github.com/tomarrell/wrapcheck/issues/2)
+    - forcetypeassert
     - goimports
     - gofmt
     - bodyclose
