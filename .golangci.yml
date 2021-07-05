@@ -28,6 +28,7 @@ linters:
     - nilerr
 #    - wrapcheck (https://github.com/tomarrell/wrapcheck/issues/2)
     - forcetypeassert
+    - godot
     - goimports
     - gofmt
     - bodyclose
