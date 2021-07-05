@@ -32,6 +32,7 @@ linters:
     - gofumpt
     - gomnd
     - ifshort
+    - makezero
     - goimports
     - gofmt
     - bodyclose
