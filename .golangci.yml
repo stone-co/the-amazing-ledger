@@ -29,6 +29,7 @@ linters:
 #    - wrapcheck (https://github.com/tomarrell/wrapcheck/issues/2)
     - forcetypeassert
     - godot
+    - gofumpt
     - goimports
     - gofmt
     - bodyclose

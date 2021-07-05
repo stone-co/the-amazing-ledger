@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-
 	totalClientAccounts := 1000
 	totalRequests := 10000
 	concurrency := 20
@@ -26,7 +25,6 @@ func main() {
 		runner.WithConcurrency(uint(concurrency)),
 		// runner.WithTimeout(0),
 	)
-
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)

@@ -37,7 +37,6 @@ func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.Acc
 		&totalDebit,
 		&currentVersion,
 	)
-
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if !errors.As(err, &pgErr) {

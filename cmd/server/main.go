@@ -76,8 +76,7 @@ func main() {
 
 	// =================
 	// Shutdown
-
-	//Handle OS signals
+	// Handle OS signals
 	go handleInterrupt(cfg, log, rpcServer)
 
 	// Blocking main and waiting for server error.

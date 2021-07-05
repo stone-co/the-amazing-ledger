@@ -17,7 +17,6 @@ import (
 )
 
 func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactionRequest) (*emptypb.Empty, error) {
-
 	defer newrelic.FromContext(ctx).StartSegment("CreateTransaction").End()
 
 	log := a.log.WithFields(logrus.Fields{

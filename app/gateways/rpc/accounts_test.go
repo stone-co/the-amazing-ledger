@@ -162,7 +162,6 @@ func TestAPI_QueryAggregatedBalance_Success(t *testing.T) {
 
 		assert.Equal(t, int64(queryBalance.Balance), got.Balance)
 		assert.Equal(t, queryBalance.Query.Value(), got.Query)
-
 	})
 }
 
