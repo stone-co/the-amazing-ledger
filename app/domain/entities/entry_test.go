@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/google/uuid"
@@ -17,6 +18,7 @@ func TestNewEntry(t *testing.T) {
 		account   string
 		version   vos.Version
 		amount    int
+		metadata  json.RawMessage
 	}
 
 	testCases := []struct {
@@ -32,6 +34,7 @@ func TestNewEntry(t *testing.T) {
 				account:   "assets.bacen.conta_liquidacao.tesouraria",
 				version:   vos.NextAccountVersion,
 				amount:    123,
+				metadata:  json.RawMessage(`{}`),
 			},
 			expectedErr: nil,
 		},
@@ -43,6 +46,7 @@ func TestNewEntry(t *testing.T) {
 				account:   "assets.bacen.conta_liquidacao.tesouraria",
 				version:   vos.NextAccountVersion,
 				amount:    123,
+				metadata:  json.RawMessage(`{}`),
 			},
 			expectedErr: app.ErrInvalidEntryID,
 		},
@@ -54,6 +58,7 @@ func TestNewEntry(t *testing.T) {
 				account:   "assets.bacen.conta_liquidacao.tesouraria",
 				version:   vos.NextAccountVersion,
 				amount:    123,
+				metadata:  json.RawMessage(`{}`),
 			},
 			expectedErr: app.ErrInvalidOperation,
 		},
@@ -65,6 +70,7 @@ func TestNewEntry(t *testing.T) {
 				account:   "assets.bacen.conta_liquidacao.tesouraria",
 				version:   vos.NextAccountVersion,
 				amount:    0,
+				metadata:  json.RawMessage(`{}`),
 			},
 			expectedErr: app.ErrInvalidAmount,
 		},
@@ -76,6 +82,7 @@ func TestNewEntry(t *testing.T) {
 				account:   "assets.bacen.conta_liquidacao.tesouraria",
 				version:   vos.NextAccountVersion,
 				amount:    -1,
+				metadata:  json.RawMessage(`{}`),
 			},
 			expectedErr: app.ErrInvalidAmount,
 		},
@@ -87,6 +94,7 @@ func TestNewEntry(t *testing.T) {
 				account:   "assets.bacen",
 				version:   vos.NextAccountVersion,
 				amount:    123,
+				metadata:  json.RawMessage(`{}`),
 			},
 			expectedErr: app.ErrInvalidAccountStructure,
 		},
@@ -94,7 +102,7 @@ func TestNewEntry(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			entry, err := NewEntry(tt.args.id, tt.args.operation, tt.args.account, tt.args.version, tt.args.amount)
+			entry, err := NewEntry(tt.args.id, tt.args.operation, tt.args.account, tt.args.version, tt.args.amount, tt.args.metadata)
 			assert.ErrorIs(t, err, tt.expectedErr)
 
 			if err != nil {
@@ -105,6 +113,7 @@ func TestNewEntry(t *testing.T) {
 				assert.Equal(t, tt.args.account, entry.Account.Name())
 				assert.Equal(t, tt.args.version, entry.Version)
 				assert.Equal(t, tt.args.amount, entry.Amount)
+				assert.Equal(t, string(tt.args.metadata), string(entry.Metadata))
 			}
 		})
 	}

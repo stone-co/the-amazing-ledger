@@ -22,10 +22,12 @@ import (
 func NewGRPCServer(useCase *usecases.LedgerUseCase, nr *newrelic.Application, cfg app.RPCServerConfig, log *logrus.Logger) (*http.Server, error) {
 	api := rpc.NewAPI(log, useCase)
 	grpcServer := api.NewServer(nr)
+
 	server, err := NewServer(grpcServer, cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create new GRPC server: %w", err)
 	}
+
 	return server, nil
 }
 
@@ -37,10 +39,10 @@ func NewServer(grpcServer *grpc.Server, cfg app.RPCServerConfig) (*http.Server, 
 
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	if err := proto.RegisterLedgerServiceHandlerFromEndpoint(context.Background(), gwMux, gwEndpoint, opts); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to register ledger service handler: %w", err)
 	}
 	if err := proto.RegisterHealthHandlerFromEndpoint(context.Background(), gwMux, gwEndpoint, opts); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to register health handler: %w", err)
 	}
 
 	// use a single server for both operations

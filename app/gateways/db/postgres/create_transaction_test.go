@@ -2,7 +2,9 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -12,6 +14,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
@@ -22,11 +25,12 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 	event := uint32(1)
 	company := "abc"
 	competenceDate := time.Now()
+	metadata := json.RawMessage(`{}`)
 
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
 
-	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('default');`)
+	_, err := pgDocker.DB.Exec(ctx, `insert into event (id, name) values (1, 'default');`)
 	assert.NoError(t, err)
 
 	t.Run("insert transaction successfully with no previous versions - auto version", func(t *testing.T) {
@@ -36,6 +40,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.NextAccountVersion,
 			100,
+			json.RawMessage(`{"requestID": "request-id-1"}`),
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -43,6 +48,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			json.RawMessage(`{"requestID": "request-id-2"}`),
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -50,6 +56,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
+
+		assertMetadata(t, ctx, pgDocker.DB, e1.ID, e1.Metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, e2.Metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -75,6 +84,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account3",
 			vos.Version(3),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -82,6 +92,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account4",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -89,6 +100,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
+
+		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -114,6 +128,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.NextAccountVersion,
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -121,6 +136,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -128,6 +144,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
+
+		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -153,6 +172,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(3),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -160,6 +180,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -167,6 +188,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
+
+		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -192,6 +216,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(3),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -199,6 +224,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -223,6 +249,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(1),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -230,6 +257,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -254,6 +282,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(30),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -261,6 +290,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -285,6 +315,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.NextAccountVersion,
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -292,6 +323,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -334,7 +366,7 @@ func fetchAccountVersion(ctx context.Context, db *pgxpool.Pool, account vos.Acco
 
 	var version int64
 	err := db.QueryRow(ctx, query, account.Name()).Scan(&version)
-	if err != nil && err != pgx.ErrNoRows {
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return vos.Version(0), err
 	} else if errors.Is(err, pgx.ErrNoRows) {
 		return vos.Version(0), nil
@@ -348,10 +380,23 @@ func fetchEntryVersion(ctx context.Context, db *pgxpool.Pool, id uuid.UUID) (vos
 
 	var version int64
 	if err := db.QueryRow(ctx, query, id).Scan(&version); err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed to scan row: %w", err)
 	}
 
 	return vos.Version(version), nil
+}
+
+func assertMetadata(t *testing.T, ctx context.Context, db *pgxpool.Pool, id uuid.UUID, want json.RawMessage) {
+	t.Helper()
+
+	const query = `select metadata from entry where id = $1`
+
+	var metadata json.RawMessage
+
+	err := db.QueryRow(ctx, query, id).Scan(&metadata)
+	require.NoError(t, err)
+
+	assert.Equal(t, string(want), string(metadata))
 }
 
 func Test_buildQuery(t *testing.T) {
@@ -364,39 +409,39 @@ func Test_buildQuery(t *testing.T) {
 			name: "should create query with 2 entries successfully",
 			size: 2,
 			expected: `
-				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
-				values ($1, $2, $3, $4, $5, $6, $7, $8, $9),
-				($10, $11, $12, $13, $14, $15, $16, $17, $18);`,
+				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company, metadata)
+				values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10),
+				($11, $12, $13, $14, $15, $16, $17, $18, $19, $20);`,
 		},
 		{
 			name: "should create query with 3 entries successfully",
 			size: 3,
 			expected: `
-				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
-				values ($1, $2, $3, $4, $5, $6, $7, $8, $9),
-				($10, $11, $12, $13, $14, $15, $16, $17, $18),
-				($19, $20, $21, $22, $23, $24, $25, $26, $27);`,
+				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company, metadata)
+				values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10),
+				($11, $12, $13, $14, $15, $16, $17, $18, $19, $20),
+				($21, $22, $23, $24, $25, $26, $27, $28, $29, $30);`,
 		},
 		{
 			name: "should create query with 4 entries successfully",
 			size: 4,
 			expected: `
-				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
-				values ($1, $2, $3, $4, $5, $6, $7, $8, $9),
-				($10, $11, $12, $13, $14, $15, $16, $17, $18),
-				($19, $20, $21, $22, $23, $24, $25, $26, $27),
-				($28, $29, $30, $31, $32, $33, $34, $35, $36);`,
+				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company, metadata)
+				values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10),
+				($11, $12, $13, $14, $15, $16, $17, $18, $19, $20),
+				($21, $22, $23, $24, $25, $26, $27, $28, $29, $30),
+				($31, $32, $33, $34, $35, $36, $37, $38, $39, $40);`,
 		},
 		{
 			name: "should create query with 5 entries successfully",
 			size: 5,
 			expected: `
-				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
-				values ($1, $2, $3, $4, $5, $6, $7, $8, $9),
-				($10, $11, $12, $13, $14, $15, $16, $17, $18),
-				($19, $20, $21, $22, $23, $24, $25, $26, $27),
-				($28, $29, $30, $31, $32, $33, $34, $35, $36),
-				($37, $38, $39, $40, $41, $42, $43, $44, $45);`,
+				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company, metadata)
+				values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10),
+				($11, $12, $13, $14, $15, $16, $17, $18, $19, $20),
+				($21, $22, $23, $24, $25, $26, $27, $28, $29, $30),
+				($31, $32, $33, $34, $35, $36, $37, $38, $39, $40),
+				($41, $42, $43, $44, $45, $46, $47, $48, $49, $50);`,
 		},
 	}
 

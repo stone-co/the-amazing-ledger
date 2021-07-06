@@ -40,12 +40,20 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 			return nil, status.Error(codes.InvalidArgument, errMsg)
 		}
 
+		metadata, mErr := entry.Metadata.MarshalJSON()
+		if mErr != nil {
+			errMsg := "error marshaling entry metadata"
+			log.WithError(err).Error(errMsg)
+			return nil, status.Error(codes.InvalidArgument, errMsg)
+		}
+
 		domainEntry, domainErr := entities.NewEntry(
 			entryID,
 			vos.OperationType(proto.Operation_value[entry.Operation.String()]),
 			entry.AccountId,
 			vos.Version(entry.ExpectedVersion),
 			int(entry.Amount),
+			metadata,
 		)
 		if domainErr != nil {
 			log.WithError(err).Error("error creating entry")

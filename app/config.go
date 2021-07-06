@@ -17,10 +17,12 @@ type Config struct {
 func LoadConfig() (*Config, error) {
 	var config Config
 	noPrefix := ""
+
 	err := envconfig.Process(noPrefix, &config)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse config: %w", err)
 	}
+
 	return &config, nil
 }
 

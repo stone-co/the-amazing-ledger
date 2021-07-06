@@ -16,12 +16,12 @@ import (
 )
 
 const (
-	queryArgsLength   = 9
+	queryArgsLength   = 10
 	maxQueriesDefault = 5
 )
 
 const createTransactionQuery = `
-insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
+insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company, metadata)
 values %s;`
 
 var createTransactionQueryMap map[int]string
@@ -45,6 +45,7 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 			transaction.CompetenceDate,
 			entry.Account.Name(),
 			transaction.Company,
+			entry.Metadata,
 		)
 	}
 

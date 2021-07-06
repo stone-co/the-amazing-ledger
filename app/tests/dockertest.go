@@ -47,11 +47,11 @@ func SetupTest(migrationsPath string) *PostgresDocker {
 		ctx := context.Background()
 		conn, rErr = pgxpool.Connect(ctx, connString)
 		if rErr != nil {
-			return rErr
+			return fmt.Errorf("failed to retry pgxpool connect: %w", rErr)
 		}
 		_, rErr = conn.Acquire(ctx)
 		if rErr != nil {
-			return rErr
+			return fmt.Errorf("failed to acquire pgxpool connection: %w", rErr)
 		}
 
 		return nil
@@ -86,11 +86,11 @@ func runMigrations(migrationsPath, connString string) error {
 	if migrationsPath != "" {
 		mig, err := migrate.New("file://"+migrationsPath, connString)
 		if err != nil {
-			return fmt.Errorf("failed to start migrate struct: %s", err.Error())
+			return fmt.Errorf("failed to start migrate struct: %w", err)
 		}
 		defer mig.Close()
 		if err = mig.Up(); err != nil {
-			return fmt.Errorf("failed to run migration: %s", err.Error())
+			return fmt.Errorf("failed to run migration: %w", err)
 		}
 	}
 

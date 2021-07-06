@@ -11,9 +11,22 @@ linters-settings:
     suggest-new: true
   misspell:
     locale: US
+#  wrapcheck:
+#    ignoreSigs:
+#      - status.Error
+#      - .Errorf(
+#      - errors.New(
+#      - errors.Unwrap(
+#      - .Wrap(
+#      - .Wrapf(
+#      - .WithMessage(
 
 linters:
   enable:
+    - errorlint
+    - goerr113
+    - nilerr
+#    - wrapcheck (https://github.com/tomarrell/wrapcheck/issues/2)
     - goimports
     - gofmt
     - bodyclose

@@ -7,6 +7,7 @@ package ledger;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
 
 service LedgerService {
   rpc CreateTransaction(CreateTransactionRequest) returns (google.protobuf.Empty){
@@ -65,6 +66,8 @@ message Entry  {
   Operation operation = 4;
   // Amount (in cents).
   int32 amount = 5;
+  // The entry metadata.
+  google.protobuf.Struct metadata = 6;
 }
 
 // Operation has the possible operations to be used in Entry.
