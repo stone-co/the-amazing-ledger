@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,18 +17,20 @@ func getSyntheticReportFullPath(log *logrus.Entry, conn *ledger.Connection) {
 	defer log.Println("finishing GetSyntheticReport")
 
 	// expectedBalance := 1000
-	accountPathOne := "liability:stone:clients:" + uuid.New().String()
-	accountPathTwo := "liability:stone:clients:" + uuid.New().String()
+	accountPathBase := "liability.stone.clients"
+	accountPathOne := accountPathBase + "." + strings.ReplaceAll(uuid.New().String(), "-", "")
+	accountPathTwo := accountPathBase + "." + strings.ReplaceAll(uuid.New().String(), "-", "")
 
 	// Define a new transaction with 2 entries
 	t := conn.NewTransaction(uuid.New())
 	t.AddEntry(uuid.New(), accountPathOne, vos.NextAccountVersion, vos.CreditOperation, 1000)
 	t.AddEntry(uuid.New(), accountPathTwo, vos.NextAccountVersion, vos.DebitOperation, 1000)
+	t.Message.Event = 1 // generic event
 	err := conn.SaveTransaction(context.Background(), t)
 	AssertEqual(nil, err)
 
 	now := time.Now().UnixNano()
-	report, err := conn.GetSyntheticReport(context.Background(), accountPathOne, now, now)
+	report, err := conn.GetSyntheticReport(context.Background(), accountPathBase, now, now)
 	fmt.Printf("> report: %v\n\n", report)
 	AssertTrue(report != nil)
 
@@ -44,8 +47,8 @@ func getSyntheticReportSubgroup(log *logrus.Entry, conn *ledger.Connection) {
 	defer log.Println("finishing GetSyntheticReport Subgroup")
 
 	// expectedBalance := 1000
-	accountPathOne := "liability:stone:example:" + uuid.New().String()
-	accountPathTwo := "liability:stone:example:" + uuid.New().String()
+	accountPathOne := "liability.stone.example." + strings.ReplaceAll(uuid.New().String(), "-", "")
+	accountPathTwo := "liability.stone.example." + strings.ReplaceAll(uuid.New().String(), "-", "")
 
 	// Define a new transaction with 2 entries
 	t := conn.NewTransaction(uuid.New())

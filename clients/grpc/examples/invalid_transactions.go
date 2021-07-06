@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -27,8 +28,8 @@ func transactionWithInvalidIdReturnsInvalidTransactionID(log *logrus.Entry, conn
 	invalidUUID := uuid.Nil
 	t := conn.NewTransaction(invalidUUID)
 
-	accountID1 := "liability:clients:available:" + uuid.New().String()
-	accountID2 := "liability:clients:available:" + uuid.New().String()
+	accountID1 := "liability.clients.available." + strings.ReplaceAll(uuid.New().String(), "-", "")
+	accountID2 := "liability.clients.available." + strings.ReplaceAll(uuid.New().String(), "-", "")
 
 	t.AddEntry(uuid.New(), accountID1, vos.NextAccountVersion, vos.DebitOperation, 15000)
 	t.AddEntry(uuid.New(), accountID2, vos.NextAccountVersion, vos.CreditOperation, 15000)

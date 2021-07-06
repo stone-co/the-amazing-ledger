@@ -4,18 +4,18 @@ import "github.com/stone-co/the-amazing-ledger/app"
 
 type Path struct {
 	Account AccountPath
-	Credit  int
-	Debit   int
+	Credit  int64
+	Debit   int64
 }
 
 type SyntheticReport struct {
-	TotalCredit int
-	TotalDebit  int
+	TotalCredit int64
+	TotalDebit  int64
 	Paths       []Path
 }
 
 // synthetic account
-func NewSyntheticReport(totalCredit, totalDebit int, paths []Path) (*SyntheticReport, error) {
+func NewSyntheticReport(totalCredit, totalDebit int64, paths []Path) (*SyntheticReport, error) {
 	if paths == nil || len(paths) < 1 {
 		return nil, app.ErrInvalidSyntheticReportStructure
 	}

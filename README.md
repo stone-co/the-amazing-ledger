@@ -85,3 +85,14 @@ curl -i -X POST localhost:3000/api/v1/transactions -d \
 # Grpc
 $ go mod tidy
 $ make generate
+
+# Run Examples Clients
+$ go run .
+
+# Connect to the Database
+```
+$ docker exec -ti the-amazing-ledger_postgres_1 bash
+--- container ---
+# psql -U postgres
+# \c dev
+```

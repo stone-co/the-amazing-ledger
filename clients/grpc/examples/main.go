@@ -31,15 +31,16 @@ func main() {
 
 	defer conn.Close()
 
-	defineTransactionWithThreeEntries(log, conn)
-	invalidTransactionsTests(log, conn)
+	// defineTransactionWithThreeEntries(log, conn)
+	// invalidTransactionsTests(log, conn)
 
-	getAccountBalance(log, conn)
-	getAccountBalanceWithMoreEntries(log, conn)
-	getAccountBalanceNotFoundAccount(log, conn)
-	getAccountBalanceWithWildcard(log, conn)
-	getAnalyticalData(log, conn)
+	// getAccountBalance(log, conn)
+	// getAccountBalanceWithMoreEntries(log, conn)
+	// getAccountBalanceNotFoundAccount(log, conn)
+	// getAccountBalanceWithWildcard(log, conn)
+	// getAnalyticalData(log, conn)
 
-	getAccountHistory(log, conn)
-	getAccountHistoryWithForEntries(log, conn)
+	// getAccountHistory(log, conn)
+	// getAccountHistoryWithForEntries(log, conn)
+	getSyntheticReportFullPath(log, conn)
 }
