@@ -26,7 +26,7 @@ group by 1;
 `
 
 //TODO rename param 'account' to 'base_account'?
-func (r *LedgerRepository) GetSyntheticReport(ctx context.Context, account vos.AccountPath, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+func (r *LedgerRepository) GetSyntheticReport(ctx context.Context, account vos.AccountPath, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
 	const operation = "Repository.GetSyntheticReport"
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, accountReportQuery).End()

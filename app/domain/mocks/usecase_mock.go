@@ -16,7 +16,7 @@ type UseCase struct {
 	OnGetAccountBalance  func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
 	OnGetAnalyticalData  func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
 	OnGetAccountHistory  func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
-	OnGetSyntheticReport func(ctx context.Context, accountPath vos.AccountPath, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
+	OnGetSyntheticReport func(ctx context.Context, accountPath vos.AccountPath, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
 }
 
 func (m UseCase) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
@@ -35,8 +35,8 @@ func (m UseCase) GetAccountHistory(ctx context.Context, account vos.AccountPath,
 	return m.OnGetAccountHistory(ctx, account, fn)
 }
 
-func (m UseCase) GetSyntheticReport(ctx context.Context, accountPath vos.AccountPath, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
-	return m.OnGetSyntheticReport(ctx, accountPath, startTime, endTime)
+func (m UseCase) GetSyntheticReport(ctx context.Context, accountPath vos.AccountPath, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+	return m.OnGetSyntheticReport(ctx, accountPath, level, startTime, endTime)
 }
 
 func SuccessfulTransactionMock() UseCase {
@@ -54,6 +54,13 @@ func SuccessfulTransactionMock() UseCase {
 		},
 		OnGetAnalyticalData: func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error {
 			return nil
+		},
+		OnGetSyntheticReport: func(ctx context.Context, account vos.AccountPath, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+			return &vos.SyntheticReport{
+				Paths:       []vos.Path{},
+				TotalCredit: 0,
+				TotalDebit:  0,
+			}, nil
 		},
 	}
 }

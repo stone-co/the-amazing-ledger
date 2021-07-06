@@ -24,10 +24,12 @@ func (a *API) GetSyntheticReport(ctx context.Context, request *proto.GetSyntheti
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
+	level := int(request.Level) // that's ok to convert int32 to int, since int can be int32 or int64 depending on the used system
+
 	startTime := time.Unix(0, request.StartTime)
 	endTime := time.Unix(0, request.EndTime)
 
-	syntheticReport, err := a.UseCase.GetSyntheticReport(ctx, accountPath, startTime, endTime)
+	syntheticReport, err := a.UseCase.GetSyntheticReport(ctx, accountPath, level, startTime, endTime)
 	if err != nil {
 		if err == app.ErrAccountNotFound {
 			log.WithError(err).Error("account name does not exist")

@@ -207,6 +207,16 @@ func request_LedgerService_GetSyntheticReport_0(ctx context.Context, marshaler r
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "account_path", err)
 	}
 
+	val, ok = pathParams["level"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "level")
+	}
+
+	protoReq.Level, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "level", err)
+	}
+
 	val, ok = pathParams["start_time"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "start_time")
@@ -251,6 +261,16 @@ func local_request_LedgerService_GetSyntheticReport_0(ctx context.Context, marsh
 	protoReq.AccountPath, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "account_path", err)
+	}
+
+	val, ok = pathParams["level"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "level")
+	}
+
+	protoReq.Level, err = runtime.Int32(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "level", err)
 	}
 
 	val, ok = pathParams["start_time"]
@@ -570,7 +590,7 @@ var (
 
 	pattern_LedgerService_GetAccountHistory_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "accounts", "account_path", "history"}, ""))
 
-	pattern_LedgerService_GetSyntheticReport_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"api", "v1", "reports", "account_path", "start_time", "end_time", "synthetic"}, ""))
+	pattern_LedgerService_GetSyntheticReport_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6, 2, 7}, []string{"api", "v1", "reports", "account_path", "level", "start_time", "end_time", "synthetic"}, ""))
 )
 
 var (

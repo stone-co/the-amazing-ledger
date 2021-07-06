@@ -122,7 +122,7 @@
         ]
       }
     },
-    "/api/v1/reports/{accountPath}/{startTime}/{endTime}/synthetic": {
+    "/api/v1/reports/{accountPath}/{level}/{startTime}/{endTime}/synthetic": {
       "get": {
         "operationId": "LedgerService_GetSyntheticReport",
         "responses": {
@@ -146,6 +146,13 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "level",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
           },
           {
             "name": "startTime",

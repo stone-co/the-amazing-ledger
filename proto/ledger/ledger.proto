@@ -33,7 +33,7 @@ service LedgerService {
   rpc GetSyntheticReport(GetSyntheticReportRequest) returns (GetSyntheticReportResponse){
     option (google.api.http) = {
       //get: "/api/v1/accounts/{account_path}/{start_time}/{end_time}/report"
-      get: "/api/v1/reports/{account_path}/{start_time}/{end_time}/synthetic"
+      get: "/api/v1/reports/{account_path}/{level}/{start_time}/{end_time}/synthetic"
     };
   };
 }
@@ -102,8 +102,9 @@ message GetAccountBalanceResponse {
 message GetSyntheticReportRequest {
   // The account name
   string account_path = 1;
-  int64 start_time = 2;
-  int64 end_time = 3;
+  int32 level = 2;
+  int64 start_time = 3;
+  int64 end_time = 4;
 }
 
 // GetSyntheticReport Response

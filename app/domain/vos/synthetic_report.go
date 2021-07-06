@@ -14,15 +14,14 @@ type SyntheticReport struct {
 	Paths       []Path
 }
 
-// synthetic account
-func NewSyntheticReport(totalCredit, totalDebit int64, paths []Path) (*SyntheticReport, error) {
-	if paths == nil || len(paths) < 1 {
+func NewSyntheticReport(totalCredit, totalDebit int64, accounts []Path) (*SyntheticReport, error) {
+	if accounts == nil || len(accounts) < 1 {
 		return nil, app.ErrInvalidSyntheticReportStructure
 	}
 
 	return &SyntheticReport{
 		TotalCredit: totalCredit,
 		TotalDebit:  totalDebit,
-		Paths:       paths,
+		Paths:       accounts,
 	}, nil
 }
