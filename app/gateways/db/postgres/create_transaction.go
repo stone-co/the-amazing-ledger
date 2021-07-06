@@ -9,7 +9,6 @@ import (
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v4"
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
@@ -23,22 +22,12 @@ const (
 
 const createTransactionQuery = `
 insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
-values %s;
-`
+values %s;`
 
 var createTransactionQueryMap map[int]string
 
 func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
 	const operation = "Repository.CreateTransaction"
-
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-
-	defer func(tx pgx.Tx, ctx context.Context) {
-		_ = tx.Rollback(ctx)
-	}(tx, ctx)
 
 	query := getQuery(len(transaction.Entries))
 
@@ -61,7 +50,7 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
 
-	_, err = tx.Exec(ctx, query, args...)
+	_, err := r.db.Exec(ctx, query, args...)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if ok := errors.As(err, &pgErr); !ok {
@@ -78,8 +67,6 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 
 		return err
 	}
-
-	_ = tx.Commit(ctx)
 
 	return nil
 }
@@ -114,7 +101,7 @@ func buildQuery(entriesSize int) string {
 		}
 
 		if i != entriesSize-1 {
-			sb.WriteString("), ")
+			sb.WriteString("),\n")
 		}
 	}
 
