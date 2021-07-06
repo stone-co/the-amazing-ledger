@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -351,4 +352,60 @@ func fetchEntryVersion(ctx context.Context, db *pgxpool.Pool, id uuid.UUID) (vos
 	}
 
 	return vos.Version(version), nil
+}
+
+func Test_buildQuery(t *testing.T) {
+	testCases := []struct {
+		name     string
+		size     int
+		expected string
+	}{
+		{
+			name: "should create query with 2 entries successfully",
+			size: 2,
+			expected: `
+				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
+				values ($1, $2, $3, $4, $5, $6, $7, $8, $9),
+				($10, $11, $12, $13, $14, $15, $16, $17, $18);`,
+		},
+		{
+			name: "should create query with 3 entries successfully",
+			size: 3,
+			expected: `
+				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
+				values ($1, $2, $3, $4, $5, $6, $7, $8, $9),
+				($10, $11, $12, $13, $14, $15, $16, $17, $18),
+				($19, $20, $21, $22, $23, $24, $25, $26, $27);`,
+		},
+		{
+			name: "should create query with 4 entries successfully",
+			size: 4,
+			expected: `
+				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
+				values ($1, $2, $3, $4, $5, $6, $7, $8, $9),
+				($10, $11, $12, $13, $14, $15, $16, $17, $18),
+				($19, $20, $21, $22, $23, $24, $25, $26, $27),
+				($28, $29, $30, $31, $32, $33, $34, $35, $36);`,
+		},
+		{
+			name: "should create query with 5 entries successfully",
+			size: 5,
+			expected: `
+				insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
+				values ($1, $2, $3, $4, $5, $6, $7, $8, $9),
+				($10, $11, $12, $13, $14, $15, $16, $17, $18),
+				($19, $20, $21, $22, $23, $24, $25, $26, $27),
+				($28, $29, $30, $31, $32, $33, $34, $35, $36),
+				($37, $38, $39, $40, $41, $42, $43, $44, $45);`,
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			got := buildQuery(tt.size)
+			want := strings.ReplaceAll(tt.expected, "\t", "")
+
+			assert.Equal(t, want, got)
+		})
+	}
 }
