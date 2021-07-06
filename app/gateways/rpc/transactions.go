@@ -42,7 +42,9 @@ func (a *API) CreateTransaction(ctx context.Context, req *proto.CreateTransactio
 
 		metadata, mErr := entry.Metadata.MarshalJSON()
 		if mErr != nil {
-			return nil, status.Error(codes.InvalidArgument, "error marshaling entry metadata")
+			errMsg := "error marshaling entry metadata"
+			log.WithError(err).Error(errMsg)
+			return nil, status.Error(codes.InvalidArgument, errMsg)
 		}
 
 		domainEntry, domainErr := entities.NewEntry(
