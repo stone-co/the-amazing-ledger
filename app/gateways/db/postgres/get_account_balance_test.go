@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -21,6 +22,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	event := uint32(1)
 	company := "abc"
 	competenceDate := time.Now()
+	metadata := json.RawMessage(`{}`)
 
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
@@ -43,6 +45,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc1.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 	e2, _ := entities.NewEntry(
 		uuid.New(),
@@ -50,6 +53,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc2.Name(),
 		vos.IgnoreAccountVersion,
 		100,
+		metadata,
 	)
 
 	tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -80,6 +84,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc1.Name(),
 		vos.IgnoreAccountVersion,
 		100,
+		metadata,
 	)
 	e2, _ = entities.NewEntry(
 		uuid.New(),
@@ -87,6 +92,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc2.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 
 	tx, err = entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -121,6 +127,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc1.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 	e2, _ = entities.NewEntry(
 		uuid.New(),
@@ -128,6 +135,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc2.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 
 	tx, err = entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)

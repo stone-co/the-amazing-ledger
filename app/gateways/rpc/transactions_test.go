@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/stone-co/the-amazing-ledger/app"
@@ -41,6 +42,15 @@ func TestAPI_CreateTransaction_Success(t *testing.T) {
 						ExpectedVersion: 3,
 						Operation:       proto.Operation_OPERATION_DEBIT,
 						Amount:          123,
+						Metadata: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"requestID": {
+									Kind: &structpb.Value_StringValue{
+										StringValue: "my-request-id-1",
+									},
+								},
+							},
+						},
 					},
 					{
 						Id:              uuid.New().String(),
@@ -48,6 +58,15 @@ func TestAPI_CreateTransaction_Success(t *testing.T) {
 						ExpectedVersion: 3,
 						Operation:       proto.Operation_OPERATION_CREDIT,
 						Amount:          123,
+						Metadata: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"requestID": {
+									Kind: &structpb.Value_StringValue{
+										StringValue: "my-request-id-2",
+									},
+								},
+							},
+						},
 					},
 				},
 				Company:        "abc",

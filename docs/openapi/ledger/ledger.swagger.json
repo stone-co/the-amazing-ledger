@@ -285,6 +285,10 @@
           "type": "integer",
           "format": "int32",
           "description": "Amount (in cents)."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "The entry metadata."
         }
       },
       "description": "Entry represents a new entry on the Ledger."
@@ -404,6 +408,14 @@
           "format": "byte"
         }
       }
+    },
+    "protobufNullValue": {
+      "type": "string",
+      "enum": [
+        "NULL_VALUE"
+      ],
+      "default": "NULL_VALUE",
+      "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\n The JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
     },
     "rpcStatus": {
       "type": "object",

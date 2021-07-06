@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -16,14 +17,15 @@ func TestNewTransaction(t *testing.T) {
 	event := uint32(1)
 	company := "abc"
 	competenceDate := time.Now()
+	metadata := json.RawMessage(`{}`)
 
-	e11, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability.clients.available.111", vos.NextAccountVersion, 123)
-	e12, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.222", vos.NextAccountVersion, 123)
+	e11, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability.clients.available.111", vos.NextAccountVersion, 123, metadata)
+	e12, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.222", vos.NextAccountVersion, 123, metadata)
 	validTwoEntries := []Entry{e11, e12}
 
-	e21, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability.clients.available.333", vos.NextAccountVersion, 400)
-	e22, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.444", vos.NextAccountVersion, 300)
-	e23, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.555", vos.NextAccountVersion, 100)
+	e21, _ := NewEntry(uuid.New(), vos.DebitOperation, "liability.clients.available.333", vos.NextAccountVersion, 400, metadata)
+	e22, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.444", vos.NextAccountVersion, 300, metadata)
+	e23, _ := NewEntry(uuid.New(), vos.CreditOperation, "liability.clients.available.555", vos.NextAccountVersion, 100, metadata)
 	validThreeEntries := []Entry{e21, e22, e23}
 
 	testCases := []struct {

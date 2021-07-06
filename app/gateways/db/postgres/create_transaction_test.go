@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"testing"
@@ -12,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
@@ -22,6 +24,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 	event := uint32(1)
 	company := "abc"
 	competenceDate := time.Now()
+	metadata := json.RawMessage(`{}`)
 
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
@@ -36,6 +39,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.NextAccountVersion,
 			100,
+			json.RawMessage(`{"requestID": "request-id-1"}`),
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -43,6 +47,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			json.RawMessage(`{"requestID": "request-id-2"}`),
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -50,6 +55,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
+
+		assertMetadata(t, ctx, pgDocker.DB, e1.ID, e1.Metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, e2.Metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -75,6 +83,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account3",
 			vos.Version(3),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -82,6 +91,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account4",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -89,6 +99,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
+
+		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -114,6 +127,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.NextAccountVersion,
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -121,6 +135,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -128,6 +143,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
+
+		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -153,6 +171,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(3),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -160,6 +179,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -167,6 +187,9 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 
 		err = r.CreateTransaction(ctx, tx)
 		assert.NoError(t, err)
+
+		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
+		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
 
 		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
 		assert.NoError(t, err)
@@ -192,6 +215,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(3),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -199,6 +223,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -223,6 +248,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(1),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -230,6 +256,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -254,6 +281,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.Version(30),
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -261,6 +289,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -285,6 +314,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account1",
 			vos.NextAccountVersion,
 			100,
+			metadata,
 		)
 		e2, _ := entities.NewEntry(
 			uuid.New(),
@@ -292,6 +322,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 			"liability.abc.account2",
 			vos.IgnoreAccountVersion,
 			100,
+			metadata,
 		)
 
 		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -352,4 +383,17 @@ func fetchEntryVersion(ctx context.Context, db *pgxpool.Pool, id uuid.UUID) (vos
 	}
 
 	return vos.Version(version), nil
+}
+
+func assertMetadata(t *testing.T, ctx context.Context, db *pgxpool.Pool, id uuid.UUID, want json.RawMessage) {
+	t.Helper()
+
+	const query = `select metadata from entry where id = $1`
+
+	var metadata json.RawMessage
+
+	err := db.QueryRow(ctx, query, id).Scan(&metadata)
+	require.NoError(t, err)
+
+	assert.Equal(t, string(want), string(metadata))
 }

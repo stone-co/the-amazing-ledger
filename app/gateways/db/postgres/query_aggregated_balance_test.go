@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -20,6 +21,8 @@ import (
 func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
+
+	metadata := json.RawMessage(`{}`)
 
 	_, err := pgDocker.DB.Exec(ctx, `insert into event (id, name) values (3, 'query_aggregated_balance');`)
 	assert.NoError(t, err)
@@ -45,6 +48,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc1.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 	e2, _ := entities.NewEntry(
 		uuid.New(),
@@ -52,6 +56,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc2.Name(),
 		vos.IgnoreAccountVersion,
 		100,
+		metadata,
 	)
 
 	tx, err := entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e2)
@@ -73,6 +78,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc1.Name(),
 		vos.IgnoreAccountVersion,
 		100,
+		metadata,
 	)
 	e3, _ := entities.NewEntry(
 		uuid.New(),
@@ -80,6 +86,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc3.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 
 	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e3)
@@ -103,6 +110,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc1.Name(),
 		vos.NextAccountVersion,
 		200,
+		metadata,
 	)
 	e3, _ = entities.NewEntry(
 		uuid.New(),
@@ -110,6 +118,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 		acc3.Name(),
 		vos.NextAccountVersion,
 		200,
+		metadata,
 	)
 
 	tx, err = entities.NewTransaction(uuid.New(), 1, "company", time.Now(), e1, e3)
