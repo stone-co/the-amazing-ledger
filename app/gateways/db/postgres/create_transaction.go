@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
@@ -25,7 +26,7 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 
 	tx, err := r.db.Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to begin db transaction: %w", err)
 	}
 
 	defer func(tx pgx.Tx, ctx context.Context) {
@@ -53,12 +54,12 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 	err = br.Close()
 	if err == nil {
 		_ = tx.Commit(ctx) // TODO: double check
-		return err
+		return nil
 	}
 
 	var pgErr *pgconn.PgError
 	if ok := errors.As(err, &pgErr); !ok {
-		return err
+		return fmt.Errorf("failed to create transaction: %w", err)
 	}
 
 	if pgErr.Code == pgerrcode.RaiseException {
@@ -67,5 +68,5 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 		return app.ErrIdempotencyKeyViolation
 	}
 
-	return err
+	return fmt.Errorf("failed to create transaction: %w", pgErr)
 }

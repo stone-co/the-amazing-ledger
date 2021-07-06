@@ -28,7 +28,7 @@ func main() {
 		log.WithError(err).Fatal("unable to load app configuration")
 	}
 
-	nr, err := newrelic.NewRelicApp(cfg.NewRelic.AppName, cfg.NewRelic.LicenseKey, logrus.NewEntry(log))
+	nr, err := newrelic.App(cfg.NewRelic.AppName, cfg.NewRelic.LicenseKey, logrus.NewEntry(log))
 	if err != nil {
 		log.WithError(err).Fatal("error starting new relic")
 	}

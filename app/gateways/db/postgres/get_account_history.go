@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
@@ -32,8 +33,9 @@ func (r LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos
 		accountName.Name(),
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to execute query: %w", err)
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -46,7 +48,7 @@ func (r LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos
 			&operation,
 			&createdAt,
 		); err != nil {
-			return err
+			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
 		err = fn(vos.EntryHistory{
@@ -56,12 +58,12 @@ func (r LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos
 		})
 
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to execute fn: %w", err)
 		}
 	}
 
 	if err = rows.Err(); err != nil {
-		return err
+		return fmt.Errorf("%s rows have error: %w", operation, err)
 	}
 
 	return nil

@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
@@ -40,14 +41,14 @@ func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.Acc
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if !errors.As(err, &pgErr) {
-			return vos.AccountBalance{}, err
+			return vos.AccountBalance{}, fmt.Errorf("failed to get account balance: %w", err)
 		}
 
 		if pgErr.Code == pgerrcode.NoDataFound {
 			return vos.AccountBalance{}, app.ErrAccountNotFound
 		}
 
-		return vos.AccountBalance{}, err
+		return vos.AccountBalance{}, fmt.Errorf("failed to get account balance: %w", pgErr)
 	}
 
 	return vos.NewAccountBalance(

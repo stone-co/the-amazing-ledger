@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -28,7 +29,7 @@ func TestLedgerRepository_CreateTransaction(t *testing.T) {
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
 
-	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('default');`)
+	_, err := pgDocker.DB.Exec(ctx, `insert into event (id, name) values (1, 'default');`)
 	assert.NoError(t, err)
 
 	t.Run("insert transaction successfully with no previous versions - auto version", func(t *testing.T) {
@@ -364,7 +365,7 @@ func fetchAccountVersion(ctx context.Context, db *pgxpool.Pool, account vos.Acco
 
 	var version int64
 	err := db.QueryRow(ctx, query, account.Name()).Scan(&version)
-	if err != nil && err != pgx.ErrNoRows {
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return vos.Version(0), err
 	} else if errors.Is(err, pgx.ErrNoRows) {
 		return vos.Version(0), nil
@@ -378,7 +379,7 @@ func fetchEntryVersion(ctx context.Context, db *pgxpool.Pool, id uuid.UUID) (vos
 
 	var version int64
 	if err := db.QueryRow(ctx, query, id).Scan(&version); err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed to scan row: %w", err)
 	}
 
 	return vos.Version(version), nil

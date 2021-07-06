@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 
@@ -23,7 +24,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 
 	metadata := json.RawMessage(`{}`)
 
-	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('query_aggregated_balance');`)
+	_, err := pgDocker.DB.Exec(ctx, `insert into event (id, name) values (3, 'query_aggregated_balance');`)
 	assert.NoError(t, err)
 
 	query, err := vos.NewAccountQuery("liability.agg.*")
@@ -69,7 +70,7 @@ func TestLedgerRepository_QueryAggregatedBalance(t *testing.T) {
 	assert.Equal(t, 0, balance.Balance)
 
 	_, err = fetchQuerySnapshot(ctx, pgDocker.DB, query)
-	assert.ErrorIs(t, pgx.ErrNoRows, err)
+	assert.ErrorIs(t, err, pgx.ErrNoRows)
 
 	e1, _ = entities.NewEntry(
 		uuid.New(),
@@ -147,6 +148,9 @@ func fetchQuerySnapshot(ctx context.Context, db *pgxpool.Pool, query vos.Account
 	var snap querySnapshot
 
 	err := db.QueryRow(ctx, cmd, query.Value()).Scan(&snap.balance, &snap.date)
+	if err != nil {
+		return querySnapshot{}, fmt.Errorf("failed to fetch query snapshot: %w", err)
+	}
 
-	return snap, err
+	return snap, nil
 }
