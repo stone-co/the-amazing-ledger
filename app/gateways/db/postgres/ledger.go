@@ -19,8 +19,18 @@ type LedgerRepository struct {
 }
 
 func NewLedgerRepository(db *pgxpool.Pool, log *logrus.Logger) *LedgerRepository {
+	initCreateTransactioQueryMap()
+
 	return &LedgerRepository{
 		db:  db,
 		log: log,
+	}
+}
+
+func initCreateTransactioQueryMap() {
+	createTransactionQueryMap = make(map[int]string)
+
+	for i := 2; i < maxQueriesDefault; i++ {
+		createTransactionQueryMap[i] = buildQuery(i)
 	}
 }
