@@ -1,7 +1,5 @@
 package app
 
-import "errors"
-
 const (
 	ErrInvalidTransactionID              = DomainError("invalid transaction id")
 	ErrInvalidEntryID                    = DomainError("invalid entry id")
@@ -22,8 +20,4 @@ type DomainError string
 
 func (err DomainError) Error() string {
 	return string(err)
-}
-
-func (err DomainError) Is(target error) bool {
-	return errors.Is(err, target)
 }
