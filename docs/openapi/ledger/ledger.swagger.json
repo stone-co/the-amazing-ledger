@@ -4,6 +4,14 @@
     "title": "ledger/ledger.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "LedgerService"
+    },
+    {
+      "name": "Health"
+    }
+  ],
   "consumes": [
     "application/json"
   ],
@@ -82,6 +90,37 @@
         ]
       }
     },
+    "/api/v1/aggregated/{query}/balance": {
+      "get": {
+        "operationId": "LedgerService_QueryAggregatedBalance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ledgerQueryAggregatedBalanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "description": "The account name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
     "/api/v1/analytical-data/{accountPath}": {
       "get": {
         "operationId": "LedgerService_GetAnalyticalData",
@@ -115,58 +154,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          }
-        ],
-        "tags": [
-          "LedgerService"
-        ]
-      }
-    },
-    "/api/v1/reports/{accountPath}/{level}/{startTime}/{endTime}/synthetic": {
-      "get": {
-        "operationId": "LedgerService_GetSyntheticReport",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/ledgerGetSyntheticReportResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "accountPath",
-            "description": "The account name",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "level",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "startTime",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "endTime",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "int64"
           }
         ],
         "tags": [
@@ -298,6 +285,10 @@
           "type": "integer",
           "format": "int32",
           "description": "Amount (in cents)."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "The entry metadata."
         }
       },
       "description": "Entry represents a new entry on the Ledger."
@@ -371,29 +362,6 @@
       },
       "title": "GetAnalyticalDataResponse"
     },
-    "ledgerGetSyntheticReportResponse": {
-      "type": "object",
-      "properties": {
-        "totalCredit": {
-          "type": "string",
-          "format": "int64",
-          "title": "All credit accumulated"
-        },
-        "totalDebit": {
-          "type": "string",
-          "format": "int64",
-          "title": "All debit accumulated"
-        },
-        "paths": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ledgerPath"
-          },
-          "title": "The paths"
-        }
-      },
-      "title": "GetSyntheticReport Response"
-    },
     "ledgerHealthCheckResponse": {
       "type": "object",
       "properties": {
@@ -414,24 +382,20 @@
       "default": "OPERATION_UNSPECIFIED",
       "description": "Operation has the possible operations to be used in Entry.\n\n - OPERATION_UNSPECIFIED: Don't use. It's just the default value.\n - OPERATION_CREDIT: Credit operation.\n - OPERATION_DEBIT: Debit operation."
     },
-    "ledgerPath": {
+    "ledgerQueryAggregatedBalanceResponse": {
       "type": "object",
       "properties": {
-        "account": {
+        "query": {
           "type": "string",
-          "title": "The account name"
+          "title": "The query path"
         },
-        "credit": {
+        "balance": {
           "type": "string",
           "format": "int64",
-          "title": "credit"
-        },
-        "debit": {
-          "type": "string",
-          "format": "int64",
-          "title": "debit"
+          "title": "The query balance"
         }
-      }
+      },
+      "title": "GetAccountBalance Response"
     },
     "protobufAny": {
       "type": "object",
@@ -444,6 +408,14 @@
           "format": "byte"
         }
       }
+    },
+    "protobufNullValue": {
+      "type": "string",
+      "enum": [
+        "NULL_VALUE"
+      ],
+      "default": "NULL_VALUE",
+      "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\n The JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
     },
     "rpcStatus": {
       "type": "object",

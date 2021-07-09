@@ -20,17 +20,20 @@ type AccountQuery struct {
 
 func NewAccountQuery(query string) (AccountQuery, error) {
 	query = strings.ToLower(query)
-
-	components := strings.Split(query, DepthSeparator)
+	components := strings.Split(query, _defaultConfig.DepthSeparator)
 	size := len(components)
 
 	if size == 0 {
 		return AccountQuery{}, app.ErrInvalidAccountStructure
 	}
 
+	if _defaultConfig.MaximumDepth != 0 && size > _defaultConfig.MaximumDepth {
+		return AccountQuery{}, app.ErrInvalidAccountStructure
+	}
+
 	for i, component := range components {
-		if len(component) == 0 {
-			return AccountQuery{}, app.ErrInvalidAccountStructure
+		if component == "" {
+			return AccountQuery{}, app.ErrInvalidAccountComponentSize
 		}
 
 		config, ok := _defaultConfig.DepthConfigs[i]
@@ -38,8 +41,12 @@ func NewAccountQuery(query string) (AccountQuery, error) {
 			continue
 		}
 
+		if !regexOnlyAlphanumericAndUnderscore.MatchString(component) {
+			continue
+		}
+
 		if _, ok = config.Restrictions[component]; !ok {
-			return AccountQuery{}, app.ErrInvalidAccountStructure
+			return AccountQuery{}, app.ErrAccountPathViolation
 		}
 	}
 

@@ -1,0 +1,535 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "ledger/ledger.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "LedgerService"
+    },
+    {
+      "name": "Health"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/accounts/{accountPath}/balance": {
+      "get": {
+        "operationId": "LedgerService_GetAccountBalance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ledgerGetAccountBalanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountPath",
+            "description": "The account name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
+    "/api/v1/accounts/{accountPath}/history": {
+      "get": {
+        "operationId": "LedgerService_GetAccountHistory",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/ledgerGetAccountHistoryResponse"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of ledgerGetAccountHistoryResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountPath",
+            "description": "The account name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
+    "/api/v1/aggregated/{query}/balance": {
+      "get": {
+        "operationId": "LedgerService_QueryAggregatedBalance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ledgerQueryAggregatedBalanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "description": "The account name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
+    "/api/v1/analytical-data/{accountPath}": {
+      "get": {
+        "operationId": "LedgerService_GetAnalyticalData",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/ledgerGetAnalyticalDataResponse"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of ledgerGetAnalyticalDataResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountPath",
+            "description": "The account path",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
+    "/api/v1/reports/{accountPath}/{level}/{startTime}/{endTime}/synthetic": {
+      "get": {
+        "operationId": "LedgerService_GetSyntheticReport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ledgerGetSyntheticReportResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountPath",
+            "description": "The account name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "level",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "startTime",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "endTime",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
+    "/api/v1/transactions": {
+      "post": {
+        "operationId": "LedgerService_CreateTransaction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ledgerCreateTransactionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Check - checks the system health.",
+        "operationId": "Health_Check",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ledgerHealthCheckResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "HealthCheckResponseServingStatus": {
+      "type": "string",
+      "enum": [
+        "SERVING_STATUS_UNKNOWN_UNSPECIFIED",
+        "SERVING_STATUS_SERVING",
+        "SERVING_STATUS_NOT_SERVING",
+        "SERVING_STATUS_SERVICE_UNKNOWN"
+      ],
+      "default": "SERVING_STATUS_UNKNOWN_UNSPECIFIED",
+      "description": "- SERVING_STATUS_UNKNOWN_UNSPECIFIED: Don't use. It's just the default value.\n - SERVING_STATUS_SERVING: Healthy\n - SERVING_STATUS_NOT_SERVING: Unhealthy\n - SERVING_STATUS_SERVICE_UNKNOWN: Used only when streaming",
+      "title": "ServingStatus is the enum of the possible health check status"
+    },
+    "ledgerCreateTransactionRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID (UUID) to link the entries to a transaction."
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ledgerEntry"
+          },
+          "description": "The list of entries, where len(entries) must be \u003e= 2."
+        },
+        "competenceDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The transaction competence date (execution date)."
+        },
+        "company": {
+          "type": "string",
+          "title": "The ledgers owner. Eg.: company name"
+        },
+        "event": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The event which triggered the transaction."
+        }
+      },
+      "title": "CreateTransactionRequest represents a transaction to be saved. A transaction must\nhave at least two entries, with a valid balance. More info here:\nhttps://en.wikipedia.org/wiki/Double-entry_bookkeeping"
+    },
+    "ledgerEntry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "It's the idempotency key, and must be unique (UUID)."
+        },
+        "accountId": {
+          "type": "string",
+          "description": "Account involved in the operation."
+        },
+        "expectedVersion": {
+          "type": "string",
+          "format": "int64",
+          "description": "To deal with optimistic lock."
+        },
+        "operation": {
+          "$ref": "#/definitions/ledgerOperation",
+          "description": "Operation: debit or credit."
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Amount (in cents)."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "The entry metadata."
+        }
+      },
+      "description": "Entry represents a new entry on the Ledger."
+    },
+    "ledgerGetAccountBalanceResponse": {
+      "type": "object",
+      "properties": {
+        "accountPath": {
+          "type": "string",
+          "title": "The account name"
+        },
+        "currentVersion": {
+          "type": "string",
+          "format": "int64",
+          "title": "The account version"
+        },
+        "totalCredit": {
+          "type": "string",
+          "format": "int64",
+          "title": "All credit accumulated"
+        },
+        "totalDebit": {
+          "type": "string",
+          "format": "int64",
+          "title": "All debit accumulated"
+        },
+        "balance": {
+          "type": "string",
+          "format": "int64",
+          "title": "The Account balance"
+        }
+      },
+      "title": "GetAccountBalance Response"
+    },
+    "ledgerGetAccountHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "format": "int64",
+          "title": "amount in cents"
+        },
+        "operation": {
+          "$ref": "#/definitions/ledgerOperation",
+          "description": "Operation: debit or credit."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "timestamp to created at"
+        }
+      },
+      "title": "EntryHistory to AccountHistory"
+    },
+    "ledgerGetAnalyticalDataResponse": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "type": "string",
+          "description": "Account involved in the operation."
+        },
+        "operation": {
+          "$ref": "#/definitions/ledgerOperation",
+          "description": "Operation: debit or credit."
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Amount (in cents)."
+        }
+      },
+      "title": "GetAnalyticalDataResponse"
+    },
+    "ledgerGetSyntheticReportResponse": {
+      "type": "object",
+      "properties": {
+        "totalCredit": {
+          "type": "string",
+          "format": "int64",
+          "title": "All credit accumulated"
+        },
+        "totalDebit": {
+          "type": "string",
+          "format": "int64",
+          "title": "All debit accumulated"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ledgerPath"
+          },
+          "title": "The paths"
+        }
+      },
+      "title": "GetSyntheticReport Response"
+    },
+    "ledgerHealthCheckResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/HealthCheckResponseServingStatus",
+          "description": "Server status."
+        }
+      },
+      "title": "https://github.com/grpc/grpc/blob/master/doc/health-checking.md\nHealthCheckResponse is the health check status"
+    },
+    "ledgerOperation": {
+      "type": "string",
+      "enum": [
+        "OPERATION_UNSPECIFIED",
+        "OPERATION_CREDIT",
+        "OPERATION_DEBIT"
+      ],
+      "default": "OPERATION_UNSPECIFIED",
+      "description": "Operation has the possible operations to be used in Entry.\n\n - OPERATION_UNSPECIFIED: Don't use. It's just the default value.\n - OPERATION_CREDIT: Credit operation.\n - OPERATION_DEBIT: Debit operation."
+    },
+<<<<<<< HEAD
+    "ledgerPath": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "title": "The account name"
+        },
+        "credit": {
+          "type": "string",
+          "format": "int64",
+          "title": "credit"
+        },
+        "debit": {
+          "type": "string",
+          "format": "int64",
+          "title": "debit"
+        }
+      }
+=======
+    "ledgerQueryAggregatedBalanceResponse": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "title": "The query path"
+        },
+        "balance": {
+          "type": "string",
+          "format": "int64",
+          "title": "The query balance"
+        }
+      },
+      "title": "GetAccountBalance Response"
+>>>>>>> c220e9fded7cc43cee3fef4721a86f6775a903a3
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "protobufNullValue": {
+      "type": "string",
+      "enum": [
+        "NULL_VALUE"
+      ],
+      "default": "NULL_VALUE",
+      "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\n The JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

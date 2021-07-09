@@ -1,0 +1,212 @@
+syntax = "proto3";
+
+option go_package = "github.com/stone-co/the-amazing-ledger/proto/ledger";
+
+package ledger;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+service LedgerService {
+  rpc CreateTransaction(CreateTransactionRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/api/v1/transactions"
+      body: "*"
+    };
+  };
+  rpc GetAccountBalance(GetAccountBalanceRequest) returns (GetAccountBalanceResponse){
+    option (google.api.http) = {
+      get: "/api/v1/accounts/{account_path}/balance"
+    };
+  };
+  rpc QueryAggregatedBalance(QueryAggregatedBalanceRequest) returns (QueryAggregatedBalanceResponse){
+    option (google.api.http) = {
+      get: "/api/v1/aggregated/{query}/balance"
+    };
+  };
+  rpc GetAnalyticalData(GetAnalyticalDataRequest) returns (stream GetAnalyticalDataResponse){
+    option (google.api.http) = {
+      get: "/api/v1/analytical-data/{account_path}"
+    };
+  };
+  rpc GetAccountHistory(GetAccountHistoryRequest) returns (stream GetAccountHistoryResponse){
+    option (google.api.http) = {
+      get: "/api/v1/accounts/{account_path}/history"
+    };
+  };
+  rpc GetSyntheticReport(GetSyntheticReportRequest) returns (GetSyntheticReportResponse){
+    option (google.api.http) = {
+      get: "/api/v1/reports/{account_path}/{level}/{start_time}/{end_time}/synthetic"
+    };
+  };
+}
+
+// CreateTransactionRequest represents a transaction to be saved. A transaction must
+// have at least two entries, with a valid balance. More info here:
+// https://en.wikipedia.org/wiki/Double-entry_bookkeeping
+message CreateTransactionRequest {
+  // ID (UUID) to link the entries to a transaction.
+  string id = 1;
+  // The list of entries, where len(entries) must be >= 2.
+  repeated Entry entries = 2;
+  // The transaction competence date (execution date).
+  google.protobuf.Timestamp competence_date = 3;
+  // The ledgers owner. Eg.: company name
+  string company = 4;
+  // The event which triggered the transaction.
+  uint32 event = 5;
+}
+
+// Entry represents a new entry on the Ledger.
+message Entry  {
+  // It's the idempotency key, and must be unique (UUID).
+  string id = 1;
+  // Account involved in the operation.
+  string account_id = 2;
+  // To deal with optimistic lock.
+  int64 expected_version = 3;
+  // Operation: debit or credit.
+  Operation operation = 4;
+  // Amount (in cents).
+  int32 amount = 5;
+  // The entry metadata.
+  google.protobuf.Struct metadata = 6;
+}
+
+// Operation has the possible operations to be used in Entry.
+enum Operation {
+  // Don't use. It's just the default value.
+  OPERATION_UNSPECIFIED = 0;
+  // Credit operation.
+  OPERATION_CREDIT = 1;
+  // Debit operation.
+  OPERATION_DEBIT = 2;
+};
+
+// GetAccountBalance Request
+message GetAccountBalanceRequest {
+  // The account name
+  string account_path = 1;
+}
+
+// GetAccountBalance Response
+message GetAccountBalanceResponse {
+  // The account name
+  string account_path = 1;
+  // The account version
+  int64 current_version = 2;
+  // All credit accumulated
+  int64 total_credit = 3;
+  // All debit accumulated
+  int64 total_debit = 4;
+  // The Account balance
+  int64 balance = 5;
+}
+
+<<<<<<< HEAD
+// GetSyntheticReport Request
+message GetSyntheticReportRequest {
+  // The account name
+  string account_path = 1;
+  int32 level = 2;
+  int64 start_time = 3;
+  int64 end_time = 4;
+  // TODO: filters
+  // TODO: pagination
+  // TODO: checar obrigatoriedade de campos. Proto 3
+}
+
+// GetSyntheticReport Response
+message GetSyntheticReportResponse {
+  // All credit accumulated
+  int64 total_credit = 2;
+  // All debit accumulated
+  int64 total_debit = 3;
+  // The paths
+  repeated Path paths = 4;
+}
+
+message Path {
+// The account name
+  string account = 1;
+  // credit 
+  int64 credit = 2;
+  // debit 
+  int64 debit = 3;
+=======
+// QueryAggregatedBalance Request
+message QueryAggregatedBalanceRequest {
+  // The account name
+  string query = 1;
+}
+
+// GetAccountBalance Response
+message QueryAggregatedBalanceResponse {
+  // The query path
+  string query = 1;
+  // The query balance
+  int64 balance = 2;
+>>>>>>> c220e9fded7cc43cee3fef4721a86f6775a903a3
+}
+
+// GetAnalyticalDataRequest contains the filters to be used to get data from the accounts.
+message GetAnalyticalDataRequest {
+  // The account path
+  string account_path = 1;
+}
+
+// GetAnalyticalDataResponse
+message GetAnalyticalDataResponse {
+  // Account involved in the operation.
+  string account_id = 1;
+  // Operation: debit or credit.
+  Operation operation = 2;
+  // Amount (in cents).
+  int32 amount = 3;
+}
+
+// GetAccountHistory Request
+message GetAccountHistoryRequest {
+  // The account name
+  string account_path = 1;
+}
+
+// EntryHistory to AccountHistory
+message GetAccountHistoryResponse {
+  // amount in cents
+  int64 amount = 1;
+  // Operation: debit or credit.
+  Operation operation = 2;
+  // timestamp to created at
+  google.protobuf.Timestamp created_at = 3;
+}
+
+//https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+// HealthCheckResponse is the health check status
+message HealthCheckResponse {
+  // ServingStatus is the enum of the possible health check status
+  enum ServingStatus {
+    // Don't use. It's just the default value.
+    SERVING_STATUS_UNKNOWN_UNSPECIFIED = 0;
+    // Healthy
+    SERVING_STATUS_SERVING = 1;
+    // Unhealthy
+    SERVING_STATUS_NOT_SERVING = 2;
+    // Used only when streaming
+    SERVING_STATUS_SERVICE_UNKNOWN = 3;
+  }
+  // Server status.
+  ServingStatus status = 1;
+}
+
+// Health Check service.
+service Health {
+  // Check - checks the system health.
+  rpc Check(google.protobuf.Empty) returns (HealthCheckResponse){
+    option (google.api.http) = {
+      get: "/health"
+    };
+  };
+}

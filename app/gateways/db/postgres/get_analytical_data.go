@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
@@ -29,7 +30,7 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, query vos.Acco
 
 	rows, err := r.db.Query(ctx, analyticalDataQuery, query.Value())
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to execute query: %w", err)
 	}
 	defer rows.Close()
 
@@ -44,7 +45,7 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, query vos.Acco
 			&amount,
 			&createdAt,
 		); err != nil {
-			return err
+			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
 		err = fn(vos.Statement{
@@ -58,7 +59,7 @@ func (r *LedgerRepository) GetAnalyticalData(ctx context.Context, query vos.Acco
 	}
 
 	if err := rows.Err(); err != nil {
-		return err
+		return fmt.Errorf("%s rows have error: %w", operation, err)
 	}
 
 	return nil

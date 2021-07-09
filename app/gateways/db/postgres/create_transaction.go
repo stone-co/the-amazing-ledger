@@ -3,39 +3,39 @@ package postgres
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v4"
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
+const (
+	queryArgsLength   = 10
+	maxQueriesDefault = 5
+)
+
 const createTransactionQuery = `
-insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company)
-values ($1, $2, $3, $4, $5, $6, $7, $8, $9);
-`
+insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company, metadata)
+values %s;`
+
+var createTransactionQueryMap map[int]string
 
 func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
 	const operation = "Repository.CreateTransaction"
 
-	defer newrelic.NewDatastoreSegment(ctx, collection, operation, createTransactionQuery).End()
+	query := getQuery(len(transaction.Entries))
 
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
+	args := make([]interface{}, 0)
 
-	defer func(tx pgx.Tx, ctx context.Context) {
-		_ = tx.Rollback(ctx)
-	}(tx, ctx)
-
-	var batch pgx.Batch
 	for _, entry := range transaction.Entries {
-		batch.Queue(
-			createTransactionQuery,
+		args = append(
+			args,
 			entry.ID,
 			transaction.ID,
 			transaction.Event,
@@ -45,26 +45,68 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 			transaction.CompetenceDate,
 			entry.Account.Name(),
 			transaction.Company,
+			entry.Metadata,
 		)
 	}
 
-	br := tx.SendBatch(ctx, &batch)
-	err = br.Close()
-	if err == nil {
-		_ = tx.Commit(ctx) // TODO: double check
+	defer newrelic.NewDatastoreSegment(ctx, collection, operation, query).End()
+
+	_, err := r.db.Exec(ctx, query, args...)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if ok := errors.As(err, &pgErr); !ok {
+			return err
+		}
+
+		if pgErr.Code == pgerrcode.RaiseException {
+			return app.ErrInvalidVersion
+		}
+
+		if pgErr.Code == pgerrcode.UniqueViolation {
+			return app.ErrIdempotencyKeyViolation
+		}
+
 		return err
 	}
 
-	var pgErr *pgconn.PgError
-	if ok := errors.As(err, &pgErr); !ok {
-		return err
+	return nil
+}
+
+func getQuery(entriesSize int) string {
+	query, ok := createTransactionQueryMap[entriesSize]
+	if ok {
+		return query
 	}
 
-	if pgErr.Code == pgerrcode.RaiseException {
-		return app.ErrInvalidVersion
-	} else if pgErr.Code == pgerrcode.UniqueViolation {
-		return app.ErrIdempotencyKeyViolation
+	query = buildQuery(entriesSize)
+	createTransactionQueryMap[entriesSize] = query
+
+	return query
+}
+
+func buildQuery(entriesSize int) string {
+	var sb strings.Builder
+
+	for i := 0; i < entriesSize; i++ {
+		n := i * queryArgsLength
+
+		sb.WriteString("(")
+
+		for j := 0; j < queryArgsLength; j++ {
+			sb.WriteString("$")
+			sb.WriteString(strconv.Itoa(n + j + 1))
+
+			if j != queryArgsLength-1 {
+				sb.WriteString(", ")
+			}
+		}
+
+		if i != entriesSize-1 {
+			sb.WriteString("),\n")
+		}
 	}
 
-	return err
+	sb.WriteString(")")
+
+	return fmt.Sprintf(createTransactionQuery, sb.String())
 }

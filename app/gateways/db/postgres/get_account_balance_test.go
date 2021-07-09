@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 
@@ -20,11 +22,12 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	event := uint32(1)
 	company := "abc"
 	competenceDate := time.Now()
+	metadata := json.RawMessage(`{}`)
 
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
 
-	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('defaults');`)
+	_, err := pgDocker.DB.Exec(ctx, `insert into event (id, name) values (2, 'defaults');`)
 	assert.NoError(t, err)
 
 	acc1, err := vos.NewAccountPath("liability.123.account11")
@@ -42,6 +45,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc1.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 	e2, _ := entities.NewEntry(
 		uuid.New(),
@@ -49,6 +53,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc2.Name(),
 		vos.IgnoreAccountVersion,
 		100,
+		metadata,
 	)
 
 	tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -63,7 +68,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	assert.Equal(t, 100, balance.TotalDebit)
 
 	_, err = fetchSnapshot(ctx, pgDocker.DB, acc1)
-	assert.ErrorIs(t, pgx.ErrNoRows, err)
+	assert.ErrorIs(t, err, pgx.ErrNoRows)
 
 	balance, err = r.GetAccountBalance(ctx, acc2)
 	assert.NoError(t, err)
@@ -71,7 +76,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 	assert.Equal(t, 0, balance.TotalDebit)
 
 	_, err = fetchSnapshot(ctx, pgDocker.DB, acc2)
-	assert.ErrorIs(t, pgx.ErrNoRows, err)
+	assert.ErrorIs(t, err, pgx.ErrNoRows)
 
 	e1, _ = entities.NewEntry(
 		uuid.New(),
@@ -79,6 +84,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc1.Name(),
 		vos.IgnoreAccountVersion,
 		100,
+		metadata,
 	)
 	e2, _ = entities.NewEntry(
 		uuid.New(),
@@ -86,6 +92,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc2.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 
 	tx, err = entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -120,6 +127,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc1.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 	e2, _ = entities.NewEntry(
 		uuid.New(),
@@ -127,6 +135,7 @@ func TestLedgerRepository_GetAccountBalance(t *testing.T) {
 		acc2.Name(),
 		vos.NextAccountVersion,
 		100,
+		metadata,
 	)
 
 	tx, err = entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
@@ -172,6 +181,9 @@ func fetchSnapshot(ctx context.Context, db *pgxpool.Pool, account vos.AccountPat
 		&snap.debit,
 		&snap.date,
 	)
+	if err != nil {
+		return snapshot{}, fmt.Errorf("failed to fetch snapshot: %w", err)
+	}
 
-	return snap, err
+	return snap, nil
 }

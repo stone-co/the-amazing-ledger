@@ -7,6 +7,7 @@ package ledger;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
 
 service LedgerService {
   rpc CreateTransaction(CreateTransactionRequest) returns (google.protobuf.Empty){
@@ -20,6 +21,11 @@ service LedgerService {
       get: "/api/v1/accounts/{account_path}/balance"
     };
   };
+  rpc QueryAggregatedBalance(QueryAggregatedBalanceRequest) returns (QueryAggregatedBalanceResponse){
+    option (google.api.http) = {
+      get: "/api/v1/aggregated/{query}/balance"
+    };
+  };
   rpc GetAnalyticalData(GetAnalyticalDataRequest) returns (stream GetAnalyticalDataResponse){
     option (google.api.http) = {
       get: "/api/v1/analytical-data/{account_path}"
@@ -28,11 +34,6 @@ service LedgerService {
   rpc GetAccountHistory(GetAccountHistoryRequest) returns (stream GetAccountHistoryResponse){
     option (google.api.http) = {
       get: "/api/v1/accounts/{account_path}/history"
-    };
-  };
-  rpc GetSyntheticReport(GetSyntheticReportRequest) returns (GetSyntheticReportResponse){
-    option (google.api.http) = {
-      get: "/api/v1/reports/{account_path}/{level}/{start_time}/{end_time}/synthetic"
     };
   };
 }
@@ -65,6 +66,8 @@ message Entry  {
   Operation operation = 4;
   // Amount (in cents).
   int32 amount = 5;
+  // The entry metadata.
+  google.protobuf.Struct metadata = 6;
 }
 
 // Operation has the possible operations to be used in Entry.
@@ -97,35 +100,18 @@ message GetAccountBalanceResponse {
   int64 balance = 5;
 }
 
-// GetSyntheticReport Request
-message GetSyntheticReportRequest {
+// QueryAggregatedBalance Request
+message QueryAggregatedBalanceRequest {
   // The account name
-  string account_path = 1;
-  int32 level = 2;
-  int64 start_time = 3;
-  int64 end_time = 4;
-  // TODO: filters
-  // TODO: pagination
-  // TODO: checar obrigatoriedade de campos. Proto 3
+  string query = 1;
 }
 
-// GetSyntheticReport Response
-message GetSyntheticReportResponse {
-  // All credit accumulated
-  int64 total_credit = 2;
-  // All debit accumulated
-  int64 total_debit = 3;
-  // The paths
-  repeated Path paths = 4;
-}
-
-message Path {
-// The account name
-  string account = 1;
-  // credit 
-  int64 credit = 2;
-  // debit 
-  int64 debit = 3;
+// GetAccountBalance Response
+message QueryAggregatedBalanceResponse {
+  // The query path
+  string query = 1;
+  // The query balance
+  int64 balance = 2;
 }
 
 // GetAnalyticalDataRequest contains the filters to be used to get data from the accounts.

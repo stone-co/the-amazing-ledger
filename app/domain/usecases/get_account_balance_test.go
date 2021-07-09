@@ -4,42 +4,51 @@ import (
 	"context"
 	"testing"
 
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	"github.com/stone-co/the-amazing-ledger/app/tests/mocks"
+	"github.com/stone-co/the-amazing-ledger/app/tests/testdata"
 )
 
 func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
-	t.Run("The Balance is totalCredit subtract by totalDebit", func(t *testing.T) {
-		totalCredit := 150
-		totalDebit := 130
-		expectedBalance := totalCredit - totalDebit
+	t.Run("should return account balance successfully", func(t *testing.T) {
+		accountPath, err := vos.NewAccountPath(testdata.GenerateAccountPath())
+		assert.NoError(t, err)
 
-		account, err := vos.NewAccountPath("liability.stone.clients.user_1")
-		assert.Nil(t, err)
+		accountBalance := vos.NewAccountBalance(accountPath, vos.Version(1), 150, 130)
+		mockedRepository := &mocks.RepositoryMock{
+			GetAccountBalanceFunc: func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
+				return accountBalance, nil
+			},
+		}
+		usecase := NewLedgerUseCase(logrus.New(), mockedRepository)
 
-		accountBalance := vos.NewAccountBalance(account, 3, totalCredit, totalDebit)
+		got, err := usecase.GetAccountBalance(context.Background(), accountPath)
+		assert.NoError(t, err)
 
-		useCase := newFakeGetAccountBalance(accountBalance, nil)
-		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.Account)
-		assert.Nil(t, err)
-		assert.Equal(t, accountBalance.TotalCredit, a.TotalCredit)
-		assert.Equal(t, accountBalance.TotalDebit, a.TotalDebit)
-		assert.Equal(t, expectedBalance, a.Balance())
+		assert.Equal(t, accountBalance.Account, got.Account)
+		assert.Equal(t, accountBalance.CurrentVersion, got.CurrentVersion)
+		assert.Equal(t, accountBalance.TotalCredit, got.TotalCredit)
+		assert.Equal(t, accountBalance.TotalDebit, got.TotalDebit)
+		assert.Equal(t, accountBalance.Balance(), got.Balance())
 	})
 
-	t.Run("The max version for account path must be version in account balance", func(t *testing.T) {
-		expectedVersion := vos.Version(5)
+	t.Run("should return an error if account does not exist", func(t *testing.T) {
+		accountPath, err := vos.NewAccountPath(testdata.GenerateAccountPath())
+		assert.NoError(t, err)
 
-		account, err := vos.NewAccountPath("liability.stone.clients.user_1")
-		assert.Nil(t, err)
+		mockedRepository := &mocks.RepositoryMock{
+			GetAccountBalanceFunc: func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
+				return vos.AccountBalance{}, app.ErrAccountNotFound
+			},
+		}
+		usecase := NewLedgerUseCase(logrus.New(), mockedRepository)
 
-		accountBalance := vos.NewAccountBalance(account, expectedVersion, 0, 0)
-
-		useCase := newFakeGetAccountBalance(accountBalance, nil)
-		a, err := useCase.GetAccountBalance(context.Background(), accountBalance.Account)
-
-		assert.Nil(t, err)
-		assert.Equal(t, expectedVersion, a.CurrentVersion)
+		got, err := usecase.GetAccountBalance(context.Background(), accountPath)
+		assert.Empty(t, got)
+		assert.ErrorIs(t, err, app.ErrAccountNotFound)
 	})
 }

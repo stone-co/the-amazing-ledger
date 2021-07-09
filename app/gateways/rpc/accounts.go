@@ -2,8 +2,9 @@ package rpc
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
@@ -30,7 +31,7 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 
 	accountBalance, err := a.UseCase.GetAccountBalance(ctx, accountName)
 	if err != nil {
-		if err == app.ErrAccountNotFound {
+		if errors.Is(err, app.ErrAccountNotFound) {
 			log.WithError(err).Error("account name does not exist")
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
@@ -48,6 +49,36 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 	}, nil
 }
 
+func (a *API) QueryAggregatedBalance(ctx context.Context, request *proto.QueryAggregatedBalanceRequest) (*proto.QueryAggregatedBalanceResponse, error) {
+	defer newrelic.FromContext(ctx).StartSegment("QueryAggregatedBalance").End()
+
+	log := a.log.WithFields(logrus.Fields{
+		"handler": "QueryAggregatedBalance",
+	})
+
+	query, err := vos.NewAccountQuery(request.Query)
+	if err != nil {
+		log.WithError(err).Error("failed to create account query")
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	queryBalance, err := a.UseCase.QueryAggregatedBalance(ctx, query)
+	if err != nil {
+		if errors.Is(err, app.ErrAccountNotFound) {
+			log.WithError(err).Error("accounts for the given query do not exist")
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+
+		log.WithError(err).Error("failed to query aggregated account balance")
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	return &proto.QueryAggregatedBalanceResponse{
+		Query:   query.Value(),
+		Balance: int64(queryBalance.Balance),
+	}, nil
+}
+
 func (a *API) GetAccountHistory(request *proto.GetAccountHistoryRequest, stream proto.LedgerService_GetAccountHistoryServer) error {
 	defer newrelic.FromContext(stream.Context()).StartSegment("GetAccountHistory").End()
 
@@ -62,19 +93,14 @@ func (a *API) GetAccountHistory(request *proto.GetAccountHistoryRequest, stream 
 	}
 
 	fn := func(et vos.EntryHistory) error {
-		var timestamp *timestamppb.Timestamp
-		timestamp, err = ptypes.TimestampProto(et.CreatedAt)
-		if err != nil {
-			log.WithError(err).Error("can't convert time.Time to proto timestamp")
-			return err
-		}
+		ts := timestamppb.New(et.CreatedAt)
 
 		if err = stream.Send(&proto.GetAccountHistoryResponse{
 			Amount:    int64(et.Amount),
 			Operation: proto.Operation(et.Operation),
-			CreatedAt: timestamp,
+			CreatedAt: ts,
 		}); err != nil {
-			return err
+			return fmt.Errorf("failed to send data into stream: %w", err)
 		}
 
 		return nil
