@@ -107,7 +107,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 			},
 		}
 		err = useCase.CreateTransaction(context.Background(), tx)
-		assert.True(t, app.ErrIdempotencyKeyViolation.Is(err))
+		assert.ErrorIs(t, err, app.ErrIdempotencyKeyViolation)
 
 		e1, _ = entities.NewEntry(uuid.New(), vos.DebitOperation, accountID1, 4, 123)
 		e2, _ = entities.NewEntry(uuid.New(), vos.CreditOperation, accountID2, 5, 123)

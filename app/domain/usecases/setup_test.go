@@ -72,7 +72,7 @@ func newFakeGetSyntheticReport(syntheticReport *vos.SyntheticReport, date time.T
 	log := logrus.New()
 
 	mockRepository := &mocks.Repository{
-		OnGetSyntheticReport: func(ctx context.Context, accountPath vos.AccountPath, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+		OnGetSyntheticReport: func(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
 			return syntheticReport, result
 		},
 	}

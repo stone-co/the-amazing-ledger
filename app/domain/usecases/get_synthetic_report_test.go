@@ -12,6 +12,9 @@ import (
 
 func TestLedgerUseCase_GetSyntheticReport(t *testing.T) {
 	t.Run("GetSyntheticReport with startDate and endDate being equals must return the report for the year", func(t *testing.T) {
+		query, err := vos.NewAccountQuery("liability.credit_card.invoice.*")
+		assert.Nil(t, err)
+
 		totalCredit := int64(150)
 		totalDebit := int64(130)
 
@@ -31,7 +34,7 @@ func TestLedgerUseCase_GetSyntheticReport(t *testing.T) {
 		date := time.Now()
 
 		useCase := newFakeGetSyntheticReport(fakeSyntheticReport, date, nil)
-		a, err := useCase.GetSyntheticReport(context.Background(), accountPath, level, date, date)
+		a, err := useCase.GetSyntheticReport(context.Background(), query, level, date, date)
 
 		assert.Nil(t, err)
 		assert.Equal(t, fakeSyntheticReport.TotalDebit, a.TotalDebit)

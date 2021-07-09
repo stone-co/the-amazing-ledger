@@ -6,30 +6,49 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// test the creation of a new synthetic report object
 func TestSyntheticReport(t *testing.T) {
-	accountPathLiability := "liability"
-	accountPathAssets := "assets"
+	accountLiquidacao, _ := NewAccountPath("assets.bacen.conta_liquidacao")
 
-	accountPath1, err := NewAccountPath(accountPathLiability)
-	assert.NotNil(t, err)
-	accountPath2, err := NewAccountPath(accountPathAssets)
-	assert.NotNil(t, err)
-
-	paths := []Path{
-		{
-			accountPath1,
-			200,
-			300,
-		},
-		{
-			accountPath2,
-			400,
-			500,
-		},
+	type wants struct {
+		paths       []Path
+		totalCredit int64
+		totalDebit  int64
+		err         error
 	}
 
-	syntheticReport, err := NewSyntheticReport(600, 800, paths)
+	tests := []struct {
+		name    string
+		account string
+		wants   wants
+	}{
+		{
+			name: "Successfully creates a synthetic report",
+			wants: wants{
+				paths: []Path{
+					{
+						Account: accountLiquidacao,
+						Credit:  200,
+						Debit:   300,
+					},
+				},
+				totalCredit: 200,
+				totalDebit:  300,
+				err:         nil,
+			},
+		},
+		// TODO: criacao errada
+	}
 
-	assert.Nil(t, err)
-	assert.Equal(t, 2, len(syntheticReport.Paths))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewSyntheticReport(tt.wants.totalCredit, tt.wants.totalDebit, tt.wants.paths)
+
+			assert.Nil(t, err)
+			assert.Equal(t, len(tt.wants.paths), len(got.Paths))
+			assert.Equal(t, tt.wants.totalCredit, got.TotalCredit)
+			assert.Equal(t, tt.wants.totalDebit, got.TotalDebit)
+		})
+	}
+
 }

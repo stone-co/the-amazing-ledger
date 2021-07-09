@@ -13,100 +13,100 @@ import (
 func TestNewAccount(t *testing.T) {
 	id := strings.ReplaceAll(uuid.New().String(), "-", "_")
 
-	type args struct {
+	type wants struct {
 		name string
+		err  error
 	}
 	tests := []struct {
-		name string
-		args args
-		err  error
+		name  string
+		wants wants
 	}{
 		{
 			name: "Successfully creates an account name with minimum inputs",
-			args: args{
+			wants: wants{
 				name: "assets.bacen.conta_liquidacao",
+				err:  nil,
 			},
-			err: nil,
 		},
 		{
 			name: "Successfully creates an account name with depth 4",
-			args: args{
+			wants: wants{
 				name: "liability.clients.available." + id,
+				err:  nil,
 			},
-			err: nil,
 		},
 		{
 			name: "Successfully creates an account name with depth 5",
-			args: args{
+			wants: wants{
 				name: "liability.clients.available." + id + ".mydetail",
+				err:  nil,
 			},
-			err: nil,
 		},
 		{
 			name: "Successfully creates an account name with depth 6",
-			args: args{
+			wants: wants{
 				name: "liability.clients.available." + id + ".mydetail1.mydetail2_mydetail3",
+				err:  nil,
 			},
-			err: nil,
 		},
 		{
 			name: "Error when account has depth 1",
-			args: args{
+			wants: wants{
 				name: "assets",
+				err:  app.ErrInvalidAccountStructure,
 			},
-			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account has a depth 2",
-			args: args{
+			wants: wants{
 				name: "assets.bacen",
+				err:  app.ErrInvalidAccountStructure,
 			},
-			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account has an empty depth",
-			args: args{
+			wants: wants{
 				name: "liability..treasury",
+				err:  app.ErrInvalidAccountComponentSize,
 			},
-			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account omits level 3",
-			args: args{
+			wants: wants{
 				name: "assets.conta_liquidacao.",
+				err:  app.ErrInvalidAccountComponentSize,
 			},
-			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when depth 1 value is not one of the available",
-			args: args{
+			wants: wants{
 				name: "xpto.conta_liquidacao.tesouraria",
+				err:  app.ErrAccountPathViolation,
 			},
-			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when account has invalid characters",
-			args: args{
+			wants: wants{
 				name: "assets.conta_liquidacao." + uuid.New().String(),
+				err:  app.ErrInvalidAccountComponentCharacters,
 			},
-			err: app.ErrInvalidAccountStructure,
 		},
 		{
 			name: "Error when label has more thant 255 characters characters",
-			args: args{
+			wants: wants{
 				name: "assets.bacen.conta_liquidacao." + strings.Repeat("a", maxLabelLength+1),
+				err:  app.ErrInvalidAccountComponentSize,
 			},
-			err: app.ErrInvalidAccountStructure,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewAccountPath(tt.args.name)
-			assert.ErrorIs(t, err, tt.err)
+			got, err := NewAccountPath(tt.wants.name)
+			assert.ErrorIs(t, err, tt.wants.err)
 
 			if err == nil {
-				assert.Equal(t, tt.args.name, got.Name())
+				assert.Equal(t, tt.wants.name, got.Name())
 			}
 		})
 	}

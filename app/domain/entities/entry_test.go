@@ -31,30 +31,30 @@ func TestNewEntry(t *testing.T) {
 	t.Run("Invalid when entry id is invalid", func(t *testing.T) {
 		entry, err := NewEntry(uuid.Nil, vos.CreditOperation, "assets.bacen.conta_liquidacao.tesouraria", vos.NextAccountVersion, 123)
 		assert.Empty(t, entry)
-		assert.True(t, app.ErrInvalidEntryID.Is(err))
+		assert.ErrorIs(t, err, app.ErrInvalidEntryID)
 	})
 
 	t.Run("Invalid when operation is invalid", func(t *testing.T) {
 		entry, err := NewEntry(newUUID, vos.InvalidOperation, "assets.bacen.conta_liquidacao.tesouraria", vos.NextAccountVersion, 123)
 		assert.Empty(t, entry)
-		assert.True(t, app.ErrInvalidOperation.Is(err))
+		assert.ErrorIs(t, err, app.ErrInvalidOperation)
 	})
 
 	t.Run("Invalid when amount is zero", func(t *testing.T) {
 		entry, err := NewEntry(newUUID, vos.CreditOperation, "assets.bacen.conta_liquidacao.tesouraria", vos.NextAccountVersion, 0)
 		assert.Empty(t, entry)
-		assert.True(t, app.ErrInvalidAmount.Is(err))
+		assert.ErrorIs(t, err, app.ErrInvalidAmount)
 	})
 
 	t.Run("Invalid when amount < zero", func(t *testing.T) {
 		entry, err := NewEntry(newUUID, vos.CreditOperation, "assets.bacen.conta_liquidacao.tesouraria", vos.NextAccountVersion, -1)
 		assert.Empty(t, entry)
-		assert.True(t, app.ErrInvalidAmount.Is(err))
+		assert.ErrorIs(t, err, app.ErrInvalidAmount)
 	})
 
 	t.Run("Invalid when account structure has less than 3 levels", func(t *testing.T) {
 		entry, err := NewEntry(newUUID, vos.CreditOperation, "assets.bacen", vos.NextAccountVersion, 123)
 		assert.Empty(t, entry)
-		assert.True(t, app.ErrInvalidAccountStructure.Is(err))
+		assert.ErrorIs(t, err, app.ErrInvalidAccountStructure)
 	})
 }

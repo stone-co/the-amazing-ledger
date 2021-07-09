@@ -6,21 +6,15 @@ import (
 
 	"time"
 
-	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 )
 
-func (l *LedgerUseCase) GetSyntheticReport(ctx context.Context, accountPath vos.AccountPath, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
-
-	if (vos.AccountPath{}) == accountPath || accountPath.Name() == "" {
-		return &vos.SyntheticReport{}, app.ErrEmptyAccountPath
-	}
-
+func (l *LedgerUseCase) GetSyntheticReport(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
 	if level < 1 {
-		level = len(strings.Split(accountPath.Name(), ".")) // TODO get separator from default config
+		level = len(strings.Split(query.Value(), vos.DepthSeparator))
 	}
 
-	syntheticReport, err := l.repository.GetSyntheticReport(ctx, accountPath, level, startTime, endTime)
+	syntheticReport, err := l.repository.GetSyntheticReport(ctx, query, level, startTime, endTime)
 
 	if err != nil {
 		return nil, err

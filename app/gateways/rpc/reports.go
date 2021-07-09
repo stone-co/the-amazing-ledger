@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"google.golang.org/grpc/codes"
@@ -18,10 +17,10 @@ func (a *API) GetSyntheticReport(ctx context.Context, request *proto.GetSyntheti
 		"handler": "GetSyntheticReport",
 	})
 
-	accountPath, err := vos.NewAccountPath(request.AccountPath)
+	query, err := vos.NewAccountQuery(request.AccountPath)
 	if err != nil {
-		log.WithError(err).Error("Invalid account path")
-		return nil, status.Error(codes.NotFound, err.Error())
+		log.WithError(err).Error("Invalid account query")
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	level := int(request.Level) // that's ok to convert int32 to int, since int can be int32 or int64 depending on the used system
@@ -29,14 +28,9 @@ func (a *API) GetSyntheticReport(ctx context.Context, request *proto.GetSyntheti
 	startTime := time.Unix(0, request.StartTime)
 	endTime := time.Unix(0, request.EndTime)
 
-	syntheticReport, err := a.UseCase.GetSyntheticReport(ctx, accountPath, level, startTime, endTime)
+	syntheticReport, err := a.UseCase.GetSyntheticReport(ctx, query, level, startTime, endTime)
 	if err != nil {
-		if err == app.ErrAccountNotFound {
-			log.WithError(err).Error("account name does not exist")
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-
-		log.WithError(err).Error("can't get account")
+		log.WithError(err).Error("can't get report")
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 

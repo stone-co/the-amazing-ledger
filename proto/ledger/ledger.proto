@@ -32,7 +32,6 @@ service LedgerService {
   };
   rpc GetSyntheticReport(GetSyntheticReportRequest) returns (GetSyntheticReportResponse){
     option (google.api.http) = {
-      //get: "/api/v1/accounts/{account_path}/{start_time}/{end_time}/report"
       get: "/api/v1/reports/{account_path}/{level}/{start_time}/{end_time}/synthetic"
     };
   };
@@ -105,6 +104,9 @@ message GetSyntheticReportRequest {
   int32 level = 2;
   int64 start_time = 3;
   int64 end_time = 4;
+  // TODO: filters
+  // TODO: pagination
+  // TODO: checar obrigatoriedade de campos. Proto 3
 }
 
 // GetSyntheticReport Response

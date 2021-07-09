@@ -21,7 +21,7 @@ type AccountQuery struct {
 func NewAccountQuery(query string) (AccountQuery, error) {
 	query = strings.ToLower(query)
 
-	components := strings.Split(query, _defaultConfig.DepthSeparator)
+	components := strings.Split(query, DepthSeparator)
 	size := len(components)
 
 	if size == 0 {
