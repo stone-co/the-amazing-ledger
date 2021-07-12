@@ -69,6 +69,7 @@ func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
 		acc1Level3.Name(),
 		vos.NextAccountVersion,
 		100,
+		nil,
 	)
 	e2, _ := entities.NewEntry(
 		uuid.New(),
@@ -76,6 +77,7 @@ func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
 		acc2Level3.Name(),
 		vos.IgnoreAccountVersion,
 		100,
+		nil,
 	)
 
 	tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)

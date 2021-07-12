@@ -277,7 +277,6 @@ func (x *ledgerServiceGetAccountHistoryServer) Send(m *GetAccountHistoryResponse
 	return x.ServerStream.SendMsg(m)
 }
 
-<<<<<<< HEAD
 func _LedgerService_GetSyntheticReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetSyntheticReportRequest)
 	if err := dec(in); err != nil {
@@ -296,13 +295,10 @@ func _LedgerService_GetSyntheticReport_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-var _LedgerService_serviceDesc = grpc.ServiceDesc{
-=======
 // LedgerService_ServiceDesc is the grpc.ServiceDesc for LedgerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var LedgerService_ServiceDesc = grpc.ServiceDesc{
->>>>>>> c220e9fded7cc43cee3fef4721a86f6775a903a3
 	ServiceName: "ledger.LedgerService",
 	HandlerType: (*LedgerServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
@@ -315,13 +311,12 @@ var LedgerService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _LedgerService_GetAccountBalance_Handler,
 		},
 		{
-<<<<<<< HEAD
-			MethodName: "GetSyntheticReport",
-			Handler:    _LedgerService_GetSyntheticReport_Handler,
-=======
 			MethodName: "QueryAggregatedBalance",
 			Handler:    _LedgerService_QueryAggregatedBalance_Handler,
->>>>>>> c220e9fded7cc43cee3fef4721a86f6775a903a3
+		},
+		{
+			MethodName: "GetSyntheticReport",
+			Handler:    _LedgerService_GetSyntheticReport_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

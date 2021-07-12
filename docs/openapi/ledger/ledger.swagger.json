@@ -161,6 +161,57 @@
         ]
       }
     },
+    "/api/v1/reports/{filters.accountPath}/{filters.level}/{filters.startTime}/{filters.endTime}/synthetic": {
+      "get": {
+        "operationId": "LedgerService_GetSyntheticReport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ledgerGetSyntheticReportResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "filters.accountPath",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "filters.level",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "filters.startTime",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "filters.endTime",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "LedgerService"
+        ]
+      }
+    },
     "/api/v1/transactions": {
       "post": {
         "operationId": "LedgerService_CreateTransaction",
@@ -362,6 +413,49 @@
       },
       "title": "GetAnalyticalDataResponse"
     },
+    "ledgerGetSyntheticReportFilters": {
+      "type": "object",
+      "properties": {
+        "accountPath": {
+          "type": "string"
+        },
+        "level": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "int64"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ledgerGetSyntheticReportResponse": {
+      "type": "object",
+      "properties": {
+        "totalCredit": {
+          "type": "string",
+          "format": "int64",
+          "title": "All credit accumulated"
+        },
+        "totalDebit": {
+          "type": "string",
+          "format": "int64",
+          "title": "All debit accumulated"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ledgerPath"
+          },
+          "title": "The paths"
+        }
+      },
+      "title": "GetSyntheticReport Response"
+    },
     "ledgerHealthCheckResponse": {
       "type": "object",
       "properties": {
@@ -381,6 +475,25 @@
       ],
       "default": "OPERATION_UNSPECIFIED",
       "description": "Operation has the possible operations to be used in Entry.\n\n - OPERATION_UNSPECIFIED: Don't use. It's just the default value.\n - OPERATION_CREDIT: Credit operation.\n - OPERATION_DEBIT: Debit operation."
+    },
+    "ledgerPath": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "title": "The account name"
+        },
+        "credit": {
+          "type": "string",
+          "format": "int64",
+          "title": "credit"
+        },
+        "debit": {
+          "type": "string",
+          "format": "int64",
+          "title": "debit"
+        }
+      }
     },
     "ledgerQueryAggregatedBalanceResponse": {
       "type": "object",

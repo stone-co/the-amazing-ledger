@@ -17,16 +17,16 @@ func (a *API) GetSyntheticReport(ctx context.Context, request *proto.GetSyntheti
 		"handler": "GetSyntheticReport",
 	})
 
-	query, err := vos.NewAccountQuery(request.AccountPath)
+	query, err := vos.NewAccountQuery(request.Filters.AccountPath)
 	if err != nil {
 		log.WithError(err).Error("Invalid account query")
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	level := int(request.Level) // that's ok to convert int32 to int, since int can be int32 or int64 depending on the used system
+	level := int(request.Filters.Level) // that's ok to convert int32 to int, since int can be int32 or int64 depending on the used system
 
-	startTime := time.Unix(0, request.StartTime)
-	endTime := time.Unix(0, request.EndTime)
+	startTime := time.Unix(0, request.Filters.StartTime)
+	endTime := time.Unix(0, request.Filters.EndTime)
 
 	syntheticReport, err := a.UseCase.GetSyntheticReport(ctx, query, level, startTime, endTime)
 	if err != nil {
