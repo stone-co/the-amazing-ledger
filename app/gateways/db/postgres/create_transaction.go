@@ -3,34 +3,31 @@ package postgres
 import (
 	"context"
 	"errors"
-	"fmt"
-	"strconv"
-	"strings"
 
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
+	"github.com/stone-co/the-amazing-ledger/app/gateways/db/querybuilder"
 	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
 const (
-	queryArgsLength   = 10
-	maxQueriesDefault = 5
+	numArgs           = 10
+	numDefaultQueries = 5
 )
+
+var queryBuilder querybuilder.QueryBuilder
 
 const createTransactionQuery = `
 insert into entry (id, tx_id, event, operation, version, amount, competence_date, account, company, metadata)
 values %s;`
 
-var createTransactionQueryMap map[int]string
-
 func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
 	const operation = "Repository.CreateTransaction"
 
-	query := getQuery(len(transaction.Entries))
-
+	query := queryBuilder.Build(len(transaction.Entries))
 	args := make([]interface{}, 0)
 
 	for _, entry := range transaction.Entries {
@@ -70,43 +67,4 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 	}
 
 	return nil
-}
-
-func getQuery(entriesSize int) string {
-	query, ok := createTransactionQueryMap[entriesSize]
-	if ok {
-		return query
-	}
-
-	query = buildQuery(entriesSize)
-	createTransactionQueryMap[entriesSize] = query
-
-	return query
-}
-
-func buildQuery(entriesSize int) string {
-	var sb strings.Builder
-
-	for i := 0; i < entriesSize; i++ {
-		n := i * queryArgsLength
-
-		sb.WriteString("(")
-
-		for j := 0; j < queryArgsLength; j++ {
-			sb.WriteString("$")
-			sb.WriteString(strconv.Itoa(n + j + 1))
-
-			if j != queryArgsLength-1 {
-				sb.WriteString(", ")
-			}
-		}
-
-		if i != entriesSize-1 {
-			sb.WriteString("),\n")
-		}
-	}
-
-	sb.WriteString(")")
-
-	return fmt.Sprintf(createTransactionQuery, sb.String())
 }

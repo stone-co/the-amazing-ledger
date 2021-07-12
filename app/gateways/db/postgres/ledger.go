@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain"
+	"github.com/stone-co/the-amazing-ledger/app/gateways/db/querybuilder"
 )
 
 const (
@@ -19,18 +20,11 @@ type LedgerRepository struct {
 }
 
 func NewLedgerRepository(db *pgxpool.Pool, log *logrus.Logger) *LedgerRepository {
-	initCreateTransactioQueryMap()
+	queryBuilder = querybuilder.New(createTransactionQuery, numArgs)
+	queryBuilder.Init(numDefaultQueries)
 
 	return &LedgerRepository{
 		db:  db,
 		log: log,
-	}
-}
-
-func initCreateTransactioQueryMap() {
-	createTransactionQueryMap = make(map[int]string)
-
-	for i := 2; i < maxQueriesDefault; i++ {
-		createTransactionQueryMap[i] = buildQuery(i)
 	}
 }
