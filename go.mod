@@ -17,7 +17,6 @@ require (
 	github.com/jackc/pgerrcode v0.0.0-20201024163028-a0d42d470451
 	github.com/jackc/pgx/v4 v4.8.1
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/matryer/moq v0.2.3 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/newrelic/go-agent/v3 v3.10.0
 	github.com/newrelic/go-agent/v3/integrations/nrgrpc v1.1.0

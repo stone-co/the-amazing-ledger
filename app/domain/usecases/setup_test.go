@@ -2,7 +2,6 @@ package usecases
 
 import (
 	"context"
-	"time"
 
 	"github.com/sirupsen/logrus"
 
@@ -38,18 +37,6 @@ func newFakeGetAccountHistory(entries []vos.EntryHistory, result error) *LedgerU
 				}
 			}
 			return result
-		},
-	}
-
-	return NewLedgerUseCase(log, mockRepository)
-}
-
-func newFakeGetSyntheticReport(syntheticReport *vos.SyntheticReport, date time.Time, result error) *LedgerUseCase {
-	log := logrus.New()
-
-	mockRepository := &mocks.Repository{
-		OnGetSyntheticReport: func(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
-			return syntheticReport, result
 		},
 	}
 

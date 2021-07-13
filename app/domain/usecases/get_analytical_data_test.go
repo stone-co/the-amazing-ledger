@@ -34,7 +34,9 @@ func TestLedgerUseCase_GetAnalyticalData(t *testing.T) {
 		assert.Nil(t, err)
 
 		accountName1, err := vos.NewAccountPath("liability.stone.clients.user_1")
+		assert.NoError(t, err)
 		accountName2, err := vos.NewAccountPath("liability.stone.clients.user_2")
+		assert.NoError(t, err)
 
 		entries := []vos.Statement{
 			{

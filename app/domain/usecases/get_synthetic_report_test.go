@@ -5,9 +5,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	"github.com/stone-co/the-amazing-ledger/app/tests/mocks"
 )
 
 func TestLedgerUseCase_GetSyntheticReport(t *testing.T) {
@@ -27,16 +29,22 @@ func TestLedgerUseCase_GetSyntheticReport(t *testing.T) {
 			Credit:  2000,
 		}}
 
-		fakeSyntheticReport, err := vos.NewSyntheticReport(totalCredit, totalDebit, paths)
-		assert.Nil(t, err)
-
 		level := 3
 		date := time.Now()
 
-		useCase := newFakeGetSyntheticReport(fakeSyntheticReport, date, nil)
-		a, err := useCase.GetSyntheticReport(context.Background(), query, level, date, date)
+		fakeSyntheticReport, err := vos.NewSyntheticReport(totalCredit, totalDebit, paths)
+		assert.NoError(t, err)
 
-		assert.Nil(t, err)
+		mockedRepository := mocks.RepositoryMock{
+			GetSyntheticReportFunc: func(ctx context.Context, query vos.AccountQuery, level int, startTime, endTime time.Time) (*vos.SyntheticReport, error) {
+				return fakeSyntheticReport, nil
+			},
+		}
+
+		useCase := NewLedgerUseCase(logrus.New(), &mockedRepository)
+
+		a, err := useCase.GetSyntheticReport(context.Background(), query, level, date, date)
+		assert.NoError(t, err)
 		assert.Equal(t, fakeSyntheticReport.TotalDebit, a.TotalDebit)
 	})
 }
