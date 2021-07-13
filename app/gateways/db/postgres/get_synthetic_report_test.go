@@ -90,23 +90,23 @@ func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			query, err := vos.NewAccountQuery(tc.query)
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			query, err := vos.NewAccountQuery(tt.query)
 			assert.NoError(t, err)
 
-			if tc.transaction.Company != "" {
+			if tt.transaction.Company != "" {
 				err = r.CreateTransaction(ctx, tx)
 				assert.NoError(t, err)
 			}
 
-			got, err := r.GetSyntheticReport(ctx, query, tc.level, tc.startTime, tc.endTime)
+			got, err := r.GetSyntheticReport(ctx, query, tt.level, tt.startTime, tt.endTime)
 			assert.NoError(t, err)
 
-			if tc.transaction.Company != "" {
+			if tt.transaction.Company != "" {
 				assert.NotEmpty(t, got)
-				assert.Equal(t, tc.report.TotalCredit, got.TotalCredit)
-				assert.Equal(t, tc.report.TotalDebit, got.TotalDebit)
+				assert.Equal(t, tt.report.TotalCredit, got.TotalCredit)
+				assert.Equal(t, tt.report.TotalDebit, got.TotalDebit)
 			} else {
 				assert.Empty(t, got)
 			}

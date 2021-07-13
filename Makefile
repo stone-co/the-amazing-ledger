@@ -104,3 +104,7 @@ goimports:
 
 .PHONY: pre/push
 pre/push: goimports metalint archlint test
+
+.PHONY: update-buf-dependencies
+update-buf-dependencies:
+	@buf beta mod update

@@ -32,7 +32,7 @@ The system supports the following account types:
 # Dependencies
 ## buf-build (v)
 - download & install it
-GO111MODULE=on go install github.com/bufbuild/buf/cmd/buf@v0.36.0
+https://docs.buf.build/installation
 
 ## protobuf
 $ sudo apt install protobuf-compiler

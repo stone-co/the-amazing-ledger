@@ -15,7 +15,6 @@ func (l *LedgerUseCase) GetSyntheticReport(ctx context.Context, query vos.Accoun
 	}
 
 	syntheticReport, err := l.repository.GetSyntheticReport(ctx, query, level, startTime, endTime)
-
 	if err != nil {
 		return nil, err
 	}

@@ -2,7 +2,7 @@ package vos
 
 import "github.com/stone-co/the-amazing-ledger/app"
 
-// TODO: melhorar nome (Linguagem Comum)
+// TODO: improve struct name(Common Language)
 type Path struct {
 	Account AccountPath
 	Credit  int64
