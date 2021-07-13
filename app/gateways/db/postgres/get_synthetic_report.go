@@ -11,10 +11,6 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
 )
 
-// TODO: exemplos usando subpath
-// TODO: checar se da para usar $ com subpath
-// TODO: usar sprintf para add valor da operacao
-// TODO: testes unitarios
 const syntheticReportQuery = `
 select 
 	subpath(account, 0, $1),
@@ -26,7 +22,6 @@ where
 	account ~ $2
 `
 
-// TODO: use it
 const timeParamsQueryStart = " and created_at >= $3 "
 const timeParamsQueryEnd = " and created_at < $4 "
 
