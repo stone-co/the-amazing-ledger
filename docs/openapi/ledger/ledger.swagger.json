@@ -161,7 +161,7 @@
         ]
       }
     },
-    "/api/v1/reports/{filters.accountPath}/{filters.level}/{filters.startTime}/{filters.endTime}/synthetic": {
+    "/api/v1/reports/{filters.accountQuery}/{filters.level}/{filters.startTime}/{filters.endTime}/synthetic": {
       "get": {
         "operationId": "LedgerService_GetSyntheticReport",
         "responses": {
@@ -180,7 +180,7 @@
         },
         "parameters": [
           {
-            "name": "filters.accountPath",
+            "name": "filters.accountQuery",
             "in": "path",
             "required": true,
             "type": "string"
@@ -416,7 +416,7 @@
     "ledgerGetSyntheticReportFilters": {
       "type": "object",
       "properties": {
-        "accountPath": {
+        "accountQuery": {
           "type": "string"
         },
         "level": {

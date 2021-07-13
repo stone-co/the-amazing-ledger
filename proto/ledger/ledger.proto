@@ -38,7 +38,7 @@ service LedgerService {
   };
   rpc GetSyntheticReport(GetSyntheticReportRequest) returns (GetSyntheticReportResponse){
     option (google.api.http) = {
-      get: "/api/v1/reports/{filters.account_path}/{filters.level}/{filters.start_time}/{filters.end_time}/synthetic"
+      get: "/api/v1/reports/{filters.account_query}/{filters.level}/{filters.start_time}/{filters.end_time}/synthetic"
     };
   };
 }
@@ -154,10 +154,11 @@ message GetAccountHistoryResponse {
 // GetSyntheticReport Request
 message GetSyntheticReportRequest {
   GetSyntheticReportFilters filters = 1;
+  // TODO use gRPC pagination
 }
 
 message GetSyntheticReportFilters {
-  string account_path = 1;
+  string account_query = 1;
   int32 level = 2;
   int64 start_time = 3;
   int64 end_time = 4;

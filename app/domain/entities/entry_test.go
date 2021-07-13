@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/google/uuid"

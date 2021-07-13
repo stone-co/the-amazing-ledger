@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -15,22 +15,17 @@ import (
 )
 
 func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
-	event := uint32(1)
+	event := uint32(4)
 	company := "abc"
 	competenceDate := time.Now().UTC()
+	metadata := json.RawMessage(`{}`)
 
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
 
-	//
-	// preparation
-	//
-
-	// dependencies
-	_, err := pgDocker.DB.Exec(ctx, `insert into event (name) values ('defaults');`)
+	_, err := pgDocker.DB.Exec(ctx, `insert into event (id, name) values (4, 'default4');`)
 	assert.NoError(t, err)
 
-	// data
 	accountBase := "liability.assets"
 	accountBaseEmpty := "liability.income"
 
@@ -40,69 +35,81 @@ func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
 	acc2Level3, err := vos.NewAccountPath(accountBase + vos.DepthSeparator + "account22")
 	assert.NoError(t, err)
 
-	//
-	// exec
-	//
-
-	// TEST_01.A: all params & no results because it is not inserted
-	fmt.Println("========== 01.A ==========>")
-	query, err := vos.NewAccountQuery(accountBaseEmpty + vos.DepthSeparator + "*")
-	assert.NoError(t, err)
-
-	level := 3
-	startTime := time.Now().UTC()
-	endTime := time.Now().UTC()
-
-	report, err := r.GetSyntheticReport(ctx, query, level, startTime, endTime)
-	assert.Empty(t, report)
-	assert.True(t, err == nil)
-
-	// TEST_01.B: all params & no results because wrong time range
-	fmt.Println("========== 01.B ==========>")
-	query, err = vos.NewAccountQuery(accountBase + vos.DepthSeparator + "*")
-	assert.NoError(t, err)
-
-	// insert transaction 01
 	e1, _ := entities.NewEntry(
 		uuid.New(),
 		vos.DebitOperation,
 		acc1Level3.Name(),
-		vos.NextAccountVersion,
+		vos.IgnoreAccountVersion,
 		100,
-		nil,
-	)
+		metadata)
+
 	e2, _ := entities.NewEntry(
 		uuid.New(),
 		vos.CreditOperation,
 		acc2Level3.Name(),
 		vos.IgnoreAccountVersion,
 		100,
-		nil,
+		metadata,
 	)
 
 	tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
 	assert.NoError(t, err)
 
-	err = r.CreateTransaction(ctx, tx)
-	assert.NoError(t, err)
-	// end insert transaction 01
+	testCases := []struct {
+		name        string
+		query       string
+		level       int
+		startTime   time.Time
+		endTime     time.Time
+		transaction entities.Transaction
+		report      vos.SyntheticReport
+		err         error
+	}{
+		{
+			name:        "should not get a result because there was no data inserted",
+			query:       accountBaseEmpty + vos.DepthSeparator + "*",
+			level:       3,
+			startTime:   time.Now().UTC(),
+			endTime:     time.Now().UTC(),
+			transaction: entities.Transaction{},
+			report:      vos.SyntheticReport{},
+			err:         nil,
+		},
+		{
+			name:        "should get a result",
+			query:       accountBase + vos.DepthSeparator + "*",
+			level:       3,
+			startTime:   time.Now().UTC(),
+			endTime:     time.Now().UTC().Add(time.Hour * 1),
+			transaction: tx,
+			report: vos.SyntheticReport{
+				TotalCredit: 100,
+				TotalDebit:  100,
+			},
+			err: nil,
+		},
+	}
 
-	report, err = r.GetSyntheticReport(ctx, query, level, startTime, endTime)
-	assert.Empty(t, report)
-	assert.True(t, err == nil)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			query, err := vos.NewAccountQuery(tc.query)
+			assert.NoError(t, err)
 
-	// TEST_02.A: all params & results
-	fmt.Println("========== 02.A ==========>")
-	endTime = time.Now().UTC()
-	fmt.Println("---")
-	fmt.Println(startTime)
-	fmt.Println(".")
-	fmt.Println(endTime)
-	fmt.Println("---")
-	fmt.Println()
-	report, err = r.GetSyntheticReport(ctx, query, level, startTime, endTime)
-	assert.NotEmpty(t, report)
-	assert.NoError(t, err)
-	assert.Equal(t, int64(100), report.TotalCredit)
-	assert.Equal(t, int64(100), report.TotalDebit)
+			if tc.transaction.Company != "" {
+				err = r.CreateTransaction(ctx, tx)
+				assert.NoError(t, err)
+			}
+
+			got, err := r.GetSyntheticReport(ctx, query, tc.level, tc.startTime, tc.endTime)
+			assert.NoError(t, err)
+
+			if tc.transaction.Company != "" {
+				assert.NotEmpty(t, got)
+				assert.Equal(t, tc.report.TotalCredit, got.TotalCredit)
+				assert.Equal(t, tc.report.TotalDebit, got.TotalDebit)
+			} else {
+				assert.Empty(t, got)
+			}
+		})
+	}
 }

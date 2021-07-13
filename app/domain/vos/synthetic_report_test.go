@@ -37,7 +37,6 @@ func TestSyntheticReport(t *testing.T) {
 				err:         nil,
 			},
 		},
-		// TODO: criacao errada
 	}
 
 	for _, tt := range tests {

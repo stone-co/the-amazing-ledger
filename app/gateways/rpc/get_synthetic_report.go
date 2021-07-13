@@ -17,7 +17,7 @@ func (a *API) GetSyntheticReport(ctx context.Context, request *proto.GetSyntheti
 		"handler": "GetSyntheticReport",
 	})
 
-	query, err := vos.NewAccountQuery(request.Filters.AccountPath)
+	query, err := vos.NewAccountQuery(request.Filters.AccountQuery)
 	if err != nil {
 		log.WithError(err).Error("Invalid account query")
 		return nil, status.Error(codes.InvalidArgument, err.Error())

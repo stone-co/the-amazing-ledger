@@ -44,7 +44,7 @@ func (r *LedgerRepository) GetSyntheticReport(ctx context.Context, query vos.Acc
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, sqlQuery).End()
 
-	fmt.Println(sqlQuery)
+	// fmt.Println(sqlQuery)
 
 	rows, errQuery := r.db.Query(
 		ctx,
