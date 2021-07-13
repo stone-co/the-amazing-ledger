@@ -15,13 +15,13 @@ import (
 func TestLedgerUseCase_GetSyntheticReport(t *testing.T) {
 	t.Run("GetSyntheticReport with startDate and endDate being equals must return the report for the year", func(t *testing.T) {
 		query, err := vos.NewAccountQuery("liability.credit_card.invoice.*")
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 
 		totalCredit := int64(150)
 		totalDebit := int64(130)
 
 		accountPath, err := vos.NewAccountPath("liability.credit_card.invoice")
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 
 		paths := []vos.Path{{
 			Account: accountPath,

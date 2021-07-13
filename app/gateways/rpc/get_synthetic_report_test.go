@@ -55,7 +55,7 @@ func TestAPI_GetSyntheticReport(t *testing.T) {
 		respStatus, ok := status.FromError(err)
 
 		assert.True(t, ok)
-		assert.Equal(t, codes.InvalidArgument, respStatus.Code())
+		assert.Equal(t, codes.Internal, respStatus.Code())
 		assert.Equal(t, app.ErrInvalidAccountComponentSize.Error(), respStatus.Message())
 	})
 }
