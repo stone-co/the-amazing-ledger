@@ -4,10 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
@@ -19,371 +17,231 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	"github.com/stone-co/the-amazing-ledger/app/tests"
 )
 
-func TestLedgerRepository_CreateTransaction(t *testing.T) {
-	event := uint32(1)
-	company := "abc"
-	competenceDate := time.Now()
-	metadata := json.RawMessage(`{}`)
+func TestLedgerRepository_CreateTransactionSuccess(t *testing.T) {
+	testCases := []struct {
+		name                   string
+		repoSetup              func(t *testing.T, ctx context.Context, r *LedgerRepository)
+		entriesSetup           func(t *testing.T) []entities.Entry
+		expectedEntryVersion   vos.Version
+		expectedAccountVersion vos.Version
+	}{
+		{
+			name:      "insert transaction successfully with no previous versions - auto version",
+			repoSetup: func(t *testing.T, ctx context.Context, r *LedgerRepository) {},
+			entriesSetup: func(t *testing.T) []entities.Entry {
+				e1 := createEntry(t, vos.DebitOperation, "liability.abc.account1", vos.NextAccountVersion)
+				e2 := createEntry(t, vos.CreditOperation, "liability.abc.account2", vos.IgnoreAccountVersion)
 
-	r := NewLedgerRepository(pgDocker.DB, logrus.New())
-	ctx := context.Background()
+				return []entities.Entry{e1, e2}
+			},
+			expectedEntryVersion:   vos.Version(1),
+			expectedAccountVersion: vos.Version(1),
+		},
+		{
+			name:      "insert transaction successfully with no previous versions - manual version",
+			repoSetup: func(t *testing.T, ctx context.Context, r *LedgerRepository) {},
+			entriesSetup: func(t *testing.T) []entities.Entry {
+				e1 := createEntry(t, vos.DebitOperation, "liability.abc.account1", vos.Version(1))
+				e2 := createEntry(t, vos.CreditOperation, "liability.abc.account2", vos.IgnoreAccountVersion)
 
-	_, err := pgDocker.DB.Exec(ctx, `insert into event (id, name) values (1, 'default');`)
-	assert.NoError(t, err)
+				return []entities.Entry{e1, e2}
+			},
+			expectedEntryVersion:   vos.Version(1),
+			expectedAccountVersion: vos.Version(1),
+		},
+		{
+			name: "insert transaction successfully with existing versions - auto version",
+			repoSetup: func(t *testing.T, ctx context.Context, r *LedgerRepository) {
+				e1 := createEntry(t, vos.DebitOperation, "liability.abc.account1", vos.NextAccountVersion)
+				e2 := createEntry(t, vos.CreditOperation, "liability.abc.account2", vos.IgnoreAccountVersion)
 
-	t.Run("insert transaction successfully with no previous versions - auto version", func(t *testing.T) {
-		e1, _ := entities.NewEntry(
-			uuid.New(),
-			vos.DebitOperation,
-			"liability.abc.account1",
-			vos.NextAccountVersion,
-			100,
-			json.RawMessage(`{"requestID": "request-id-1"}`),
-		)
-		e2, _ := entities.NewEntry(
-			uuid.New(),
-			vos.CreditOperation,
-			"liability.abc.account2",
-			vos.IgnoreAccountVersion,
-			100,
-			json.RawMessage(`{"requestID": "request-id-2"}`),
-		)
+				err := createTransaction(t, ctx, r, e1, e2)
+				assert.NoError(t, err)
+			},
+			entriesSetup: func(t *testing.T) []entities.Entry {
+				e1 := createEntry(t, vos.DebitOperation, "liability.abc.account1", vos.NextAccountVersion)
+				e2 := createEntry(t, vos.CreditOperation, "liability.abc.account2", vos.IgnoreAccountVersion)
 
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
-		assert.NoError(t, err)
+				return []entities.Entry{e1, e2}
+			},
+			expectedEntryVersion:   vos.Version(2),
+			expectedAccountVersion: vos.Version(2),
+		},
+		{
+			name: "insert transaction successfully with existing versions - manual version",
+			repoSetup: func(t *testing.T, ctx context.Context, r *LedgerRepository) {
+				e1 := createEntry(t, vos.DebitOperation, "liability.abc.account1", vos.NextAccountVersion)
+				e2 := createEntry(t, vos.CreditOperation, "liability.abc.account2", vos.IgnoreAccountVersion)
 
-		err = r.CreateTransaction(ctx, tx)
-		assert.NoError(t, err)
+				err := createTransaction(t, ctx, r, e1, e2)
+				assert.NoError(t, err)
+			},
+			entriesSetup: func(t *testing.T) []entities.Entry {
+				e1 := createEntry(t, vos.DebitOperation, "liability.abc.account1", vos.Version(2))
+				e2 := createEntry(t, vos.CreditOperation, "liability.abc.account2", vos.IgnoreAccountVersion)
 
-		assertMetadata(t, ctx, pgDocker.DB, e1.ID, e1.Metadata)
-		assertMetadata(t, ctx, pgDocker.DB, e2.ID, e2.Metadata)
+				return []entities.Entry{e1, e2}
+			},
+			expectedEntryVersion:   vos.Version(2),
+			expectedAccountVersion: vos.Version(2),
+		},
+	}
 
-		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(1), ev1)
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			r := NewLedgerRepository(pgDocker.DB, logrus.New())
+			ctx := context.Background()
 
-		ev2, err := fetchEntryVersion(ctx, pgDocker.DB, e2.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.IgnoreAccountVersion, ev2)
+			defer tests.TruncateTables(ctx, pgDocker.DB, "entry", "account_version")
 
-		v1, err := fetchAccountVersion(ctx, pgDocker.DB, e1.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(1), v1)
+			tt.repoSetup(t, ctx, r)
 
-		v2, err := fetchAccountVersion(ctx, pgDocker.DB, e2.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(0), v2)
-	})
+			entries := tt.entriesSetup(t)
+			e1, e2 := entries[0], entries[1]
 
-	t.Run("insert transaction successfully with no previous versions - manual version", func(t *testing.T) {
-		e1, _ := entities.NewEntry(
-			uuid.New(),
-			vos.DebitOperation,
-			"liability.abc.account3",
-			vos.Version(3),
-			100,
-			metadata,
-		)
-		e2, _ := entities.NewEntry(
-			uuid.New(),
-			vos.CreditOperation,
-			"liability.abc.account4",
-			vos.IgnoreAccountVersion,
-			100,
-			metadata,
-		)
+			err := createTransaction(t, ctx, r, e1, e2)
+			assert.NoError(t, err)
 
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
-		assert.NoError(t, err)
+			assertMetadata(t, ctx, pgDocker.DB, e1.ID, e1.Metadata)
+			assertMetadata(t, ctx, pgDocker.DB, e2.ID, e2.Metadata)
 
-		err = r.CreateTransaction(ctx, tx)
-		assert.NoError(t, err)
+			assertEntryVersion(t, ctx, pgDocker.DB, e1.ID, tt.expectedEntryVersion)
+			assertEntryVersion(t, ctx, pgDocker.DB, e2.ID, vos.IgnoreAccountVersion)
 
-		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
-		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
-
-		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(1), ev1)
-
-		ev2, err := fetchEntryVersion(ctx, pgDocker.DB, e2.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.IgnoreAccountVersion, ev2)
-
-		v1, err := fetchAccountVersion(ctx, pgDocker.DB, e1.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(1), v1)
-
-		v2, err := fetchAccountVersion(ctx, pgDocker.DB, e2.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(0), v2)
-	})
-
-	t.Run("insert transaction successfully with existing versions - auto version", func(t *testing.T) {
-		e1, _ := entities.NewEntry(
-			uuid.New(),
-			vos.DebitOperation,
-			"liability.abc.account1",
-			vos.NextAccountVersion,
-			100,
-			metadata,
-		)
-		e2, _ := entities.NewEntry(
-			uuid.New(),
-			vos.CreditOperation,
-			"liability.abc.account2",
-			vos.IgnoreAccountVersion,
-			100,
-			metadata,
-		)
-
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
-		assert.NoError(t, err)
-
-		err = r.CreateTransaction(ctx, tx)
-		assert.NoError(t, err)
-
-		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
-		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
-
-		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(2), ev1)
-
-		ev2, err := fetchEntryVersion(ctx, pgDocker.DB, e2.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.IgnoreAccountVersion, ev2)
-
-		v1, err := fetchAccountVersion(ctx, pgDocker.DB, e1.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(2), v1)
-
-		v2, err := fetchAccountVersion(ctx, pgDocker.DB, e2.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(0), v2)
-	})
-
-	t.Run("insert transaction successfully with existing versions - manual version", func(t *testing.T) {
-		e1, _ := entities.NewEntry(
-			uuid.New(),
-			vos.DebitOperation,
-			"liability.abc.account1",
-			vos.Version(3),
-			100,
-			metadata,
-		)
-		e2, _ := entities.NewEntry(
-			uuid.New(),
-			vos.CreditOperation,
-			"liability.abc.account2",
-			vos.IgnoreAccountVersion,
-			100,
-			metadata,
-		)
-
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
-		assert.NoError(t, err)
-
-		err = r.CreateTransaction(ctx, tx)
-		assert.NoError(t, err)
-
-		assertMetadata(t, ctx, pgDocker.DB, e1.ID, metadata)
-		assertMetadata(t, ctx, pgDocker.DB, e2.ID, metadata)
-
-		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(3), ev1)
-
-		ev2, err := fetchEntryVersion(ctx, pgDocker.DB, e2.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.IgnoreAccountVersion, ev2)
-
-		v1, err := fetchAccountVersion(ctx, pgDocker.DB, e1.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(3), v1)
-
-		v2, err := fetchAccountVersion(ctx, pgDocker.DB, e2.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(0), v2)
-	})
-
-	t.Run("return error when sending same version", func(t *testing.T) {
-		e1, _ := entities.NewEntry(
-			uuid.New(),
-			vos.DebitOperation,
-			"liability.abc.account1",
-			vos.Version(3),
-			100,
-			metadata,
-		)
-		e2, _ := entities.NewEntry(
-			uuid.New(),
-			vos.CreditOperation,
-			"liability.abc.account2",
-			vos.IgnoreAccountVersion,
-			100,
-			metadata,
-		)
-
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
-		assert.NoError(t, err)
-
-		err = r.CreateTransaction(ctx, tx)
-		assert.ErrorIs(t, err, app.ErrInvalidVersion)
-
-		v1, err := fetchAccountVersion(ctx, pgDocker.DB, e1.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(3), v1)
-
-		v2, err := fetchAccountVersion(ctx, pgDocker.DB, e2.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(0), v2)
-	})
-
-	t.Run("return error when sending lower version", func(t *testing.T) {
-		e1, _ := entities.NewEntry(
-			uuid.New(),
-			vos.DebitOperation,
-			"liability.abc.account1",
-			vos.Version(1),
-			100,
-			metadata,
-		)
-		e2, _ := entities.NewEntry(
-			uuid.New(),
-			vos.CreditOperation,
-			"liability.abc.account2",
-			vos.IgnoreAccountVersion,
-			100,
-			metadata,
-		)
-
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
-		assert.NoError(t, err)
-
-		err = r.CreateTransaction(ctx, tx)
-		assert.ErrorIs(t, err, app.ErrInvalidVersion)
-
-		v1, err := fetchAccountVersion(ctx, pgDocker.DB, e1.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(3), v1)
-
-		v2, err := fetchAccountVersion(ctx, pgDocker.DB, e2.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(0), v2)
-	})
-
-	t.Run("return error when sending random high version", func(t *testing.T) {
-		e1, _ := entities.NewEntry(
-			uuid.New(),
-			vos.DebitOperation,
-			"liability.abc.account1",
-			vos.Version(30),
-			100,
-			metadata,
-		)
-		e2, _ := entities.NewEntry(
-			uuid.New(),
-			vos.CreditOperation,
-			"liability.abc.account2",
-			vos.IgnoreAccountVersion,
-			100,
-			metadata,
-		)
-
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
-		assert.NoError(t, err)
-
-		err = r.CreateTransaction(ctx, tx)
-		assert.ErrorIs(t, err, app.ErrInvalidVersion)
-
-		v1, err := fetchAccountVersion(ctx, pgDocker.DB, e1.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(3), v1)
-
-		v2, err := fetchAccountVersion(ctx, pgDocker.DB, e2.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(0), v2)
-	})
-
-	t.Run("return error when reusing entry id", func(t *testing.T) {
-		e1, _ := entities.NewEntry(
-			uuid.New(),
-			vos.DebitOperation,
-			"liability.abc.account1",
-			vos.NextAccountVersion,
-			100,
-			metadata,
-		)
-		e2, _ := entities.NewEntry(
-			uuid.New(),
-			vos.CreditOperation,
-			"liability.abc.account2",
-			vos.IgnoreAccountVersion,
-			100,
-			metadata,
-		)
-
-		tx, err := entities.NewTransaction(uuid.New(), event, company, competenceDate, e1, e2)
-		assert.NoError(t, err)
-
-		err = r.CreateTransaction(ctx, tx)
-		assert.NoError(t, err)
-
-		ev1, err := fetchEntryVersion(ctx, pgDocker.DB, e1.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(4), ev1)
-
-		ev2, err := fetchEntryVersion(ctx, pgDocker.DB, e2.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.IgnoreAccountVersion, ev2)
-
-		v1, err := fetchAccountVersion(ctx, pgDocker.DB, e1.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(4), v1)
-
-		v2, err := fetchAccountVersion(ctx, pgDocker.DB, e2.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(0), v2)
-
-		err = r.CreateTransaction(ctx, tx)
-		assert.ErrorIs(t, err, app.ErrIdempotencyKeyViolation)
-
-		v1, err = fetchAccountVersion(ctx, pgDocker.DB, e1.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(4), v1)
-
-		v2, err = fetchAccountVersion(ctx, pgDocker.DB, e2.Account)
-		assert.NoError(t, err)
-		assert.Equal(t, vos.Version(0), v2)
-	})
+			assertAccountVersion(t, ctx, pgDocker.DB, e1.Account, tt.expectedAccountVersion)
+			assertAccountVersion(t, ctx, pgDocker.DB, e2.Account, vos.Version(0))
+		})
+	}
 }
 
-func fetchAccountVersion(ctx context.Context, db *pgxpool.Pool, account vos.AccountPath) (vos.Version, error) {
+func TestLedgerRepository_CreateTransactionFailure(t *testing.T) {
+	e1 := createEntry(t, vos.DebitOperation, "liability.abc.account1", vos.NextAccountVersion)
+	e2 := createEntry(t, vos.CreditOperation, "liability.abc.account2", vos.IgnoreAccountVersion)
+
+	testCases := []struct {
+		name                   string
+		repoSetup              func(t *testing.T, ctx context.Context, r *LedgerRepository)
+		entriesSetup           func(t *testing.T) []entities.Entry
+		expectedErr            error
+		expectedAccountVersion vos.Version
+	}{
+		{
+			name: "return error when sending same version",
+			repoSetup: func(t *testing.T, ctx context.Context, r *LedgerRepository) {
+				err := createTransaction(t, ctx, r, e1, e2)
+				assert.NoError(t, err)
+			},
+			entriesSetup: func(t *testing.T) []entities.Entry {
+				e3 := createEntry(t, vos.DebitOperation, "liability.abc.account1", vos.Version(1))
+				e4 := createEntry(t, vos.CreditOperation, "liability.abc.account2", vos.IgnoreAccountVersion)
+
+				return []entities.Entry{e3, e4}
+			},
+			expectedErr:            app.ErrInvalidVersion,
+			expectedAccountVersion: vos.Version(1),
+		},
+		{
+			name: "return error when sending lower version",
+			repoSetup: func(t *testing.T, ctx context.Context, r *LedgerRepository) {
+				err := createTransaction(t, ctx, r, e1, e2)
+				assert.NoError(t, err)
+
+				e3 := createEntry(t, vos.DebitOperation, "liability.abc.account1", vos.NextAccountVersion)
+				e4 := createEntry(t, vos.CreditOperation, "liability.abc.account2", vos.IgnoreAccountVersion)
+
+				err = createTransaction(t, ctx, r, e3, e4)
+				assert.NoError(t, err)
+			},
+			entriesSetup: func(t *testing.T) []entities.Entry {
+				e5 := createEntry(t, vos.DebitOperation, "liability.abc.account1", vos.Version(1))
+				e6 := createEntry(t, vos.CreditOperation, "liability.abc.account2", vos.IgnoreAccountVersion)
+
+				return []entities.Entry{e5, e6}
+			},
+			expectedErr:            app.ErrInvalidVersion,
+			expectedAccountVersion: vos.Version(2),
+		},
+		{
+			name: "return error when sending random high version",
+			repoSetup: func(t *testing.T, ctx context.Context, r *LedgerRepository) {
+				err := createTransaction(t, ctx, r, e1, e2)
+				assert.NoError(t, err)
+			},
+			entriesSetup: func(t *testing.T) []entities.Entry {
+				e3 := createEntry(t, vos.DebitOperation, "liability.abc.account1", vos.Version(30))
+				e4 := createEntry(t, vos.CreditOperation, "liability.abc.account2", vos.IgnoreAccountVersion)
+
+				return []entities.Entry{e3, e4}
+			},
+			expectedErr:            app.ErrInvalidVersion,
+			expectedAccountVersion: vos.Version(1),
+		},
+		{
+			name: "return error when reusing entry id",
+			repoSetup: func(t *testing.T, ctx context.Context, r *LedgerRepository) {
+				err := createTransaction(t, ctx, r, e1, e2)
+				assert.NoError(t, err)
+			},
+			entriesSetup: func(t *testing.T) []entities.Entry {
+				return []entities.Entry{e1, e2}
+			},
+			expectedErr:            app.ErrIdempotencyKeyViolation,
+			expectedAccountVersion: vos.Version(1),
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			r := NewLedgerRepository(pgDocker.DB, logrus.New())
+			ctx := context.Background()
+
+			defer tests.TruncateTables(ctx, pgDocker.DB, "entry", "account_version")
+
+			tt.repoSetup(t, ctx, r)
+
+			entries := tt.entriesSetup(t)
+			e1, e2 := entries[0], entries[1]
+
+			err := createTransaction(t, ctx, r, e1, e2)
+			assert.ErrorIs(t, err, tt.expectedErr)
+
+			assertAccountVersion(t, ctx, pgDocker.DB, e1.Account, tt.expectedAccountVersion)
+			assertAccountVersion(t, ctx, pgDocker.DB, e2.Account, vos.Version(0))
+		})
+	}
+}
+
+func assertAccountVersion(t *testing.T, ctx context.Context, db *pgxpool.Pool, account vos.AccountPath, want vos.Version) {
+	t.Helper()
+
 	const query = `select coalesce(version, 0) from account_version where account = $1;`
 
-	var version int64
+	var version vos.Version
+
 	err := db.QueryRow(ctx, query, account.Name()).Scan(&version)
 	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
-		return vos.Version(0), err
+		t.Fatalf("unexpected error: %v", err)
 	} else if errors.Is(err, pgx.ErrNoRows) {
-		return vos.Version(0), nil
+		assert.Equal(t, vos.Version(0), version)
 	}
 
-	return vos.Version(version), nil
+	assert.Equal(t, want, version)
 }
 
-func fetchEntryVersion(ctx context.Context, db *pgxpool.Pool, id uuid.UUID) (vos.Version, error) {
+func assertEntryVersion(t *testing.T, ctx context.Context, db *pgxpool.Pool, id uuid.UUID, want vos.Version) {
+	t.Helper()
+
 	const query = `select version from entry where id = $1;`
 
-	var version int64
-	if err := db.QueryRow(ctx, query, id).Scan(&version); err != nil {
-		return 0, fmt.Errorf("failed to scan row: %w", err)
-	}
+	var version vos.Version
 
-	return vos.Version(version), nil
+	err := db.QueryRow(ctx, query, id).Scan(&version)
+	require.NoError(t, err)
+
+	assert.Equal(t, want, version)
 }
 
 func assertMetadata(t *testing.T, ctx context.Context, db *pgxpool.Pool, id uuid.UUID, want json.RawMessage) {

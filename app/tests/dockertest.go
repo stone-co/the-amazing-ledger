@@ -3,11 +3,11 @@ package tests
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/ory/dockertest"
 )
@@ -76,8 +76,8 @@ func RemoveContainer(pgDocker *PostgresDocker) {
 	}
 }
 
-func TruncateTables(ctx context.Context, db *pgx.Conn, tables ...string) {
-	if _, err := db.Exec(ctx, "truncate entry, event, account_version"); err != nil {
+func TruncateTables(ctx context.Context, db *pgxpool.Pool, tables ...string) {
+	if _, err := db.Exec(ctx, "truncate "+strings.Join(tables, ", ")); err != nil {
 		panic(fmt.Errorf("failed to truncate table(s) %v: %w", tables, err))
 	}
 }
