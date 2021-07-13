@@ -30,8 +30,8 @@ func (a *API) GetSyntheticReport(ctx context.Context, request *proto.GetSyntheti
 
 	syntheticReport, err := a.UseCase.GetSyntheticReport(ctx, query, level, startTime, endTime)
 	if err != nil {
-		log.WithError(err).Error("can't get report")
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		log.WithError(err).Error("can't get synthetic report")
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &proto.GetSyntheticReportResponse{
