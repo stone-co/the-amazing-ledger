@@ -100,7 +100,7 @@ func TestPage_Extract(t *testing.T) {
 		Abc time.Time `json:"abc"`
 	}
 
-	dt := data{Abc: time.Now().Round(time.Nanosecond)}
+	dt := data{Abc: time.Now().UTC().Round(time.Nanosecond)}
 	jsonStr, err := json.Marshal(dt)
 	assert.NoError(t, err)
 
