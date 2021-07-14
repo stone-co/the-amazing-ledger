@@ -22,7 +22,7 @@ func Test_generateListAccountEntriesQuery(t *testing.T) {
 
 	size := 10
 
-	end := time.Now().Round(time.Microsecond)
+	end := time.Now().UTC().Round(time.Microsecond)
 	start := end.Add(-10 * time.Second)
 
 	version := vos.Version(1)
