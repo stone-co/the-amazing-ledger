@@ -17,8 +17,8 @@ func TestLedgerUseCase_GetSyntheticReport(t *testing.T) {
 		query, err := vos.NewAccountQuery("liability.credit_card.invoice.*")
 		assert.NoError(t, err)
 
-		totalCredit := int64(150)
-		totalDebit := int64(130)
+		totalCredit := int64(2000)
+		totalDebit := int64(1000)
 
 		accountPath, err := vos.NewAccountPath("liability.credit_card.invoice")
 		assert.NoError(t, err)
@@ -43,8 +43,10 @@ func TestLedgerUseCase_GetSyntheticReport(t *testing.T) {
 
 		useCase := NewLedgerUseCase(logrus.New(), &mockedRepository)
 
-		a, err := useCase.GetSyntheticReport(context.Background(), query, level, date, date)
+		got, err := useCase.GetSyntheticReport(context.Background(), query, level, date, date)
 		assert.NoError(t, err)
-		assert.Equal(t, fakeSyntheticReport.TotalDebit, a.TotalDebit)
+		assert.Equal(t, fakeSyntheticReport.TotalCredit, got.TotalCredit)
+		assert.Equal(t, fakeSyntheticReport.TotalDebit, got.TotalDebit)
+		assert.Equal(t, len(fakeSyntheticReport.Paths), len(got.Paths))
 	})
 }
