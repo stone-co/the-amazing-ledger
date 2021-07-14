@@ -77,6 +77,7 @@
           },
           {
             "name": "startDate",
+            "description": "Start history date.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -84,6 +85,7 @@
           },
           {
             "name": "endDate",
+            "description": "End history date.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -99,6 +101,7 @@
           },
           {
             "name": "page.pageToken",
+            "description": "Cursor for the next page.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -335,7 +338,8 @@
           "type": "object",
           "description": "The entry metadata."
         }
-      }
+      },
+      "title": "Represents a historical entry for a account"
     },
     "ledgerCreateTransactionRequest": {
       "type": "object",
@@ -389,8 +393,8 @@
           "description": "Operation: debit or credit."
         },
         "amount": {
-          "type": "string",
-          "format": "int64",
+          "type": "integer",
+          "format": "int32",
           "description": "Amount (in cents)."
         },
         "metadata": {
@@ -509,10 +513,12 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/ledgerAccountEntry"
-          }
+          },
+          "title": "List of entries of a given account"
         },
         "nextPageToken": {
-          "type": "string"
+          "type": "string",
+          "title": "Cursor that references the next page. Empty string if there is no next page"
         }
       },
       "title": "ListAccountEntries Response"
@@ -570,9 +576,11 @@
           "description": "Max of 50, defaults to 10."
         },
         "pageToken": {
-          "type": "string"
+          "type": "string",
+          "description": "Cursor for the next page."
         }
-      }
+      },
+      "title": "Request Pagination"
     },
     "protobufAny": {
       "type": "object",
