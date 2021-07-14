@@ -92,54 +92,6 @@ func TestAPI_GetAccountBalance_InvalidRequest(t *testing.T) {
 	}
 }
 
-func TestAPI_GetAccountHistory(t *testing.T) {
-	t.Run("should get account history successfully", func(t *testing.T) {
-		mockedUsecase := &mocks.UseCaseMock{
-			GetAccountHistoryFunc: func(ctx context.Context, accountPath vos.AccountPath, fn func(vos.EntryHistory) error) error {
-				return nil
-			},
-		}
-		api := NewAPI(logrus.New(), mockedUsecase)
-
-		request := &proto.GetAccountHistoryRequest{
-			AccountPath: testdata.GenerateAccountPath(),
-		}
-
-		grpcServerMocked := &mocks.LedgerService_GetAccountHistoryServerMock{
-			ContextFunc: func() context.Context {
-				return context.Background()
-			},
-		}
-
-		err := api.GetAccountHistory(request, grpcServerMocked)
-		assert.NoError(t, err)
-	})
-
-	t.Run("should return an error if account name is invalid", func(t *testing.T) {
-		api := NewAPI(logrus.New(), &mocks.UseCaseMock{})
-
-		request := &proto.GetAccountHistoryRequest{
-			AccountPath: "liability.clients",
-		}
-
-		grpcServerMocked := &mocks.LedgerService_GetAccountHistoryServerMock{
-			ContextFunc: func() context.Context {
-				return context.Background()
-			},
-			SendFunc: func(getAccountHistoryResponse *proto.GetAccountHistoryResponse) error {
-				return nil
-			},
-		}
-
-		err := api.GetAccountHistory(request, grpcServerMocked)
-		respStatus, ok := status.FromError(err)
-
-		assert.True(t, ok)
-		assert.Equal(t, codes.InvalidArgument, respStatus.Code())
-		assert.Equal(t, app.ErrInvalidAccountStructure.Error(), respStatus.Message())
-	})
-}
-
 func TestAPI_QueryAggregatedBalance_Success(t *testing.T) {
 	t.Run("should get aggregated balance successfully", func(t *testing.T) {
 		accountQuery, err := vos.NewAccountQuery("liability.stone.clients.*")
