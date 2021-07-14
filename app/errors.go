@@ -15,6 +15,8 @@ const (
 	ErrInvalidAccountComponentCharacters = DomainError("only alphanumeric and underscore characters are supported")
 	ErrAccountPathViolation              = DomainError("invalid depth value")
 	ErrInvalidSyntheticReportStructure   = DomainError("invalid synthetic report structure")
+	ErrInvalidPageSize                   = DomainError("invalid page size")
+	ErrInvalidPageCursor                 = DomainError("invalid page cursor")
 )
 
 type DomainError string
