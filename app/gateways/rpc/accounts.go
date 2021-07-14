@@ -3,13 +3,11 @@ package rpc
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
@@ -77,40 +75,4 @@ func (a *API) QueryAggregatedBalance(ctx context.Context, request *proto.QueryAg
 		Query:   query.Value(),
 		Balance: int64(queryBalance.Balance),
 	}, nil
-}
-
-func (a *API) GetAccountHistory(request *proto.GetAccountHistoryRequest, stream proto.LedgerService_GetAccountHistoryServer) error {
-	defer newrelic.FromContext(stream.Context()).StartSegment("GetAccountHistory").End()
-
-	log := a.log.WithFields(logrus.Fields{
-		"handler": "GetAccountHistory",
-	})
-
-	accountName, err := vos.NewAccountPath(request.AccountPath)
-	if err != nil {
-		log.WithError(err).Error("can't create account name")
-		return status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	fn := func(et vos.EntryHistory) error {
-		ts := timestamppb.New(et.CreatedAt)
-
-		if err = stream.Send(&proto.GetAccountHistoryResponse{
-			Amount:    int64(et.Amount),
-			Operation: proto.Operation(et.Operation),
-			CreatedAt: ts,
-		}); err != nil {
-			return fmt.Errorf("failed to send data into stream: %w", err)
-		}
-
-		return nil
-	}
-
-	err = a.UseCase.GetAccountHistory(stream.Context(), accountName, fn)
-	if err != nil {
-		log.WithError(err).Error("can't get account")
-		return status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	return nil
 }
