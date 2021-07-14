@@ -9,7 +9,7 @@ import (
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
-	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
+	"github.com/stone-co/the-amazing-ledger/app/instrumentation/newrelic"
 )
 
 const (
