@@ -31,7 +31,7 @@ service LedgerService {
       get: "/api/v1/analytical-data/{account_path}"
     };
   };
-  rpc GetAccountHistory(GetAccountHistoryRequest) returns (stream GetAccountHistoryResponse){
+  rpc ListAccountEntries(ListAccountEntriesRequest) returns (ListAccountEntriesResponse){
     option (google.api.http) = {
       get: "/api/v1/accounts/{account_path}/history"
     };
@@ -135,20 +135,51 @@ message GetAnalyticalDataResponse {
   int32 amount = 3;
 }
 
-// GetAccountHistory Request
-message GetAccountHistoryRequest {
-  // The account name
-  string account_path = 1;
+// Request Pagination
+message RequestPagination {
+  // Max of 50, defaults to 10.
+  int32 page_size = 1;
+  // Cursor for the next page.
+  string page_token = 2;
 }
 
-// EntryHistory to AccountHistory
-message GetAccountHistoryResponse {
-  // amount in cents
-  int64 amount = 1;
+// ListAccountEntries Request
+message ListAccountEntriesRequest {
+  reserved 4;
+  // The account path
+  string account_path = 1;
+  // Start history date
+  google.protobuf.Timestamp start_date = 2;
+  // End history date
+  google.protobuf.Timestamp end_date = 3;
+  // Pagination
+  RequestPagination page = 5;
+}
+
+// ListAccountEntries Response
+message ListAccountEntriesResponse {
+  // List of entries of a given account
+  repeated AccountEntry entries = 1;
+  // Cursor that references the next page. Empty string if there is no next page
+  string next_page_token = 2;
+}
+
+// Represents a historical entry for a account
+message AccountEntry {
+  // It's the entry id.
+  string id = 1;
+  // Account version at the time.
+  int64 version = 2;
   // Operation: debit or credit.
-  Operation operation = 2;
-  // timestamp to created at
-  google.protobuf.Timestamp created_at = 3;
+  Operation operation = 3;
+  // Amount (in cents).
+  int64 amount = 4;
+  // Event that generated the transaction
+  int32 event = 5;
+  // Transaction date received on creation.
+  google.protobuf.Timestamp competence_date = 6;
+  // The entry metadata.
+  google.protobuf.Struct metadata = 7;
 }
 
 // GetSyntheticReport Request
