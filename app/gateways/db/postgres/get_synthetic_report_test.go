@@ -15,16 +15,13 @@ import (
 )
 
 func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
-	event := uint32(4)
+	event := uint32(1)
 	company := "company xyz"
 	competenceDate := time.Now().UTC()
 	metadata := json.RawMessage(`{}`)
 
 	r := NewLedgerRepository(pgDocker.DB, logrus.New())
 	ctx := context.Background()
-
-	_, err := pgDocker.DB.Exec(ctx, `insert into event (id, name) values (4, 'default4');`)
-	assert.NoError(t, err)
 
 	accountBase := "liability.assets"
 	accountBaseEmpty := "liability.income"
