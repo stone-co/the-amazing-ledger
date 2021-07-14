@@ -15,7 +15,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain/usecases"
 	"github.com/stone-co/the-amazing-ledger/app/gateways/db/postgres"
 	server "github.com/stone-co/the-amazing-ledger/app/gateways/http"
-	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
+	"github.com/stone-co/the-amazing-ledger/app/instrumentation/newrelic"
 )
 
 func main() {
