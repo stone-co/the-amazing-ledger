@@ -9,10 +9,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/app/tests"
-	"github.com/stretchr/testify/assert"
 )
 
 var pgDocker *tests.PostgresDocker
@@ -51,7 +52,13 @@ func createEntry(t *testing.T, op vos.OperationType, account string, version vos
 func createTransaction(t *testing.T, ctx context.Context, r *LedgerRepository, entries ...entities.Entry) entities.Transaction {
 	t.Helper()
 
-	tx, err := entities.NewTransaction(uuid.New(), uint32(1), "abc", time.Now(), entries...)
+	tx, err := entities.NewTransaction(
+		uuid.New(),
+		uint32(1),
+		"abc",
+		time.Now().Round(time.Microsecond),
+		entries...,
+	)
 	assert.NoError(t, err)
 
 	err = r.CreateTransaction(ctx, tx)

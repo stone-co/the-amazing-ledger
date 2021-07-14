@@ -112,6 +112,7 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 	const (
 		account1 = "liability.abc.account1"
 		account2 = "liability.abc.account2"
+		amount   = 100
 	)
 
 	testCases := []struct {
@@ -138,12 +139,10 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 		{
 			name: "return all entries",
 			seedRepo: func(t *testing.T, ctx context.Context, r *LedgerRepository) []entities.Transaction {
-				e1 := createEntry(t, vos.DebitOperation, account1, vos.Version(1))
-				e2 := createEntry(t, vos.CreditOperation, account2, vos.IgnoreAccountVersion)
+				e1 := createEntry(t, vos.DebitOperation, account1, vos.Version(1), amount)
+				e2 := createEntry(t, vos.CreditOperation, account2, vos.IgnoreAccountVersion, amount)
 
-				tx := createTransaction(t, e1, e2)
-				err := insertTransaction(ctx, r, tx)
-				assert.NoError(t, err)
+				tx := createTransaction(t, ctx, r, e1, e2)
 
 				return []entities.Transaction{tx}
 			},
@@ -174,19 +173,15 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 		{
 			name: "return first page",
 			seedRepo: func(t *testing.T, ctx context.Context, r *LedgerRepository) []entities.Transaction {
-				e1 := createEntry(t, vos.DebitOperation, account1, vos.Version(1))
-				e2 := createEntry(t, vos.CreditOperation, account2, vos.IgnoreAccountVersion)
+				e1 := createEntry(t, vos.DebitOperation, account1, vos.Version(1), amount)
+				e2 := createEntry(t, vos.CreditOperation, account2, vos.IgnoreAccountVersion, amount)
 
-				tx1 := createTransaction(t, e1, e2)
-				err := insertTransaction(ctx, r, tx1)
-				assert.NoError(t, err)
+				tx1 := createTransaction(t, ctx, r, e1, e2)
 
-				e1 = createEntry(t, vos.DebitOperation, account1, vos.Version(2))
-				e2 = createEntry(t, vos.CreditOperation, account2, vos.IgnoreAccountVersion)
+				e1 = createEntry(t, vos.DebitOperation, account1, vos.Version(2), amount)
+				e2 = createEntry(t, vos.CreditOperation, account2, vos.IgnoreAccountVersion, amount)
 
-				tx2 := createTransaction(t, e1, e2)
-				err = insertTransaction(ctx, r, tx2)
-				assert.NoError(t, err)
+				tx2 := createTransaction(t, ctx, r, e1, e2)
 
 				return []entities.Transaction{tx1, tx2}
 			},
@@ -218,19 +213,15 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 		{
 			name: "return second page",
 			seedRepo: func(t *testing.T, ctx context.Context, r *LedgerRepository) []entities.Transaction {
-				e1 := createEntry(t, vos.DebitOperation, account1, vos.Version(1))
-				e2 := createEntry(t, vos.CreditOperation, account2, vos.IgnoreAccountVersion)
+				e1 := createEntry(t, vos.DebitOperation, account1, vos.Version(1), amount)
+				e2 := createEntry(t, vos.CreditOperation, account2, vos.IgnoreAccountVersion, amount)
 
-				tx1 := createTransaction(t, e1, e2)
-				err := insertTransaction(ctx, r, tx1)
-				assert.NoError(t, err)
+				tx1 := createTransaction(t, ctx, r, e1, e2)
 
-				e1 = createEntry(t, vos.DebitOperation, account1, vos.Version(2))
-				e2 = createEntry(t, vos.CreditOperation, account2, vos.IgnoreAccountVersion)
+				e1 = createEntry(t, vos.DebitOperation, account1, vos.Version(2), amount)
+				e2 = createEntry(t, vos.CreditOperation, account2, vos.IgnoreAccountVersion, amount)
 
-				tx2 := createTransaction(t, e1, e2)
-				err = insertTransaction(ctx, r, tx2)
-				assert.NoError(t, err)
+				tx2 := createTransaction(t, ctx, r, e1, e2)
 
 				return []entities.Transaction{tx1, tx2}
 			},

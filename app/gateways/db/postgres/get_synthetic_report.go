@@ -8,8 +8,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v4"
+
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
-	"github.com/stone-co/the-amazing-ledger/app/shared/instrumentation/newrelic"
+	"github.com/stone-co/the-amazing-ledger/app/instrumentation/newrelic"
 )
 
 const syntheticReportQuery = `
