@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -45,7 +46,7 @@ func (r *LedgerRepository) GetSyntheticReport(ctx context.Context, query vos.Acc
 	)
 
 	if errQuery != nil {
-		if errQuery == pgx.ErrNoRows {
+		if errors.Is(errQuery, pgx.ErrNoRows) {
 			return &vos.SyntheticReport{}, nil
 		}
 		return nil, errQuery

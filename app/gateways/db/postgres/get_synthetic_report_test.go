@@ -16,7 +16,7 @@ import (
 
 func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
 	event := uint32(4)
-	company := "abc"
+	company := "company xyz"
 	competenceDate := time.Now().UTC()
 	metadata := json.RawMessage(`{}`)
 

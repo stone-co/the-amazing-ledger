@@ -35,8 +35,8 @@ func (a *API) GetSyntheticReport(ctx context.Context, request *proto.GetSyntheti
 	}
 
 	return &proto.GetSyntheticReportResponse{
-		TotalCredit: int64(syntheticReport.TotalCredit),
-		TotalDebit:  int64(syntheticReport.TotalDebit),
+		TotalCredit: syntheticReport.TotalCredit,
+		TotalDebit:  syntheticReport.TotalDebit,
 		Paths:       toProto(syntheticReport.Paths),
 	}, nil
 }
@@ -47,8 +47,8 @@ func toProto(paths []vos.Path) []*proto.Path {
 	for _, element := range paths {
 		protoPaths = append(protoPaths, &proto.Path{
 			Account: element.Account.Name(),
-			Credit:  int64(element.Credit),
-			Debit:   int64(element.Debit),
+			Credit:  element.Credit,
+			Debit:   element.Debit,
 		})
 	}
 
