@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"time"
@@ -16,7 +17,7 @@ func (l *LedgerUseCase) GetSyntheticReport(ctx context.Context, query vos.Accoun
 
 	syntheticReport, err := l.repository.GetSyntheticReport(ctx, query, level, startTime, endTime)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get synthetic report: %w", err)
 	}
 
 	return syntheticReport, nil
