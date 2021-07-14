@@ -9,6 +9,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"sync"
+	"time"
 )
 
 // Ensure, that RepositoryMock does implement domain.Repository.
@@ -33,6 +34,9 @@ var _ domain.Repository = &RepositoryMock{}
 // 			GetAnalyticalDataFunc: func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error {
 // 				panic("mock out the GetAnalyticalData method")
 // 			},
+// 			GetSyntheticReportFunc: func(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+// 				panic("mock out the GetSyntheticReport method")
+// 			},
 // 			QueryAggregatedBalanceFunc: func(ctx context.Context, account vos.AccountQuery) (vos.QueryBalance, error) {
 // 				panic("mock out the QueryAggregatedBalance method")
 // 			},
@@ -54,6 +58,9 @@ type RepositoryMock struct {
 
 	// GetAnalyticalDataFunc mocks the GetAnalyticalData method.
 	GetAnalyticalDataFunc func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
+
+	// GetSyntheticReportFunc mocks the GetSyntheticReport method.
+	GetSyntheticReportFunc func(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
 
 	// QueryAggregatedBalanceFunc mocks the QueryAggregatedBalance method.
 	QueryAggregatedBalanceFunc func(ctx context.Context, account vos.AccountQuery) (vos.QueryBalance, error)
@@ -92,6 +99,19 @@ type RepositoryMock struct {
 			// Fn is the fn argument value.
 			Fn func(vos.Statement) error
 		}
+		// GetSyntheticReport holds details about calls to the GetSyntheticReport method.
+		GetSyntheticReport []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Query is the query argument value.
+			Query vos.AccountQuery
+			// Level is the level argument value.
+			Level int
+			// StartTime is the startTime argument value.
+			StartTime time.Time
+			// EndTime is the endTime argument value.
+			EndTime time.Time
+		}
 		// QueryAggregatedBalance holds details about calls to the QueryAggregatedBalance method.
 		QueryAggregatedBalance []struct {
 			// Ctx is the ctx argument value.
@@ -104,6 +124,7 @@ type RepositoryMock struct {
 	lockGetAccountBalance      sync.RWMutex
 	lockGetAccountHistory      sync.RWMutex
 	lockGetAnalyticalData      sync.RWMutex
+	lockGetSyntheticReport     sync.RWMutex
 	lockQueryAggregatedBalance sync.RWMutex
 }
 
@@ -252,6 +273,53 @@ func (mock *RepositoryMock) GetAnalyticalDataCalls() []struct {
 	mock.lockGetAnalyticalData.RLock()
 	calls = mock.calls.GetAnalyticalData
 	mock.lockGetAnalyticalData.RUnlock()
+	return calls
+}
+
+// GetSyntheticReport calls GetSyntheticReportFunc.
+func (mock *RepositoryMock) GetSyntheticReport(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+	if mock.GetSyntheticReportFunc == nil {
+		panic("RepositoryMock.GetSyntheticReportFunc: method is nil but Repository.GetSyntheticReport was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Query     vos.AccountQuery
+		Level     int
+		StartTime time.Time
+		EndTime   time.Time
+	}{
+		Ctx:       ctx,
+		Query:     query,
+		Level:     level,
+		StartTime: startTime,
+		EndTime:   endTime,
+	}
+	mock.lockGetSyntheticReport.Lock()
+	mock.calls.GetSyntheticReport = append(mock.calls.GetSyntheticReport, callInfo)
+	mock.lockGetSyntheticReport.Unlock()
+	return mock.GetSyntheticReportFunc(ctx, query, level, startTime, endTime)
+}
+
+// GetSyntheticReportCalls gets all the calls that were made to GetSyntheticReport.
+// Check the length with:
+//     len(mockedRepository.GetSyntheticReportCalls())
+func (mock *RepositoryMock) GetSyntheticReportCalls() []struct {
+	Ctx       context.Context
+	Query     vos.AccountQuery
+	Level     int
+	StartTime time.Time
+	EndTime   time.Time
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Query     vos.AccountQuery
+		Level     int
+		StartTime time.Time
+		EndTime   time.Time
+	}
+	mock.lockGetSyntheticReport.RLock()
+	calls = mock.calls.GetSyntheticReport
+	mock.lockGetSyntheticReport.RUnlock()
 	return calls
 }
 

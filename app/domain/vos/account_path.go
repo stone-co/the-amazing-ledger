@@ -36,11 +36,11 @@ var _defaultConfig = AccountConfig{
 			Name: "class",
 		},
 	},
-	DepthSeparator: ".",
 }
 
 var regexOnlyAlphanumericAndUnderscore = regexp.MustCompile(`^[a-zA-Z0-9_]*$`)
 
+const DepthSeparator = "."
 const maxLabelLength = 255
 
 // TODO: better docs
@@ -72,7 +72,7 @@ type AccountPath struct {
 func NewAccountPath(path string) (AccountPath, error) {
 	path = strings.ToLower(path)
 
-	components := strings.Split(path, _defaultConfig.DepthSeparator)
+	components := strings.Split(path, DepthSeparator)
 	size := len(components)
 
 	if size == 0 {

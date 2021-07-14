@@ -2,6 +2,7 @@ package mocks
 
 import (
 	"context"
+	"time"
 
 	"github.com/stone-co/the-amazing-ledger/app/domain"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
@@ -16,6 +17,7 @@ type Repository struct {
 	OnQueryAggregatedBalance func(ctx context.Context, query vos.AccountQuery) (vos.QueryBalance, error)
 	OnGetAnalyticalData      func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
 	OnGetAccountHistory      func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
+	OnGetSyntheticReport     func(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
 }
 
 func (s Repository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
@@ -36,4 +38,8 @@ func (s Repository) GetAnalyticalData(ctx context.Context, query vos.AccountQuer
 
 func (s Repository) GetAccountHistory(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error {
 	return s.OnGetAccountHistory(ctx, account, fn)
+}
+
+func (s Repository) GetSyntheticReport(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+	return s.OnGetSyntheticReport(ctx, query, level, startTime, endTime)
 }

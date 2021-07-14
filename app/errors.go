@@ -14,6 +14,7 @@ const (
 	ErrInvalidAccountComponentSize       = DomainError("account component cannot be empty and must be less than 256 characters")
 	ErrInvalidAccountComponentCharacters = DomainError("only alphanumeric and underscore characters are supported")
 	ErrAccountPathViolation              = DomainError("invalid depth value")
+	ErrInvalidSyntheticReportStructure   = DomainError("invalid synthetic report structure")
 )
 
 type DomainError string

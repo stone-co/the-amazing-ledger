@@ -9,6 +9,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"sync"
+	"time"
 )
 
 // Ensure, that UseCaseMock does implement domain.UseCase.
@@ -33,6 +34,9 @@ var _ domain.UseCase = &UseCaseMock{}
 // 			GetAnalyticalDataFunc: func(contextMoqParam context.Context, accountQuery vos.AccountQuery, fn func(vos.Statement) error) error {
 // 				panic("mock out the GetAnalyticalData method")
 // 			},
+// 			GetSyntheticReportFunc: func(contextMoqParam context.Context, accountQuery vos.AccountQuery, n int, timeMoqParam1 time.Time, timeMoqParam2 time.Time) (*vos.SyntheticReport, error) {
+// 				panic("mock out the GetSyntheticReport method")
+// 			},
 // 			QueryAggregatedBalanceFunc: func(contextMoqParam context.Context, accountQuery vos.AccountQuery) (vos.QueryBalance, error) {
 // 				panic("mock out the QueryAggregatedBalance method")
 // 			},
@@ -54,6 +58,9 @@ type UseCaseMock struct {
 
 	// GetAnalyticalDataFunc mocks the GetAnalyticalData method.
 	GetAnalyticalDataFunc func(contextMoqParam context.Context, accountQuery vos.AccountQuery, fn func(vos.Statement) error) error
+
+	// GetSyntheticReportFunc mocks the GetSyntheticReport method.
+	GetSyntheticReportFunc func(contextMoqParam context.Context, accountQuery vos.AccountQuery, n int, timeMoqParam1 time.Time, timeMoqParam2 time.Time) (*vos.SyntheticReport, error)
 
 	// QueryAggregatedBalanceFunc mocks the QueryAggregatedBalance method.
 	QueryAggregatedBalanceFunc func(contextMoqParam context.Context, accountQuery vos.AccountQuery) (vos.QueryBalance, error)
@@ -92,6 +99,19 @@ type UseCaseMock struct {
 			// Fn is the fn argument value.
 			Fn func(vos.Statement) error
 		}
+		// GetSyntheticReport holds details about calls to the GetSyntheticReport method.
+		GetSyntheticReport []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// AccountQuery is the accountQuery argument value.
+			AccountQuery vos.AccountQuery
+			// N is the n argument value.
+			N int
+			// TimeMoqParam1 is the timeMoqParam1 argument value.
+			TimeMoqParam1 time.Time
+			// TimeMoqParam2 is the timeMoqParam2 argument value.
+			TimeMoqParam2 time.Time
+		}
 		// QueryAggregatedBalance holds details about calls to the QueryAggregatedBalance method.
 		QueryAggregatedBalance []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -104,6 +124,7 @@ type UseCaseMock struct {
 	lockGetAccountBalance      sync.RWMutex
 	lockGetAccountHistory      sync.RWMutex
 	lockGetAnalyticalData      sync.RWMutex
+	lockGetSyntheticReport     sync.RWMutex
 	lockQueryAggregatedBalance sync.RWMutex
 }
 
@@ -252,6 +273,53 @@ func (mock *UseCaseMock) GetAnalyticalDataCalls() []struct {
 	mock.lockGetAnalyticalData.RLock()
 	calls = mock.calls.GetAnalyticalData
 	mock.lockGetAnalyticalData.RUnlock()
+	return calls
+}
+
+// GetSyntheticReport calls GetSyntheticReportFunc.
+func (mock *UseCaseMock) GetSyntheticReport(contextMoqParam context.Context, accountQuery vos.AccountQuery, n int, timeMoqParam1 time.Time, timeMoqParam2 time.Time) (*vos.SyntheticReport, error) {
+	if mock.GetSyntheticReportFunc == nil {
+		panic("UseCaseMock.GetSyntheticReportFunc: method is nil but UseCase.GetSyntheticReport was just called")
+	}
+	callInfo := struct {
+		ContextMoqParam context.Context
+		AccountQuery    vos.AccountQuery
+		N               int
+		TimeMoqParam1   time.Time
+		TimeMoqParam2   time.Time
+	}{
+		ContextMoqParam: contextMoqParam,
+		AccountQuery:    accountQuery,
+		N:               n,
+		TimeMoqParam1:   timeMoqParam1,
+		TimeMoqParam2:   timeMoqParam2,
+	}
+	mock.lockGetSyntheticReport.Lock()
+	mock.calls.GetSyntheticReport = append(mock.calls.GetSyntheticReport, callInfo)
+	mock.lockGetSyntheticReport.Unlock()
+	return mock.GetSyntheticReportFunc(contextMoqParam, accountQuery, n, timeMoqParam1, timeMoqParam2)
+}
+
+// GetSyntheticReportCalls gets all the calls that were made to GetSyntheticReport.
+// Check the length with:
+//     len(mockedUseCase.GetSyntheticReportCalls())
+func (mock *UseCaseMock) GetSyntheticReportCalls() []struct {
+	ContextMoqParam context.Context
+	AccountQuery    vos.AccountQuery
+	N               int
+	TimeMoqParam1   time.Time
+	TimeMoqParam2   time.Time
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		AccountQuery    vos.AccountQuery
+		N               int
+		TimeMoqParam1   time.Time
+		TimeMoqParam2   time.Time
+	}
+	mock.lockGetSyntheticReport.RLock()
+	calls = mock.calls.GetSyntheticReport
+	mock.lockGetSyntheticReport.RUnlock()
 	return calls
 }
 

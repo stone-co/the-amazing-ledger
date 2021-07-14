@@ -22,7 +22,7 @@ order by
 	version;
 `
 
-func (r LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos.AccountPath, fn func(vos.EntryHistory) error) error {
+func (r LedgerRepository) GetAccountHistory(ctx context.Context, accountPath vos.AccountPath, fn func(vos.EntryHistory) error) error {
 	const operation = "Repository.GetAccountHistory"
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, accountHistoryQuery).End()
@@ -30,7 +30,7 @@ func (r LedgerRepository) GetAccountHistory(ctx context.Context, accountName vos
 	rows, err := r.db.Query(
 		context.Background(),
 		accountHistoryQuery,
-		accountName.Name(),
+		accountPath.Name(),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to execute query: %w", err)

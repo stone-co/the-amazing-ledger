@@ -238,6 +238,136 @@ func request_LedgerService_GetAccountHistory_0(ctx context.Context, marshaler ru
 
 }
 
+var (
+	filter_LedgerService_GetSyntheticReport_0 = &utilities.DoubleArray{Encoding: map[string]int{"filters": 0, "account_query": 1, "level": 2, "start_time": 3, "end_time": 4}, Base: []int{1, 1, 1, 2, 3, 4, 0, 0, 0, 0}, Check: []int{0, 1, 2, 2, 2, 2, 3, 4, 5, 6}}
+)
+
+func request_LedgerService_GetSyntheticReport_0(ctx context.Context, marshaler runtime.Marshaler, client LedgerServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetSyntheticReportRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["filters.account_query"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "filters.account_query")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "filters.account_query", val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filters.account_query", err)
+	}
+
+	val, ok = pathParams["filters.level"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "filters.level")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "filters.level", val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filters.level", err)
+	}
+
+	val, ok = pathParams["filters.start_time"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "filters.start_time")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "filters.start_time", val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filters.start_time", err)
+	}
+
+	val, ok = pathParams["filters.end_time"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "filters.end_time")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "filters.end_time", val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filters.end_time", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LedgerService_GetSyntheticReport_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.GetSyntheticReport(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_LedgerService_GetSyntheticReport_0(ctx context.Context, marshaler runtime.Marshaler, server LedgerServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetSyntheticReportRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["filters.account_query"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "filters.account_query")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "filters.account_query", val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filters.account_query", err)
+	}
+
+	val, ok = pathParams["filters.level"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "filters.level")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "filters.level", val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filters.level", err)
+	}
+
+	val, ok = pathParams["filters.start_time"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "filters.start_time")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "filters.start_time", val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filters.start_time", err)
+	}
+
+	val, ok = pathParams["filters.end_time"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "filters.end_time")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "filters.end_time", val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "filters.end_time", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LedgerService_GetSyntheticReport_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := server.GetSyntheticReport(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
 func request_Health_Check_0(ctx context.Context, marshaler runtime.Marshaler, client HealthClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq emptypb.Empty
 	var metadata runtime.ServerMetadata
@@ -343,6 +473,29 @@ func RegisterLedgerServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 		return
+	})
+
+	mux.Handle("GET", pattern_LedgerService_GetSyntheticReport_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/ledger.LedgerService/GetSyntheticReport", runtime.WithHTTPPathPattern("/api/v1/reports/{filters.account_query}/{filters.level}/{filters.start_time}/{filters.end_time}/synthetic"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_LedgerService_GetSyntheticReport_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LedgerService_GetSyntheticReport_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
 	})
 
 	return nil
@@ -518,6 +671,26 @@ func RegisterLedgerServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 
 	})
 
+	mux.Handle("GET", pattern_LedgerService_GetSyntheticReport_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/ledger.LedgerService/GetSyntheticReport", runtime.WithHTTPPathPattern("/api/v1/reports/{filters.account_query}/{filters.level}/{filters.start_time}/{filters.end_time}/synthetic"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_LedgerService_GetSyntheticReport_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_LedgerService_GetSyntheticReport_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	return nil
 }
 
@@ -531,6 +704,8 @@ var (
 	pattern_LedgerService_GetAnalyticalData_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "analytical-data", "account_path"}, ""))
 
 	pattern_LedgerService_GetAccountHistory_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "accounts", "account_path", "history"}, ""))
+
+	pattern_LedgerService_GetSyntheticReport_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6, 2, 7}, []string{"api", "v1", "reports", "filters.account_query", "filters.level", "filters.start_time", "filters.end_time", "synthetic"}, ""))
 )
 
 var (
@@ -543,6 +718,8 @@ var (
 	forward_LedgerService_GetAnalyticalData_0 = runtime.ForwardResponseStream
 
 	forward_LedgerService_GetAccountHistory_0 = runtime.ForwardResponseStream
+
+	forward_LedgerService_GetSyntheticReport_0 = runtime.ForwardResponseMessage
 )
 
 // RegisterHealthHandlerFromEndpoint is same as RegisterHealthHandler but

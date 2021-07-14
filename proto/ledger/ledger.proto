@@ -36,6 +36,11 @@ service LedgerService {
       get: "/api/v1/accounts/{account_path}/history"
     };
   };
+  rpc GetSyntheticReport(GetSyntheticReportRequest) returns (GetSyntheticReportResponse){
+    option (google.api.http) = {
+      get: "/api/v1/reports/{filters.account_query}/{filters.level}/{filters.start_time}/{filters.end_time}/synthetic"
+    };
+  };
 }
 
 // CreateTransactionRequest represents a transaction to be saved. A transaction must
@@ -145,6 +150,38 @@ message GetAccountHistoryResponse {
   // timestamp to created at
   google.protobuf.Timestamp created_at = 3;
 }
+
+// GetSyntheticReport Request
+message GetSyntheticReportRequest {
+  GetSyntheticReportFilters filters = 1;
+  // TODO use gRPC pagination
+}
+
+message GetSyntheticReportFilters {
+  string account_query = 1;
+  int32 level = 2;
+  int64 start_time = 3;
+  int64 end_time = 4;
+}
+
+// GetSyntheticReport Response
+message GetSyntheticReportResponse {
+  // All credit accumulated
+  int64 total_credit = 2;
+  // All debit accumulated
+  int64 total_debit = 3;
+  // The paths
+  repeated Path paths = 4;
+}
+
+message Path {
+  // The account name
+    string account = 1;
+    // credit 
+    int64 credit = 2;
+    // debit 
+    int64 debit = 3;
+ }
 
 //https://github.com/grpc/grpc/blob/master/doc/health-checking.md
 // HealthCheckResponse is the health check status

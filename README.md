@@ -29,6 +29,14 @@ The system supports the following account types:
 - **expense**: Represents the money you spent, where money goes. The values of theses accounts are naturally positive.
 - **income**: Represents the money you have earned, where money comes from. The values of theses accounts are naturally negative.
 
+# Dependencies
+## buf-build (v)
+- download & install it
+https://docs.buf.build/installation
+
+## protobuf
+$ sudo apt install protobuf-compiler
+
 # Development
 
 To init development environment and run the amazing ledger, flow these steps.
@@ -72,4 +80,16 @@ curl -i -X POST localhost:3000/api/v1/transactions -d \
 123},{"id": "16b23084-686b-434a-8323-db483ce1e586", "operation":"OPERATION_CREDIT",
 "account_id":"liability:clients:available:16b23084-686b-434a-8323-db483ce1e581", "version": 0, "amount":
 123}]}'
+```
+
+# Grpc
+$ go mod tidy
+$ make generate
+
+# Connect to the Database
+```
+$ docker exec -ti the-amazing-ledger_postgres_1 bash
+--- container ---
+# psql -U postgres
+# \c dev
 ```
