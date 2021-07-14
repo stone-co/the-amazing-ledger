@@ -7,6 +7,7 @@ import (
 	"github.com/stone-co/the-amazing-ledger/app/domain"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	"github.com/stone-co/the-amazing-ledger/app/pagination"
 )
 
 var _ domain.Repository = &Repository{}
@@ -16,8 +17,11 @@ type Repository struct {
 	OnGetAccountBalance      func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
 	OnQueryAggregatedBalance func(ctx context.Context, query vos.AccountQuery) (vos.QueryBalance, error)
 	OnGetAnalyticalData      func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
-	OnGetAccountHistory      func(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error
 	OnGetSyntheticReport     func(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
+}
+
+func (s Repository) ListAccountEntries(ctx context.Context, request vos.AccountEntryRequest) ([]vos.AccountEntry, pagination.Cursor, error) {
+	panic("implement me")
 }
 
 func (s Repository) CreateTransaction(ctx context.Context, transaction entities.Transaction) error {
@@ -34,10 +38,6 @@ func (s Repository) QueryAggregatedBalance(ctx context.Context, query vos.Accoun
 
 func (s Repository) GetAnalyticalData(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error {
 	return s.OnGetAnalyticalData(ctx, query, fn)
-}
-
-func (s Repository) GetAccountHistory(ctx context.Context, account vos.AccountPath, fn func(vos.EntryHistory) error) error {
-	return s.OnGetAccountHistory(ctx, account, fn)
 }
 
 func (s Repository) GetSyntheticReport(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
