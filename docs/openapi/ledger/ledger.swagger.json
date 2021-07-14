@@ -52,21 +52,12 @@
     },
     "/api/v1/accounts/{accountPath}/history": {
       "get": {
-        "operationId": "LedgerService_GetAccountHistory",
+        "operationId": "LedgerService_ListAccountEntries",
         "responses": {
           "200": {
-            "description": "A successful response.(streaming responses)",
+            "description": "A successful response.",
             "schema": {
-              "type": "object",
-              "properties": {
-                "result": {
-                  "$ref": "#/definitions/ledgerGetAccountHistoryResponse"
-                },
-                "error": {
-                  "$ref": "#/definitions/rpcStatus"
-                }
-              },
-              "title": "Stream result of ledgerGetAccountHistoryResponse"
+              "$ref": "#/definitions/ledgerListAccountEntriesResponse"
             }
           },
           "default": {
@@ -79,9 +70,37 @@
         "parameters": [
           {
             "name": "accountPath",
-            "description": "The account name",
+            "description": "The account path",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "page.pageSize",
+            "description": "Max of 50, defaults to 10.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "page.pageToken",
+            "in": "query",
+            "required": false,
             "type": "string"
           }
         ],
@@ -281,6 +300,43 @@
       "description": "- SERVING_STATUS_UNKNOWN_UNSPECIFIED: Don't use. It's just the default value.\n - SERVING_STATUS_SERVING: Healthy\n - SERVING_STATUS_NOT_SERVING: Unhealthy\n - SERVING_STATUS_SERVICE_UNKNOWN: Used only when streaming",
       "title": "ServingStatus is the enum of the possible health check status"
     },
+    "ledgerAccountEntry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "It's the entry id."
+        },
+        "version": {
+          "type": "string",
+          "format": "int64",
+          "description": "Account version at the time."
+        },
+        "operation": {
+          "$ref": "#/definitions/ledgerOperation",
+          "description": "Operation: debit or credit."
+        },
+        "amount": {
+          "type": "string",
+          "format": "int64",
+          "description": "Amount (in cents)."
+        },
+        "event": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Event that generated the transaction"
+        },
+        "competenceDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Transaction date received on creation."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "The entry metadata."
+        }
+      }
+    },
     "ledgerCreateTransactionRequest": {
       "type": "object",
       "properties": {
@@ -333,8 +389,8 @@
           "description": "Operation: debit or credit."
         },
         "amount": {
-          "type": "integer",
-          "format": "int32",
+          "type": "string",
+          "format": "int64",
           "description": "Amount (in cents)."
         },
         "metadata": {
@@ -373,26 +429,6 @@
         }
       },
       "title": "GetAccountBalance Response"
-    },
-    "ledgerGetAccountHistoryResponse": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "string",
-          "format": "int64",
-          "title": "amount in cents"
-        },
-        "operation": {
-          "$ref": "#/definitions/ledgerOperation",
-          "description": "Operation: debit or credit."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "title": "timestamp to created at"
-        }
-      },
-      "title": "EntryHistory to AccountHistory"
     },
     "ledgerGetAnalyticalDataResponse": {
       "type": "object",
@@ -466,6 +502,21 @@
       },
       "title": "https://github.com/grpc/grpc/blob/master/doc/health-checking.md\nHealthCheckResponse is the health check status"
     },
+    "ledgerListAccountEntriesResponse": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ledgerAccountEntry"
+          }
+        },
+        "nextPageToken": {
+          "type": "string"
+        }
+      },
+      "title": "ListAccountEntries Response"
+    },
     "ledgerOperation": {
       "type": "string",
       "enum": [
@@ -509,6 +560,19 @@
         }
       },
       "title": "GetAccountBalance Response"
+    },
+    "ledgerRequestPagination": {
+      "type": "object",
+      "properties": {
+        "pageSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Max of 50, defaults to 10."
+        },
+        "pageToken": {
+          "type": "string"
+        }
+      }
     },
     "protobufAny": {
       "type": "object",
