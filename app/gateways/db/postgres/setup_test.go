@@ -32,13 +32,15 @@ func TestMain(m *testing.M) {
 	os.Exit(exitCode)
 }
 
-func createEntry(t *testing.T, operation vos.OperationType, account string, version vos.Version) entities.Entry {
+func createEntry(t *testing.T, op vos.OperationType, account string, version vos.Version, amount int) entities.Entry {
+	t.Helper()
+
 	entry, err := entities.NewEntry(
 		uuid.New(),
-		operation,
+		op,
 		account,
 		version,
-		100,
+		amount,
 		json.RawMessage(`{}`),
 	)
 	assert.NoError(t, err)
@@ -46,9 +48,14 @@ func createEntry(t *testing.T, operation vos.OperationType, account string, vers
 	return entry
 }
 
-func createTransaction(t *testing.T, ctx context.Context, r *LedgerRepository, entries ...entities.Entry) error {
+func createTransaction(t *testing.T, ctx context.Context, r *LedgerRepository, entries ...entities.Entry) entities.Transaction {
+	t.Helper()
+
 	tx, err := entities.NewTransaction(uuid.New(), uint32(1), "abc", time.Now(), entries...)
 	assert.NoError(t, err)
 
-	return r.CreateTransaction(ctx, tx)
+	err = r.CreateTransaction(ctx, tx)
+	assert.NoError(t, err)
+
+	return tx
 }
