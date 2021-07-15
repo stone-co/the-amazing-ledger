@@ -17,14 +17,16 @@ var _ domain.Repository = &LedgerRepository{}
 type LedgerRepository struct {
 	db  *pgxpool.Pool
 	log *logrus.Logger
+	qb  querybuilder.QueryBuilder
 }
 
 func NewLedgerRepository(db *pgxpool.Pool, log *logrus.Logger) *LedgerRepository {
-	queryBuilder = querybuilder.New(createTransactionQuery, numArgs)
-	queryBuilder.Init(numDefaultQueries)
+	qb := querybuilder.New(createTransactionQuery, numArgs)
+	qb.Init(numDefaultQueries)
 
 	return &LedgerRepository{
 		db:  db,
 		log: log,
+		qb:  qb,
 	}
 }

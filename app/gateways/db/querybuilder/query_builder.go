@@ -6,12 +6,16 @@ import (
 	"strings"
 )
 
+// QueryBuilder builds an insert query based on the number of arguments, how many values to insert,
+// and an initial query defined as `insert into table_name(arg1, ..., argn) values %s;`.
+// QueryBuilder maintains a map of queries that have already been built in memory to improve performance.
 type QueryBuilder struct {
 	queries map[int]string
 	query   string
 	numArgs int
 }
 
+// New creates a QueryBuilder and initializes it with the initial query, the number of arguments, and a 0-size queries map.
 func New(query string, numArgs int) QueryBuilder {
 	qb := QueryBuilder{}
 	qb.queries = make(map[int]string)
@@ -21,14 +25,16 @@ func New(query string, numArgs int) QueryBuilder {
 	return qb
 }
 
-func (q QueryBuilder) Init(numDefaultQueries int) {
+// Init initializes the queries map with n default queries.
+func (q QueryBuilder) Init(n int) {
 	var offset = 2
 
-	for i := offset; i < numDefaultQueries+offset; i++ {
+	for i := offset; i < n+offset; i++ {
 		q.queries[i] = q.build(i)
 	}
 }
 
+// Build builds a query based on the number of values to insert.
 func (q QueryBuilder) Build(size int) string {
 	query, ok := q.queries[size]
 	if ok {
