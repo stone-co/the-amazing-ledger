@@ -63,9 +63,35 @@ func TestNewTransaction(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
+			name:    "Valid transaction with 2 entries - unordered entries",
+			id:      id,
+			entries: []Entry{e12, e11},
+			expectedTransaction: Transaction{
+				ID:             id,
+				Entries:        validTwoEntries,
+				Event:          event,
+				Company:        company,
+				CompetenceDate: competenceDate,
+			},
+			expectedErr: nil,
+		},
+		{
 			name:    "Valid transaction with 3 entries",
 			id:      id,
 			entries: validThreeEntries,
+			expectedTransaction: Transaction{
+				ID:             id,
+				Entries:        validThreeEntries,
+				Event:          event,
+				Company:        company,
+				CompetenceDate: competenceDate,
+			},
+			expectedErr: nil,
+		},
+		{
+			name:    "Valid transaction with 3 entries - unordered entries",
+			id:      id,
+			entries: []Entry{e23, e22, e21},
 			expectedTransaction: Transaction{
 				ID:             id,
 				Entries:        validThreeEntries,
