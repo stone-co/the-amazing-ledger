@@ -66,12 +66,11 @@ func (r LedgerRepository) ListAccountEntries(ctx context.Context, req vos.Accoun
 
 	for rows.Next() {
 		var entry vos.AccountEntry
-		var operation int8
 
 		if err = rows.Scan(
 			&entry.ID,
 			&entry.Version,
-			&operation,
+			&entry.Operation,
 			&entry.Amount,
 			&entry.Event,
 			&entry.CompetenceDate,
@@ -79,8 +78,6 @@ func (r LedgerRepository) ListAccountEntries(ctx context.Context, req vos.Accoun
 		); err != nil {
 			return nil, nil, fmt.Errorf("failed to scan row: %w", err)
 		}
-
-		entry.Operation = vos.OperationType(operation)
 
 		entries = append(entries, entry)
 	}
