@@ -28,11 +28,11 @@ func Test_generateListAccountEntriesQuery(t *testing.T) {
 	version := vos.Version(1)
 
 	testCases := []struct {
-		name        string
-		req         func() vos.AccountEntryRequest
-		want        string
-		want1       []interface{}
-		expectedErr error
+		name          string
+		req           func() vos.AccountEntryRequest
+		expectedQuery string
+		expectedArgs  []interface{}
+		expectedErr   error
 	}{
 		{
 			name: "valid - without pagination",
@@ -47,9 +47,9 @@ func Test_generateListAccountEntriesQuery(t *testing.T) {
 					},
 				}
 			},
-			want:        _accountEntriesQueryPrefix + _accountEntriesQuerySuffix,
-			want1:       []interface{}{account.Name(), start, end, size + 1},
-			expectedErr: nil,
+			expectedQuery: _accountEntriesQueryPrefix + _accountEntriesQuerySuffix,
+			expectedArgs:  []interface{}{account.Name(), start, end, size + 1},
+			expectedErr:   nil,
 		},
 		{
 			name: "valid - with pagination",
@@ -69,9 +69,9 @@ func Test_generateListAccountEntriesQuery(t *testing.T) {
 					},
 				}
 			},
-			want:        _accountEntriesQueryPrefix + _accountEntriesQueryPagination + _accountEntriesQuerySuffix,
-			want1:       []interface{}{account.Name(), start, end, size + 1, end, version.AsInt64()},
-			expectedErr: nil,
+			expectedQuery: _accountEntriesQueryPrefix + _accountEntriesQueryPagination + _accountEntriesQuerySuffix,
+			expectedArgs:  []interface{}{account.Name(), start, end, size + 1, end, version.AsInt64()},
+			expectedErr:   nil,
 		},
 		{
 			name: "invalid page	token",
@@ -88,17 +88,17 @@ func Test_generateListAccountEntriesQuery(t *testing.T) {
 					},
 				}
 			},
-			want:        "",
-			want1:       nil,
-			expectedErr: app.ErrInvalidPageCursor,
+			expectedQuery: "",
+			expectedArgs:  nil,
+			expectedErr:   app.ErrInvalidPageCursor,
 		},
 	}
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			got, got1, err := generateListAccountEntriesQuery(tt.req())
 			assert.ErrorIs(t, err, tt.expectedErr)
-			assert.Equal(t, tt.want, got)
-			assert.EqualValues(t, tt.want1, got1)
+			assert.Equal(t, tt.expectedQuery, got)
+			assert.EqualValues(t, tt.expectedArgs, got1)
 		})
 	}
 }
@@ -124,10 +124,27 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 		{
 			name: "no exiting entries case",
 			seedRepo: func(t *testing.T, ctx context.Context, r *LedgerRepository) []entities.Transaction {
-				return nil
+				e1 := createEntry(t, vos.DebitOperation, account1, vos.Version(1), amount)
+				e2 := createEntry(t, vos.CreditOperation, account2, vos.IgnoreAccountVersion, amount)
+
+				tx := createTransaction(t, ctx, r, e1, e2)
+
+				return []entities.Transaction{tx}
 			},
 			setupRequest: func(t *testing.T, _ []entities.Transaction) vos.AccountEntryRequest {
-				return vos.AccountEntryRequest{}
+				account, _ := vos.NewAccountPath("liability.abc.account3")
+
+				now := time.Now()
+
+				return vos.AccountEntryRequest{
+					Account:   account,
+					StartDate: now.Add(-10 * time.Second),
+					EndDate:   now.Add(10 * time.Second),
+					Page: pagination.Page{
+						Size:   10,
+						Cursor: nil,
+					},
+				}
 			},
 			want: func(_ *testing.T, _ []entities.Transaction) w {
 				return w{

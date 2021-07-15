@@ -15,8 +15,8 @@ const (
 select
 	id,
 	version,
-    operation,
-    amount,
+	operation,
+	amount,
 	event,
 	competence_date,
 	metadata
