@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"sort"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,6 +26,11 @@ func NewTransaction(id uuid.UUID, event uint32, company string, competenceDate t
 	if len(entries) <= 1 {
 		return Transaction{}, app.ErrInvalidEntriesNumber
 	}
+
+	// sort entries by account name to avoid deadlock
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Account.Name() < entries[j].Account.Name()
+	})
 
 	balance := 0
 	for _, entry := range entries {
