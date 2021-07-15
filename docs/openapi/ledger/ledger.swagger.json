@@ -143,46 +143,6 @@
         ]
       }
     },
-    "/api/v1/analytical-data/{accountPath}": {
-      "get": {
-        "operationId": "LedgerService_GetAnalyticalData",
-        "responses": {
-          "200": {
-            "description": "A successful response.(streaming responses)",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "result": {
-                  "$ref": "#/definitions/ledgerGetAnalyticalDataResponse"
-                },
-                "error": {
-                  "$ref": "#/definitions/rpcStatus"
-                }
-              },
-              "title": "Stream result of ledgerGetAnalyticalDataResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "accountPath",
-            "description": "The account path",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "LedgerService"
-        ]
-      }
-    },
     "/api/v1/reports/{filters.accountQuery}/{filters.level}/{filters.startTime}/{filters.endTime}/synthetic": {
       "get": {
         "operationId": "LedgerService_GetSyntheticReport",
@@ -433,25 +393,6 @@
         }
       },
       "title": "GetAccountBalance Response"
-    },
-    "ledgerGetAnalyticalDataResponse": {
-      "type": "object",
-      "properties": {
-        "accountId": {
-          "type": "string",
-          "description": "Account involved in the operation."
-        },
-        "operation": {
-          "$ref": "#/definitions/ledgerOperation",
-          "description": "Operation: debit or credit."
-        },
-        "amount": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Amount (in cents)."
-        }
-      },
-      "title": "GetAnalyticalDataResponse"
     },
     "ledgerGetSyntheticReportFilters": {
       "type": "object",

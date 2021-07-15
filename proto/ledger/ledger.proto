@@ -26,11 +26,6 @@ service LedgerService {
       get: "/api/v1/aggregated/{query}/balance"
     };
   };
-  rpc GetAnalyticalData(GetAnalyticalDataRequest) returns (stream GetAnalyticalDataResponse){
-    option (google.api.http) = {
-      get: "/api/v1/analytical-data/{account_path}"
-    };
-  };
   rpc ListAccountEntries(ListAccountEntriesRequest) returns (ListAccountEntriesResponse){
     option (google.api.http) = {
       get: "/api/v1/accounts/{account_path}/history"
@@ -117,22 +112,6 @@ message QueryAggregatedBalanceResponse {
   string query = 1;
   // The query balance
   int64 balance = 2;
-}
-
-// GetAnalyticalDataRequest contains the filters to be used to get data from the accounts.
-message GetAnalyticalDataRequest {
-  // The account path
-  string account_path = 1;
-}
-
-// GetAnalyticalDataResponse
-message GetAnalyticalDataResponse {
-  // Account involved in the operation.
-  string account_id = 1;
-  // Operation: debit or credit.
-  Operation operation = 2;
-  // Amount (in cents).
-  int32 amount = 3;
 }
 
 // Request Pagination

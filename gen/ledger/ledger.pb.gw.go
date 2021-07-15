@@ -170,40 +170,6 @@ func local_request_LedgerService_QueryAggregatedBalance_0(ctx context.Context, m
 
 }
 
-func request_LedgerService_GetAnalyticalData_0(ctx context.Context, marshaler runtime.Marshaler, client LedgerServiceClient, req *http.Request, pathParams map[string]string) (LedgerService_GetAnalyticalDataClient, runtime.ServerMetadata, error) {
-	var protoReq GetAnalyticalDataRequest
-	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["account_path"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "account_path")
-	}
-
-	protoReq.AccountPath, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "account_path", err)
-	}
-
-	stream, err := client.GetAnalyticalData(ctx, &protoReq)
-	if err != nil {
-		return nil, metadata, err
-	}
-	header, err := stream.Header()
-	if err != nil {
-		return nil, metadata, err
-	}
-	metadata.HeaderMD = header
-	return stream, metadata, nil
-
-}
-
 var (
 	filter_LedgerService_ListAccountEntries_0 = &utilities.DoubleArray{Encoding: map[string]int{"account_path": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
@@ -497,13 +463,6 @@ func RegisterLedgerServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 
 	})
 
-	mux.Handle("GET", pattern_LedgerService_GetAnalyticalData_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
-		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-		return
-	})
-
 	mux.Handle("GET", pattern_LedgerService_ListAccountEntries_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -683,26 +642,6 @@ func RegisterLedgerServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 
 	})
 
-	mux.Handle("GET", pattern_LedgerService_GetAnalyticalData_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/ledger.LedgerService/GetAnalyticalData", runtime.WithHTTPPathPattern("/api/v1/analytical-data/{account_path}"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_LedgerService_GetAnalyticalData_0(rctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_LedgerService_GetAnalyticalData_0(ctx, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
-
-	})
-
 	mux.Handle("GET", pattern_LedgerService_ListAccountEntries_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -753,8 +692,6 @@ var (
 
 	pattern_LedgerService_QueryAggregatedBalance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "aggregated", "query", "balance"}, ""))
 
-	pattern_LedgerService_GetAnalyticalData_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "analytical-data", "account_path"}, ""))
-
 	pattern_LedgerService_ListAccountEntries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "accounts", "account_path", "history"}, ""))
 
 	pattern_LedgerService_GetSyntheticReport_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6, 2, 7}, []string{"api", "v1", "reports", "filters.account_query", "filters.level", "filters.start_time", "filters.end_time", "synthetic"}, ""))
@@ -766,8 +703,6 @@ var (
 	forward_LedgerService_GetAccountBalance_0 = runtime.ForwardResponseMessage
 
 	forward_LedgerService_QueryAggregatedBalance_0 = runtime.ForwardResponseMessage
-
-	forward_LedgerService_GetAnalyticalData_0 = runtime.ForwardResponseStream
 
 	forward_LedgerService_ListAccountEntries_0 = runtime.ForwardResponseMessage
 
