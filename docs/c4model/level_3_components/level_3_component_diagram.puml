@@ -3,14 +3,27 @@
 
 title Component Diagram - Ledger System
 
-Container_Boundary(ledger, "Ledger") {
-    Container(ledger_api, "Ledger API", "Go", "Provides Ledger functionalities via APi")
-    ComponentDb(database, "Database", "Postgres", "Stores transaction and operations related to accounts")
+Container(grpc_server, "gRPC Server", "grpc-go")
+
+Container_Boundary(ledger, "Ledger System") {
+    Component(api, "API", "Go", "")
+    Component(usecase, "Usecase", "Go", "")
+    Component(repository, "Repository", "Go", "")
+    Component(probe, "Probe", "Go", "")
+
+    Rel(api, usecase, "Uses")
+    Rel(usecase, repository, "Uses")
+
+    Rel(api, probe, "Write logs and metrics")
+    Rel(usecase, probe, "Write logs and metrics")
+    Rel(repository, probe, "Write logs and metrics")
 }
 
+ComponentDb(database, "Database", "Postgres", "Stores transaction and operations related to accounts")
 ContainerDb_Ext(instrumentation, "Instrumentation", "New Relic", "Stores logs and metrics data. Allows monitoring.")
 
-Rel(ledger_api, database, "Writes and reads account, entries and transactions data")
-Rel(ledger_api, instrumentation, "Write logs and metrics")
+Rel(grpc_server, api, "Calls destiny API")
+Rel(probe, instrumentation, "Write logs and metrics")
+Rel(repository, database, "Write data")
 
 @enduml
