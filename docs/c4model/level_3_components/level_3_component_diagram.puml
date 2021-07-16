@@ -1,0 +1,16 @@
+@startuml Component Diagram - Level 03
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component Diagram - Ledger System
+
+Container_Boundary(ledger, "Ledger") {
+    Container(ledger_api, "Ledger API", "Go", "Provides Ledger functionalities via APi")
+    ComponentDb(database, "Database", "Postgres", "Stores transaction and operations related to accounts")
+}
+
+ContainerDb_Ext(instrumentation, "Instrumentation", "New Relic", "Stores logs and metrics data. Allows monitoring.")
+
+Rel(ledger_api, database, "Writes and reads account, entries and transactions data")
+Rel(ledger_api, instrumentation, "Write logs and metrics")
+
+@enduml
