@@ -29,9 +29,6 @@ var _ domain.Repository = &RepositoryMock{}
 // 			GetAccountBalanceFunc: func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
 // 				panic("mock out the GetAccountBalance method")
 // 			},
-// 			GetAnalyticalDataFunc: func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error {
-// 				panic("mock out the GetAnalyticalData method")
-// 			},
 // 			GetSyntheticReportFunc: func(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
 // 				panic("mock out the GetSyntheticReport method")
 // 			},
@@ -53,9 +50,6 @@ type RepositoryMock struct {
 
 	// GetAccountBalanceFunc mocks the GetAccountBalance method.
 	GetAccountBalanceFunc func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
-
-	// GetAnalyticalDataFunc mocks the GetAnalyticalData method.
-	GetAnalyticalDataFunc func(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error
 
 	// GetSyntheticReportFunc mocks the GetSyntheticReport method.
 	GetSyntheticReportFunc func(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
@@ -81,15 +75,6 @@ type RepositoryMock struct {
 			Ctx context.Context
 			// Account is the account argument value.
 			Account vos.AccountPath
-		}
-		// GetAnalyticalData holds details about calls to the GetAnalyticalData method.
-		GetAnalyticalData []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// Query is the query argument value.
-			Query vos.AccountQuery
-			// Fn is the fn argument value.
-			Fn func(vos.Statement) error
 		}
 		// GetSyntheticReport holds details about calls to the GetSyntheticReport method.
 		GetSyntheticReport []struct {
@@ -121,7 +106,6 @@ type RepositoryMock struct {
 	}
 	lockCreateTransaction      sync.RWMutex
 	lockGetAccountBalance      sync.RWMutex
-	lockGetAnalyticalData      sync.RWMutex
 	lockGetSyntheticReport     sync.RWMutex
 	lockListAccountEntries     sync.RWMutex
 	lockQueryAggregatedBalance sync.RWMutex
@@ -194,45 +178,6 @@ func (mock *RepositoryMock) GetAccountBalanceCalls() []struct {
 	mock.lockGetAccountBalance.RLock()
 	calls = mock.calls.GetAccountBalance
 	mock.lockGetAccountBalance.RUnlock()
-	return calls
-}
-
-// GetAnalyticalData calls GetAnalyticalDataFunc.
-func (mock *RepositoryMock) GetAnalyticalData(ctx context.Context, query vos.AccountQuery, fn func(vos.Statement) error) error {
-	if mock.GetAnalyticalDataFunc == nil {
-		panic("RepositoryMock.GetAnalyticalDataFunc: method is nil but Repository.GetAnalyticalData was just called")
-	}
-	callInfo := struct {
-		Ctx   context.Context
-		Query vos.AccountQuery
-		Fn    func(vos.Statement) error
-	}{
-		Ctx:   ctx,
-		Query: query,
-		Fn:    fn,
-	}
-	mock.lockGetAnalyticalData.Lock()
-	mock.calls.GetAnalyticalData = append(mock.calls.GetAnalyticalData, callInfo)
-	mock.lockGetAnalyticalData.Unlock()
-	return mock.GetAnalyticalDataFunc(ctx, query, fn)
-}
-
-// GetAnalyticalDataCalls gets all the calls that were made to GetAnalyticalData.
-// Check the length with:
-//     len(mockedRepository.GetAnalyticalDataCalls())
-func (mock *RepositoryMock) GetAnalyticalDataCalls() []struct {
-	Ctx   context.Context
-	Query vos.AccountQuery
-	Fn    func(vos.Statement) error
-} {
-	var calls []struct {
-		Ctx   context.Context
-		Query vos.AccountQuery
-		Fn    func(vos.Statement) error
-	}
-	mock.lockGetAnalyticalData.RLock()
-	calls = mock.calls.GetAnalyticalData
-	mock.lockGetAnalyticalData.RUnlock()
 	return calls
 }
 

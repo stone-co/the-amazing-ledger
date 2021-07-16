@@ -22,7 +22,6 @@ type LedgerServiceClient interface {
 	CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetAccountBalance(ctx context.Context, in *GetAccountBalanceRequest, opts ...grpc.CallOption) (*GetAccountBalanceResponse, error)
 	QueryAggregatedBalance(ctx context.Context, in *QueryAggregatedBalanceRequest, opts ...grpc.CallOption) (*QueryAggregatedBalanceResponse, error)
-	GetAnalyticalData(ctx context.Context, in *GetAnalyticalDataRequest, opts ...grpc.CallOption) (LedgerService_GetAnalyticalDataClient, error)
 	ListAccountEntries(ctx context.Context, in *ListAccountEntriesRequest, opts ...grpc.CallOption) (*ListAccountEntriesResponse, error)
 	GetSyntheticReport(ctx context.Context, in *GetSyntheticReportRequest, opts ...grpc.CallOption) (*GetSyntheticReportResponse, error)
 }
@@ -62,38 +61,6 @@ func (c *ledgerServiceClient) QueryAggregatedBalance(ctx context.Context, in *Qu
 	return out, nil
 }
 
-func (c *ledgerServiceClient) GetAnalyticalData(ctx context.Context, in *GetAnalyticalDataRequest, opts ...grpc.CallOption) (LedgerService_GetAnalyticalDataClient, error) {
-	stream, err := c.cc.NewStream(ctx, &LedgerService_ServiceDesc.Streams[0], "/ledger.LedgerService/GetAnalyticalData", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &ledgerServiceGetAnalyticalDataClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type LedgerService_GetAnalyticalDataClient interface {
-	Recv() (*GetAnalyticalDataResponse, error)
-	grpc.ClientStream
-}
-
-type ledgerServiceGetAnalyticalDataClient struct {
-	grpc.ClientStream
-}
-
-func (x *ledgerServiceGetAnalyticalDataClient) Recv() (*GetAnalyticalDataResponse, error) {
-	m := new(GetAnalyticalDataResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 func (c *ledgerServiceClient) ListAccountEntries(ctx context.Context, in *ListAccountEntriesRequest, opts ...grpc.CallOption) (*ListAccountEntriesResponse, error) {
 	out := new(ListAccountEntriesResponse)
 	err := c.cc.Invoke(ctx, "/ledger.LedgerService/ListAccountEntries", in, out, opts...)
@@ -119,7 +86,6 @@ type LedgerServiceServer interface {
 	CreateTransaction(context.Context, *CreateTransactionRequest) (*emptypb.Empty, error)
 	GetAccountBalance(context.Context, *GetAccountBalanceRequest) (*GetAccountBalanceResponse, error)
 	QueryAggregatedBalance(context.Context, *QueryAggregatedBalanceRequest) (*QueryAggregatedBalanceResponse, error)
-	GetAnalyticalData(*GetAnalyticalDataRequest, LedgerService_GetAnalyticalDataServer) error
 	ListAccountEntries(context.Context, *ListAccountEntriesRequest) (*ListAccountEntriesResponse, error)
 	GetSyntheticReport(context.Context, *GetSyntheticReportRequest) (*GetSyntheticReportResponse, error)
 }
@@ -136,9 +102,6 @@ func (UnimplementedLedgerServiceServer) GetAccountBalance(context.Context, *GetA
 }
 func (UnimplementedLedgerServiceServer) QueryAggregatedBalance(context.Context, *QueryAggregatedBalanceRequest) (*QueryAggregatedBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryAggregatedBalance not implemented")
-}
-func (UnimplementedLedgerServiceServer) GetAnalyticalData(*GetAnalyticalDataRequest, LedgerService_GetAnalyticalDataServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetAnalyticalData not implemented")
 }
 func (UnimplementedLedgerServiceServer) ListAccountEntries(context.Context, *ListAccountEntriesRequest) (*ListAccountEntriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAccountEntries not implemented")
@@ -212,27 +175,6 @@ func _LedgerService_QueryAggregatedBalance_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LedgerService_GetAnalyticalData_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GetAnalyticalDataRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(LedgerServiceServer).GetAnalyticalData(m, &ledgerServiceGetAnalyticalDataServer{stream})
-}
-
-type LedgerService_GetAnalyticalDataServer interface {
-	Send(*GetAnalyticalDataResponse) error
-	grpc.ServerStream
-}
-
-type ledgerServiceGetAnalyticalDataServer struct {
-	grpc.ServerStream
-}
-
-func (x *ledgerServiceGetAnalyticalDataServer) Send(m *GetAnalyticalDataResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
 func _LedgerService_ListAccountEntries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListAccountEntriesRequest)
 	if err := dec(in); err != nil {
@@ -297,13 +239,7 @@ var LedgerService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _LedgerService_GetSyntheticReport_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "GetAnalyticalData",
-			Handler:       _LedgerService_GetAnalyticalData_Handler,
-			ServerStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "ledger/ledger.proto",
 }
 

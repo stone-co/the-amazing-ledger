@@ -28,9 +28,6 @@ var _ domain.UseCase = &UseCaseMock{}
 // 			GetAccountBalanceFunc: func(contextMoqParam context.Context, accountPath vos.AccountPath) (vos.AccountBalance, error) {
 // 				panic("mock out the GetAccountBalance method")
 // 			},
-// 			GetAnalyticalDataFunc: func(contextMoqParam context.Context, accountQuery vos.AccountQuery, fn func(vos.Statement) error) error {
-// 				panic("mock out the GetAnalyticalData method")
-// 			},
 // 			GetSyntheticReportFunc: func(contextMoqParam context.Context, accountQuery vos.AccountQuery, n int, timeMoqParam1 time.Time, timeMoqParam2 time.Time) (*vos.SyntheticReport, error) {
 // 				panic("mock out the GetSyntheticReport method")
 // 			},
@@ -52,9 +49,6 @@ type UseCaseMock struct {
 
 	// GetAccountBalanceFunc mocks the GetAccountBalance method.
 	GetAccountBalanceFunc func(contextMoqParam context.Context, accountPath vos.AccountPath) (vos.AccountBalance, error)
-
-	// GetAnalyticalDataFunc mocks the GetAnalyticalData method.
-	GetAnalyticalDataFunc func(contextMoqParam context.Context, accountQuery vos.AccountQuery, fn func(vos.Statement) error) error
 
 	// GetSyntheticReportFunc mocks the GetSyntheticReport method.
 	GetSyntheticReportFunc func(contextMoqParam context.Context, accountQuery vos.AccountQuery, n int, timeMoqParam1 time.Time, timeMoqParam2 time.Time) (*vos.SyntheticReport, error)
@@ -80,15 +74,6 @@ type UseCaseMock struct {
 			ContextMoqParam context.Context
 			// AccountPath is the accountPath argument value.
 			AccountPath vos.AccountPath
-		}
-		// GetAnalyticalData holds details about calls to the GetAnalyticalData method.
-		GetAnalyticalData []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// AccountQuery is the accountQuery argument value.
-			AccountQuery vos.AccountQuery
-			// Fn is the fn argument value.
-			Fn func(vos.Statement) error
 		}
 		// GetSyntheticReport holds details about calls to the GetSyntheticReport method.
 		GetSyntheticReport []struct {
@@ -120,7 +105,6 @@ type UseCaseMock struct {
 	}
 	lockCreateTransaction      sync.RWMutex
 	lockGetAccountBalance      sync.RWMutex
-	lockGetAnalyticalData      sync.RWMutex
 	lockGetSyntheticReport     sync.RWMutex
 	lockListAccountEntries     sync.RWMutex
 	lockQueryAggregatedBalance sync.RWMutex
@@ -193,45 +177,6 @@ func (mock *UseCaseMock) GetAccountBalanceCalls() []struct {
 	mock.lockGetAccountBalance.RLock()
 	calls = mock.calls.GetAccountBalance
 	mock.lockGetAccountBalance.RUnlock()
-	return calls
-}
-
-// GetAnalyticalData calls GetAnalyticalDataFunc.
-func (mock *UseCaseMock) GetAnalyticalData(contextMoqParam context.Context, accountQuery vos.AccountQuery, fn func(vos.Statement) error) error {
-	if mock.GetAnalyticalDataFunc == nil {
-		panic("UseCaseMock.GetAnalyticalDataFunc: method is nil but UseCase.GetAnalyticalData was just called")
-	}
-	callInfo := struct {
-		ContextMoqParam context.Context
-		AccountQuery    vos.AccountQuery
-		Fn              func(vos.Statement) error
-	}{
-		ContextMoqParam: contextMoqParam,
-		AccountQuery:    accountQuery,
-		Fn:              fn,
-	}
-	mock.lockGetAnalyticalData.Lock()
-	mock.calls.GetAnalyticalData = append(mock.calls.GetAnalyticalData, callInfo)
-	mock.lockGetAnalyticalData.Unlock()
-	return mock.GetAnalyticalDataFunc(contextMoqParam, accountQuery, fn)
-}
-
-// GetAnalyticalDataCalls gets all the calls that were made to GetAnalyticalData.
-// Check the length with:
-//     len(mockedUseCase.GetAnalyticalDataCalls())
-func (mock *UseCaseMock) GetAnalyticalDataCalls() []struct {
-	ContextMoqParam context.Context
-	AccountQuery    vos.AccountQuery
-	Fn              func(vos.Statement) error
-} {
-	var calls []struct {
-		ContextMoqParam context.Context
-		AccountQuery    vos.AccountQuery
-		Fn              func(vos.Statement) error
-	}
-	mock.lockGetAnalyticalData.RLock()
-	calls = mock.calls.GetAnalyticalData
-	mock.lockGetAnalyticalData.RUnlock()
 	return calls
 }
 
