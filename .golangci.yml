@@ -7,8 +7,6 @@ linters-settings:
     check-shadowing: true
   gofmt:
     simplify: true
-  maligned:
-    suggest-new: true
   misspell:
     locale: US
 #  wrapcheck:
@@ -37,7 +35,6 @@ linters:
     - gosec
     - unconvert
     - errcheck
-    - maligned
 
 output:
   format: 'colored-line-number'
