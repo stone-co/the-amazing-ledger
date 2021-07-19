@@ -7,7 +7,7 @@ import (
 )
 
 // Account represents a countability account which, underneath, can be a single ledger account or a group of accounts.
-// It's value is composed of labels, which can only contains letters (uppercase	will be lowered),
+// It's value is composed of labels, which can only contains letters (uppercase will be lowered),
 // numbers and underscores, and they are separated  by a dot (.). A label cannot be empty, so the accounts
 // 'foo.', '.foo', 'foo..bar' are all invalid. Also, each label has a maximum size of 255 characters with
 // a maximum number of total labels of 65535.
@@ -15,7 +15,7 @@ import (
 // When the account represents a group, it has a more flexible syntax, allowing a wildcard '*' in a label,
 // which follows the behavior described in the Postgres docs (https://www.postgresql.org/docs/current/ltree.html).
 //
-// The fist label if a given account is	called 'class', and it can only be one of the following:
+// The fist label if a given account is called 'class', and it can only be one of the following:
 //  - liability
 //  - asset
 //  - income
