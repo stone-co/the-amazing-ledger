@@ -93,7 +93,7 @@ func TestAPI_ListAccountEntries_Success(t *testing.T) {
 			assert.Equal(t, want, got)
 			assert.Len(t, tt.useCaseSetup.ListAccountEntriesCalls(), 1)
 
-			account, _ := vos.NewAccountPath(tt.request.AccountPath)
+			account, _ := vos.NewSingleAccount(tt.request.AccountPath)
 			page, _ := pagination.NewPage(nil)
 			assert.Equal(t, vos.AccountEntryRequest{
 				Account:   account,
@@ -123,7 +123,7 @@ func TestAPI_ListAccountEntries_InvalidRequest(t *testing.T) {
 				Page:        nil,
 			},
 			expectedCode:    codes.InvalidArgument,
-			expectedMessage: "only alphanumeric and underscore characters are supported",
+			expectedMessage: "only alphanumeric, underscore and star (*) characters are supported",
 		},
 		{
 			name:         "should return an error with nil start date",

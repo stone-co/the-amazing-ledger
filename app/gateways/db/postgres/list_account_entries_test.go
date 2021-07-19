@@ -17,7 +17,7 @@ import (
 )
 
 func Test_generateListAccountEntriesQuery(t *testing.T) {
-	account, err := vos.NewAccountPath("liability.test.account1")
+	account, err := vos.NewSingleAccount("liability.test.account1")
 	assert.NoError(t, err)
 
 	size := 10
@@ -48,7 +48,7 @@ func Test_generateListAccountEntriesQuery(t *testing.T) {
 				}
 			},
 			expectedQuery: _accountEntriesQueryPrefix + _accountEntriesQuerySuffix,
-			expectedArgs:  []interface{}{account.Name(), start, end, size + 1},
+			expectedArgs:  []interface{}{account.Value(), start, end, size + 1},
 			expectedErr:   nil,
 		},
 		{
@@ -70,7 +70,7 @@ func Test_generateListAccountEntriesQuery(t *testing.T) {
 				}
 			},
 			expectedQuery: _accountEntriesQueryPrefix + _accountEntriesQueryPagination + _accountEntriesQuerySuffix,
-			expectedArgs:  []interface{}{account.Name(), start, end, size + 1, end, version.AsInt64()},
+			expectedArgs:  []interface{}{account.Value(), start, end, size + 1, end, version.AsInt64()},
 			expectedErr:   nil,
 		},
 		{
@@ -132,7 +132,8 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 				return []entities.Transaction{tx}
 			},
 			setupRequest: func(t *testing.T, _ []entities.Transaction) vos.AccountEntryRequest {
-				account, _ := vos.NewAccountPath("liability.abc.account3")
+				account, err := vos.NewSingleAccount("liability.abc.account3")
+				assert.NoError(t, err)
 
 				now := time.Now()
 
@@ -164,7 +165,8 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 				return []entities.Transaction{tx}
 			},
 			setupRequest: func(t *testing.T, _ []entities.Transaction) vos.AccountEntryRequest {
-				account, _ := vos.NewAccountPath(account1)
+				account, err := vos.NewSingleAccount(account1)
+				assert.NoError(t, err)
 
 				now := time.Now()
 
@@ -203,7 +205,8 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 				return []entities.Transaction{tx1, tx2}
 			},
 			setupRequest: func(t *testing.T, _ []entities.Transaction) vos.AccountEntryRequest {
-				account, _ := vos.NewAccountPath(account1)
+				account, err := vos.NewSingleAccount(account1)
+				assert.NoError(t, err)
 
 				now := time.Now()
 
@@ -243,7 +246,9 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 				return []entities.Transaction{tx1, tx2}
 			},
 			setupRequest: func(t *testing.T, txs []entities.Transaction) vos.AccountEntryRequest {
-				account, _ := vos.NewAccountPath(account1)
+				account, err := vos.NewSingleAccount(account1)
+				assert.NoError(t, err)
+
 				cur := cursorFromTransaction(t, txs[0], account1)
 
 				now := time.Now()
@@ -294,7 +299,7 @@ func accountEntriesFromTransaction(t *testing.T, tx entities.Transaction, accoun
 
 	act := make([]vos.AccountEntry, 0, len(tx.Entries))
 	for _, et := range tx.Entries {
-		if et.Account.Name() != account {
+		if et.Account.Value() != account {
 			continue
 		}
 
@@ -321,7 +326,7 @@ func cursorFromTransaction(t *testing.T, tx entities.Transaction, account string
 
 	var et entities.Entry
 	for _, entry := range tx.Entries {
-		if entry.Account.Name() == account {
+		if entry.Account.Value() == account {
 			et = entry
 			break
 		}

@@ -7,8 +7,8 @@ import (
 )
 
 func TestQueryBalance(t *testing.T) {
-	query := "liability.clients.available.user-1.*"
-	accountQuery, err := NewAccountQuery(query)
+	query := "liability.clients.available.user_1.*"
+	accountQuery, err := NewAccount(query)
 	assert.NoError(t, err)
 
 	queryBalance := NewQueryBalance(accountQuery, 100)

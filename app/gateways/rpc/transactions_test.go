@@ -235,7 +235,7 @@ func TestAPI_CreateTransaction_InvalidRequest(t *testing.T) {
 				CompetenceDate: timestamppb.Now(),
 			},
 			expectedCode:    codes.InvalidArgument,
-			expectedMessage: app.ErrInvalidAccountStructure.Error(),
+			expectedMessage: app.ErrAccountPathViolation.Error(),
 		},
 	}
 

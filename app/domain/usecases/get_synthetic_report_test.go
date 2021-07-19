@@ -14,13 +14,13 @@ import (
 
 func TestLedgerUseCase_GetSyntheticReport(t *testing.T) {
 	t.Run("GetSyntheticReport with startDate and endDate being equals must return the report for the year", func(t *testing.T) {
-		query, err := vos.NewAccountQuery("liability.credit_card.invoice.*")
+		query, err := vos.NewAccount("liability.credit_card.invoice.*")
 		assert.NoError(t, err)
 
 		totalCredit := int64(2000)
 		totalDebit := int64(1000)
 
-		accountPath, err := vos.NewAccountPath("liability.credit_card.invoice")
+		accountPath, err := vos.NewSingleAccount("liability.credit_card.invoice")
 		assert.NoError(t, err)
 
 		paths := []vos.Path{{
@@ -36,7 +36,7 @@ func TestLedgerUseCase_GetSyntheticReport(t *testing.T) {
 		assert.NoError(t, err)
 
 		mockedRepository := mocks.RepositoryMock{
-			GetSyntheticReportFunc: func(ctx context.Context, query vos.AccountQuery, level int, startTime, endTime time.Time) (*vos.SyntheticReport, error) {
+			GetSyntheticReportFunc: func(ctx context.Context, account vos.Account, level int, startTime, endTime time.Time) (*vos.SyntheticReport, error) {
 				return fakeSyntheticReport, nil
 			},
 		}

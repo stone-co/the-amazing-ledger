@@ -15,12 +15,12 @@ import (
 
 func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 	t.Run("should return account balance successfully", func(t *testing.T) {
-		accountPath, err := vos.NewAccountPath(testdata.GenerateAccountPath())
+		accountPath, err := vos.NewSingleAccount(testdata.GenerateAccountPath())
 		assert.NoError(t, err)
 
 		accountBalance := vos.NewAccountBalance(accountPath, vos.Version(1), 150, 130)
 		mockedRepository := &mocks.RepositoryMock{
-			GetAccountBalanceFunc: func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
+			GetAccountBalanceFunc: func(ctx context.Context, account vos.Account) (vos.AccountBalance, error) {
 				return accountBalance, nil
 			},
 		}
@@ -37,11 +37,11 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 	})
 
 	t.Run("should return an error if account does not exist", func(t *testing.T) {
-		accountPath, err := vos.NewAccountPath(testdata.GenerateAccountPath())
+		accountPath, err := vos.NewSingleAccount(testdata.GenerateAccountPath())
 		assert.NoError(t, err)
 
 		mockedRepository := &mocks.RepositoryMock{
-			GetAccountBalanceFunc: func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
+			GetAccountBalanceFunc: func(ctx context.Context, account vos.Account) (vos.AccountBalance, error) {
 				return vos.AccountBalance{}, app.ErrAccountNotFound
 			},
 		}

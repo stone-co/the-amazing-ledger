@@ -213,14 +213,14 @@ func TestLedgerRepository_CreateTransactionFailure(t *testing.T) {
 	}
 }
 
-func assertAccountVersion(t *testing.T, ctx context.Context, db *pgxpool.Pool, account vos.AccountPath, want vos.Version) {
+func assertAccountVersion(t *testing.T, ctx context.Context, db *pgxpool.Pool, account vos.Account, want vos.Version) {
 	t.Helper()
 
 	const query = `select coalesce(version, 0) from account_version where account = $1;`
 
 	var version vos.Version
 
-	err := db.QueryRow(ctx, query, account.Name()).Scan(&version)
+	err := db.QueryRow(ctx, query, account.Value()).Scan(&version)
 	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		t.Fatalf("unexpected error: %v", err)
 	} else if errors.Is(err, pgx.ErrNoRows) {

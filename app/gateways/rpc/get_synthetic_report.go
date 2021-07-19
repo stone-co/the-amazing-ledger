@@ -2,14 +2,14 @@ package rpc
 
 import (
 	"context"
+	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
-	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"time"
+	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
+	proto "github.com/stone-co/the-amazing-ledger/gen/ledger"
 )
 
 func (a *API) GetSyntheticReport(ctx context.Context, request *proto.GetSyntheticReportRequest) (*proto.GetSyntheticReportResponse, error) {
@@ -17,7 +17,7 @@ func (a *API) GetSyntheticReport(ctx context.Context, request *proto.GetSyntheti
 		"handler": "GetSyntheticReport",
 	})
 
-	query, err := vos.NewAccountQuery(request.Filters.AccountQuery)
+	query, err := vos.NewAccount(request.Filters.AccountQuery)
 	if err != nil {
 		log.WithError(err).Error("Invalid account query")
 		return nil, status.Error(codes.InvalidArgument, err.Error())
@@ -46,7 +46,7 @@ func toProto(paths []vos.Path) []*proto.Path {
 
 	for _, element := range paths {
 		protoPaths = append(protoPaths, &proto.Path{
-			Account: element.Account.Name(),
+			Account: element.Account.Value(),
 			Credit:  element.Credit,
 			Debit:   element.Debit,
 		})

@@ -17,7 +17,7 @@ import (
 
 func TestLedgerUseCase_ListAccountEntries(t *testing.T) {
 	t.Run("should list account entries successfully", func(t *testing.T) {
-		accountPath, err := vos.NewAccountPath(testdata.GenerateAccountPath())
+		account, err := vos.NewSingleAccount(testdata.GenerateAccountPath())
 		assert.NoError(t, err)
 
 		mockedRepository := &mocks.RepositoryMock{
@@ -40,7 +40,7 @@ func TestLedgerUseCase_ListAccountEntries(t *testing.T) {
 		page, err := pagination.NewPage(nil)
 		assert.NoError(t, err)
 		got, err := usecase.ListAccountEntries(context.Background(), vos.AccountEntryRequest{
-			Account:   accountPath,
+			Account:   account,
 			StartDate: time.Now(),
 			EndDate:   time.Now(),
 			Page:      page,
@@ -52,7 +52,7 @@ func TestLedgerUseCase_ListAccountEntries(t *testing.T) {
 	})
 
 	t.Run("should return empty value if no result found", func(t *testing.T) {
-		accountPath, err := vos.NewAccountPath(testdata.GenerateAccountPath())
+		account, err := vos.NewSingleAccount(testdata.GenerateAccountPath())
 		assert.NoError(t, err)
 
 		mockedRepository := &mocks.RepositoryMock{
@@ -65,7 +65,7 @@ func TestLedgerUseCase_ListAccountEntries(t *testing.T) {
 		page, err := pagination.NewPage(nil)
 		assert.NoError(t, err)
 		got, err := usecase.ListAccountEntries(context.Background(), vos.AccountEntryRequest{
-			Account:   accountPath,
+			Account:   account,
 			StartDate: time.Now(),
 			EndDate:   time.Now(),
 			Page:      page,

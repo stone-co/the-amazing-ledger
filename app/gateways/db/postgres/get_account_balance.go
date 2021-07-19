@@ -23,7 +23,7 @@ from
 ;
 `
 
-func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
+func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.Account) (vos.AccountBalance, error) {
 	const operation = "Repository.GetAccountBalance"
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, getAccountBalanceQuery).End()
@@ -32,7 +32,7 @@ func (r LedgerRepository) GetAccountBalance(ctx context.Context, account vos.Acc
 	var totalDebit int
 	var currentVersion int64
 
-	err := r.db.QueryRow(ctx, getAccountBalanceQuery, account.Name()).Scan(
+	err := r.db.QueryRow(ctx, getAccountBalanceQuery, account.Value()).Scan(
 		&totalCredit,
 		&totalDebit,
 		&currentVersion,

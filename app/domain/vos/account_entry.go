@@ -9,7 +9,7 @@ import (
 )
 
 type AccountEntryRequest struct {
-	Account   AccountPath
+	Account   Account
 	StartDate time.Time
 	EndDate   time.Time
 	Page      pagination.Page

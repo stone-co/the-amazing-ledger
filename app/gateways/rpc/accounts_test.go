@@ -24,7 +24,7 @@ func TestAPI_GetAccountBalance_Success(t *testing.T) {
 			TotalDebit:     100,
 		}
 		mockedUsecase := &mocks.UseCaseMock{
-			GetAccountBalanceFunc: func(ctx context.Context, accountPath vos.AccountPath) (vos.AccountBalance, error) {
+			GetAccountBalanceFunc: func(ctx context.Context, accountPath vos.Account) (vos.AccountBalance, error) {
 				accountBalance.Account = accountPath
 
 				return accountBalance, nil
@@ -42,7 +42,7 @@ func TestAPI_GetAccountBalance_Success(t *testing.T) {
 		assert.Equal(t, int64(accountBalance.TotalDebit), got.TotalDebit)
 		assert.Equal(t, int64(accountBalance.TotalCredit), got.TotalCredit)
 		assert.Equal(t, int64(accountBalance.Balance()), got.Balance)
-		assert.Equal(t, accountBalance.Account.Name(), got.AccountPath)
+		assert.Equal(t, accountBalance.Account.Value(), got.AccountPath)
 	})
 }
 
@@ -58,15 +58,15 @@ func TestAPI_GetAccountBalance_InvalidRequest(t *testing.T) {
 			name:         "should return an error if account name is invalid",
 			useCaseSetup: &mocks.UseCaseMock{},
 			request: &proto.GetAccountBalanceRequest{
-				AccountPath: "liability.clients",
+				AccountPath: "liability.clients.*",
 			},
 			expectedCode:    codes.InvalidArgument,
-			expectedMessage: app.ErrInvalidAccountStructure.Error(),
+			expectedMessage: app.ErrInvalidSingleAccountComponentCharacters.Error(),
 		},
 		{
 			name: "should return an error if account does not exist",
 			useCaseSetup: &mocks.UseCaseMock{
-				GetAccountBalanceFunc: func(ctx context.Context, accountPath vos.AccountPath) (vos.AccountBalance, error) {
+				GetAccountBalanceFunc: func(ctx context.Context, account vos.Account) (vos.AccountBalance, error) {
 					return vos.AccountBalance{}, app.ErrAccountNotFound
 				},
 			},
@@ -94,12 +94,12 @@ func TestAPI_GetAccountBalance_InvalidRequest(t *testing.T) {
 
 func TestAPI_QueryAggregatedBalance_Success(t *testing.T) {
 	t.Run("should get aggregated balance successfully", func(t *testing.T) {
-		accountQuery, err := vos.NewAccountQuery("liability.stone.clients.*")
+		accountQuery, err := vos.NewAccount("liability.stone.clients.*")
 		assert.NoError(t, err)
 
 		queryBalance := vos.NewQueryBalance(accountQuery, 100)
 		mockedUsecase := &mocks.UseCaseMock{
-			QueryAggregatedBalanceFunc: func(ctx context.Context, accountQuery vos.AccountQuery) (vos.QueryBalance, error) {
+			QueryAggregatedBalanceFunc: func(ctx context.Context, account vos.Account) (vos.QueryBalance, error) {
 				return queryBalance, nil
 			},
 		}
@@ -138,7 +138,7 @@ func TestAPI_QueryAggregatedBalance_InvalidRequest(t *testing.T) {
 		{
 			name: "should return an error if account does not exist",
 			useCaseSetup: &mocks.UseCaseMock{
-				QueryAggregatedBalanceFunc: func(ctx context.Context, accountQuery vos.AccountQuery) (vos.QueryBalance, error) {
+				QueryAggregatedBalanceFunc: func(ctx context.Context, account vos.Account) (vos.QueryBalance, error) {
 					return vos.QueryBalance{}, app.ErrAccountNotFound
 				},
 			},

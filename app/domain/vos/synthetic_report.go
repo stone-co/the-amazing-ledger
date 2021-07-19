@@ -4,7 +4,7 @@ import "github.com/stone-co/the-amazing-ledger/app"
 
 // TODO: improve struct name(Common Language)
 type Path struct {
-	Account AccountPath
+	Account Account
 	Credit  int64
 	Debit   int64
 }

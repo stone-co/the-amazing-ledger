@@ -7,7 +7,7 @@ import (
 )
 
 func TestAccountBalance(t *testing.T) {
-	accountName, _ := NewAccountPath("liability.clients.available.user-1.block")
+	accountName, _ := NewSingleAccount("liability.clients.available.user-1.block")
 
 	accountBalance := NewAccountBalance(accountName, Version(3), 100, 50)
 

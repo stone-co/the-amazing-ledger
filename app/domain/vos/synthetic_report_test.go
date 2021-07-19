@@ -8,7 +8,7 @@ import (
 
 // test the creation of a new synthetic report object
 func TestSyntheticReport(t *testing.T) {
-	accountLiquidacao, _ := NewAccountPath("assets.bacen.conta_liquidacao")
+	accountLiquidacao, _ := NewSingleAccount("assets.bacen.conta_liquidacao")
 
 	type wants struct {
 		paths       []Path
