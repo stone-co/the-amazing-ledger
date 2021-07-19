@@ -1,0 +1,47 @@
+@startuml Component Diagram - Level 03
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component Diagram - Ledger System
+
+System_Ext(transactional_systems, "Transactional systems")
+System_Ext(report_systems, "Report systems")
+
+Container_Boundary(ledger, "Ledger Service") {
+    Component(https_proxy, "HTTPS Proxy", "gRPC Gateway", "")
+    Component(acc_api, "Account API", "Go", "")
+    Component(report_api, "Report API", "Go", "")
+    Component(acc_usecase, "Account Usecase", "Go", "")
+    Component(report_usecase, "Report Usecase", "Go", "")
+    Component(acc_repository, "Repository", "interface")
+    Component(report_repository, "Repository", "interface")
+    Component(inst_probe, "Probe", "Go", "interface")
+
+
+    Rel(acc_api, acc_usecase, "Uses")
+    Rel(report_api, report_usecase, "Uses")
+    Rel(acc_usecase, acc_repository, "Uses")
+    Rel(report_usecase, report_repository, "Uses")
+
+    Rel_Right(https_proxy, report_api, "Calls")
+    Rel_Right(https_proxy, acc_api, "Calls")
+
+    Rel_Right(acc_api, inst_probe, "Uses")
+    Rel_Right(acc_usecase, inst_probe, "Uses")
+    Rel_Right(acc_repository, inst_probe, "Uses")
+    Rel_Right(report_api, inst_probe, "Uses")
+    Rel_Right(report_usecase, inst_probe, "Uses")
+    Rel_Right(report_repository, inst_probe, "Uses")
+}
+
+ComponentDb(database, "Database", "Postgres", "Stores transaction and operations related to accounts")
+ContainerDb_Ext(instrumentation, "Instrumentation", "New Relic", "Stores logs and metrics data. Allows monitoring.")
+
+Rel(transactional_systems, acc_api, "Makes API calls to", "grpc")
+Rel(transactional_systems, https_proxy, "Makes API calls to", "https")
+Rel(report_systems, report_api, "Makes API calls to", "grpc")
+Rel(report_systems, https_proxy, "Makes API calls to", "https")
+Rel(inst_probe, instrumentation, "Write logs and metrics")
+Rel(acc_repository, database, "Write data")
+Rel(report_repository, database, "Write data")
+
+@enduml
