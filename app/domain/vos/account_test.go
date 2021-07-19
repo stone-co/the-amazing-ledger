@@ -1,8 +1,11 @@
 package vos
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/stone-co/the-amazing-ledger/app"
 )
 
 func TestNewAccount(t *testing.T) {
@@ -11,7 +14,7 @@ func TestNewAccount(t *testing.T) {
 		account    string
 		singleOnly bool
 		want       Account
-		wantErr    bool
+		wantErr    error
 	}{
 		{
 			name:    "Single simple",
@@ -20,7 +23,7 @@ func TestNewAccount(t *testing.T) {
 				account:    "asset.account.example",
 				represents: Single,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "Single complete",
@@ -29,7 +32,7 @@ func TestNewAccount(t *testing.T) {
 				account:    "asset.account.abc_123",
 				represents: Single,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "Single with upper",
@@ -38,7 +41,7 @@ func TestNewAccount(t *testing.T) {
 				account:    "asset.account.example",
 				represents: Single,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "suffix simple",
@@ -47,7 +50,7 @@ func TestNewAccount(t *testing.T) {
 				account:    "*.asset.account",
 				represents: Group,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "prefix simple",
@@ -56,7 +59,7 @@ func TestNewAccount(t *testing.T) {
 				account:    "asset.account.*",
 				represents: Group,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "group simple",
@@ -65,7 +68,7 @@ func TestNewAccount(t *testing.T) {
 				account:    "asset.*.account",
 				represents: Group,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "group prefix composed",
@@ -74,7 +77,7 @@ func TestNewAccount(t *testing.T) {
 				account:    "asset.*.account.*",
 				represents: Group,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "group prefix simple",
@@ -83,7 +86,7 @@ func TestNewAccount(t *testing.T) {
 				account:    "asset.account*",
 				represents: Group,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "group suffix composed",
@@ -92,7 +95,7 @@ func TestNewAccount(t *testing.T) {
 				account:    "*.asset.*.account",
 				represents: Group,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "group suffix simple",
@@ -101,50 +104,50 @@ func TestNewAccount(t *testing.T) {
 				account:    "*asset.account",
 				represents: Group,
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name:    "empty account",
 			account: "",
 			want:    Account{},
-			wantErr: true,
+			wantErr: app.ErrInvalidAccountStructure,
 		},
 		{
 			name:    "empty component beginning",
 			account: ".account",
 			want:    Account{},
-			wantErr: true,
+			wantErr: app.ErrInvalidAccountComponentSize,
 		},
 		{
 			name:    "empty component middle",
 			account: "asset..account",
 			want:    Account{},
-			wantErr: true,
+			wantErr: app.ErrInvalidAccountComponentSize,
 		},
 		{
 			name:    "empty component end",
 			account: "asset.",
 			want:    Account{},
-			wantErr: true,
+			wantErr: app.ErrInvalidAccountComponentSize,
 		},
 		{
 			name:    "non ascii characters",
 			account: "asset.áccount",
 			want:    Account{},
-			wantErr: true,
+			wantErr: app.ErrInvalidAccountComponentCharacters,
 		},
 		{
 			name:       "Single only should fail if any '*' is present",
 			account:    "*.account",
 			singleOnly: true,
 			want:       Account{},
-			wantErr:    true,
+			wantErr:    app.ErrInvalidSingleAccountComponentCharacters,
 		},
 		{
 			name:    "should fail with invalid class",
 			account: "assets.account",
 			want:    Account{},
-			wantErr: true,
+			wantErr: app.ErrAccountPathViolation,
 		},
 	}
 	for _, tt := range tests {
@@ -160,13 +163,8 @@ func TestNewAccount(t *testing.T) {
 				got, err = NewAccount(tt.account)
 			}
 
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NewAccount() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewAccount() got = %v, want %v", got, tt.want)
-			}
+			assert.ErrorIs(t, err, tt.wantErr)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
