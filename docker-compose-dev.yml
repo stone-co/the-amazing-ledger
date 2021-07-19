@@ -20,4 +20,4 @@ services:
       - 9090:9090
     volumes:
       - ./prometheus/:/etc/prometheus/
-    network_mode: host
+    # network_mode: host
