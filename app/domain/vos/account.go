@@ -13,7 +13,7 @@ import (
 // a maximum number of total labels of 65535.
 //
 // When the account represents a group, it has a more flexible syntax, allowing a wildcard '*' in a label,
-// which follows the behaviour described in the Postgres docs (https://www.postgresql.org/docs/current/ltree.html).
+// which follows the behavior described in the Postgres docs (https://www.postgresql.org/docs/current/ltree.html).
 //
 // The fist label if a given account is	called 'class', and it can only be one of the following:
 //  - liability
@@ -82,9 +82,9 @@ const (
 )
 
 type state struct {
-	strategy         Representation
 	totalComponents  uint
 	componentSize    uint
+	strategy         Representation
 	needsLower       bool
 	componentHasStar bool
 }
