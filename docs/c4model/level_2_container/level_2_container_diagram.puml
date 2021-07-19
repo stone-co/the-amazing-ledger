@@ -7,14 +7,13 @@ System_Ext(transactional_systems, "Transactional systems")
 System_Ext(report_systems, "Report systems")
 
 Container_Boundary(ledger, "Ledger") {
-    Container(ledger_api, "Ledger API", "Go", "Provides Ledger functionalities via APi")
+    Container(ledger_api, "Ledger Service", "Go", "Provides Ledger functionalities via API")
     ContainerDb(database, "Database", "Postgres", "Stores transaction and operations related to accounts")
 
     Rel(ledger_api, database, "Writes and reads account, entries and transactions data")
 }
 
 ContainerDb_Ext(instrumentation, "Instrumentation", "New Relic", "Stores logs and metrics data. Allows monitoring.")
-
 
 Rel(transactional_systems, ledger_api, "Record transactions and query for account balances using", "rpc/https")
 Rel(report_systems, ledger_api, "Query for reports using", "rpc/https")
