@@ -18,7 +18,7 @@ import (
 // The fist label if a given account is called 'class', and it can only be one of the following:
 //  - liability
 //  - asset
-//  - income
+//  - revenue
 //  - expense
 //  - equity
 //  - conciliate_credit
