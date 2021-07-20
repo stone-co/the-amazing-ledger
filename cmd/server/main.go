@@ -12,6 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/stone-co/the-amazing-ledger/app"
+	"github.com/stone-co/the-amazing-ledger/app/domain/probes"
 	"github.com/stone-co/the-amazing-ledger/app/domain/usecases"
 	"github.com/stone-co/the-amazing-ledger/app/gateways/db/postgres"
 	server "github.com/stone-co/the-amazing-ledger/app/gateways/http"
@@ -43,9 +44,9 @@ func main() {
 		log.WithError(err).Fatal("running postgres migrations")
 	}
 
+	ledgerProbe := probes.NewLedgerProbe(log)
 	ledgerRepository := postgres.NewLedgerRepository(conn, log)
-
-	ledgerUseCase := usecases.NewLedgerUseCase(log, ledgerRepository)
+	ledgerUseCase := usecases.NewLedgerUseCase(log, ledgerRepository, ledgerProbe)
 
 	httpServer := server.NewHttpServer(cfg.HttpServer, BuildGitCommit, BuildTime, log)
 	defer func() {

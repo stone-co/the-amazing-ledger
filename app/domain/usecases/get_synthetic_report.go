@@ -11,6 +11,8 @@ import (
 )
 
 func (l *LedgerUseCase) GetSyntheticReport(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+	l.probe.GettingSyntheticReport(ctx, query, startTime, endTime)
+
 	if level < 1 {
 		level = len(strings.Split(query.Value(), vos.DepthSeparator))
 	}

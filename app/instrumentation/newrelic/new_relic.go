@@ -1,4 +1,4 @@
-package newrelic
+package instrumentation
 
 import (
 	"context"
