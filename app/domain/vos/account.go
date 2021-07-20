@@ -31,24 +31,24 @@ import (
 //  - liability.clients.available.96a131a8_c4ac_495e_8971_fcecdbdd003a.detail1.detail2
 //  - asset.*.treasury
 type Account struct {
-	represents Representation
-	account    string
+	accountType AccountType
+	value       string
 }
 
 func (a Account) Value() string {
-	return a.account
+	return a.value
 }
 
-func (a Account) Represents() Representation {
-	return a.represents
+func (a Account) Type() AccountType {
+	return a.accountType
 }
 
-// Representation indicates what the given account represents, being either a single account or a group of accounts.
-type Representation uint8
+// AccountType indicates what the given account represents, being either a analytical account or a synthetic one.
+type AccountType uint8
 
 const (
-	Single Representation = iota + 1
-	Group
+	Analytical AccountType = iota + 1
+	Synthetic
 )
 
 // Available classes
@@ -84,7 +84,7 @@ const (
 type state struct {
 	totalComponents  uint
 	componentSize    uint
-	strategy         Representation
+	strategy         AccountType
 	needsLower       bool
 	componentHasStar bool
 }
@@ -105,7 +105,7 @@ func newAccount(account string, singleOnly bool) (Account, error) {
 		return Account{}, app.ErrInvalidAccountStructure
 	}
 
-	st := &state{strategy: Single}
+	st := &state{strategy: Analytical}
 
 	var (
 		r   rune
@@ -149,7 +149,7 @@ func newAccount(account string, singleOnly bool) (Account, error) {
 		default:
 			return Account{}, app.ErrAccountPathViolation
 		}
-	} else if st.totalComponents < 2 && st.strategy != Group {
+	} else if st.totalComponents < 2 && st.strategy != Synthetic {
 		return Account{}, app.ErrInvalidAccountStructure
 	}
 
@@ -158,8 +158,8 @@ func newAccount(account string, singleOnly bool) (Account, error) {
 	}
 
 	return Account{
-		account:    account,
-		represents: st.strategy,
+		value:       account,
+		accountType: st.strategy,
 	}, nil
 }
 
@@ -193,7 +193,7 @@ func treatStar(st *state) error {
 		return app.ErrInvalidAccountStructure
 	}
 
-	st.strategy = Group
+	st.strategy = Synthetic
 	st.componentSize += 1
 	st.componentHasStar = true
 

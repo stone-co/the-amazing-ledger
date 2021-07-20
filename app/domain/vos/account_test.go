@@ -17,29 +17,29 @@ func TestNewAccount(t *testing.T) {
 		wantErr    error
 	}{
 		{
-			name:    "Single simple",
+			name:    "Analytical simple",
 			account: "asset.account.example",
 			want: Account{
-				account:    "asset.account.example",
-				represents: Single,
+				value:       "asset.account.example",
+				accountType: Analytical,
 			},
 			wantErr: nil,
 		},
 		{
-			name:    "Single complete",
+			name:    "Analytical complete",
 			account: "asset.account.abc_123",
 			want: Account{
-				account:    "asset.account.abc_123",
-				represents: Single,
+				value:       "asset.account.abc_123",
+				accountType: Analytical,
 			},
 			wantErr: nil,
 		},
 		{
-			name:    "Single with upper",
+			name:    "Analytical with upper",
 			account: "asset.Account.example",
 			want: Account{
-				account:    "asset.account.example",
-				represents: Single,
+				value:       "asset.account.example",
+				accountType: Analytical,
 			},
 			wantErr: nil,
 		},
@@ -47,8 +47,8 @@ func TestNewAccount(t *testing.T) {
 			name:    "suffix simple",
 			account: "*.asset.account",
 			want: Account{
-				account:    "*.asset.account",
-				represents: Group,
+				value:       "*.asset.account",
+				accountType: Synthetic,
 			},
 			wantErr: nil,
 		},
@@ -56,8 +56,8 @@ func TestNewAccount(t *testing.T) {
 			name:    "prefix simple",
 			account: "asset.account.*",
 			want: Account{
-				account:    "asset.account.*",
-				represents: Group,
+				value:       "asset.account.*",
+				accountType: Synthetic,
 			},
 			wantErr: nil,
 		},
@@ -65,8 +65,8 @@ func TestNewAccount(t *testing.T) {
 			name:    "group simple",
 			account: "asset.*.account",
 			want: Account{
-				account:    "asset.*.account",
-				represents: Group,
+				value:       "asset.*.account",
+				accountType: Synthetic,
 			},
 			wantErr: nil,
 		},
@@ -74,8 +74,8 @@ func TestNewAccount(t *testing.T) {
 			name:    "group prefix composed",
 			account: "asset.*.account.*",
 			want: Account{
-				account:    "asset.*.account.*",
-				represents: Group,
+				value:       "asset.*.account.*",
+				accountType: Synthetic,
 			},
 			wantErr: nil,
 		},
@@ -83,8 +83,8 @@ func TestNewAccount(t *testing.T) {
 			name:    "group prefix simple",
 			account: "asset.account*",
 			want: Account{
-				account:    "asset.account*",
-				represents: Group,
+				value:       "asset.account*",
+				accountType: Synthetic,
 			},
 			wantErr: nil,
 		},
@@ -92,8 +92,8 @@ func TestNewAccount(t *testing.T) {
 			name:    "group suffix composed",
 			account: "*.asset.*.account",
 			want: Account{
-				account:    "*.asset.*.account",
-				represents: Group,
+				value:       "*.asset.*.account",
+				accountType: Synthetic,
 			},
 			wantErr: nil,
 		},
@@ -101,8 +101,8 @@ func TestNewAccount(t *testing.T) {
 			name:    "group suffix simple",
 			account: "*asset.account",
 			want: Account{
-				account:    "*asset.account",
-				represents: Group,
+				value:       "*asset.account",
+				accountType: Synthetic,
 			},
 			wantErr: nil,
 		},
@@ -137,7 +137,7 @@ func TestNewAccount(t *testing.T) {
 			wantErr: app.ErrInvalidAccountComponentCharacters,
 		},
 		{
-			name:       "Single only should fail if any '*' is present",
+			name:       "Analytical only should fail if any '*' is present",
 			account:    "*.account",
 			singleOnly: true,
 			want:       Account{},
