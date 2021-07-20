@@ -22,7 +22,7 @@ func (a *API) ListAccountEntries(ctx context.Context, request *proto.ListAccount
 		"handler": "ListAccountEntries",
 	})
 
-	account, err := vos.NewSingleAccount(request.AccountPath)
+	account, err := vos.NewAnalyticalAccount(request.AccountPath)
 	if err != nil {
 		log.WithError(err).Error("can't create account name")
 		return nil, status.Error(codes.InvalidArgument, err.Error())

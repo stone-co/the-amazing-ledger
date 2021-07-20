@@ -18,10 +18,10 @@ import (
 )
 
 func TestLedgerRepository_GetAccountBalanceSuccess(t *testing.T) {
-	acc1, err := vos.NewSingleAccount(testdata.GenerateAccountPath())
+	acc1, err := vos.NewAnalyticalAccount(testdata.GenerateAccountPath())
 	assert.NoError(t, err)
 
-	acc2, err := vos.NewSingleAccount(testdata.GenerateAccountPath())
+	acc2, err := vos.NewAnalyticalAccount(testdata.GenerateAccountPath())
 	assert.NoError(t, err)
 
 	type accountValues struct {
@@ -175,7 +175,7 @@ func TestLedgerRepository_GetAccountBalanceFailure(t *testing.T) {
 	t.Run("should return an error if account does not exist", func(t *testing.T) {
 		r := NewLedgerRepository(pgDocker.DB, logrus.New())
 
-		acc, err := vos.NewSingleAccount(testdata.GenerateAccountPath())
+		acc, err := vos.NewAnalyticalAccount(testdata.GenerateAccountPath())
 		assert.NoError(t, err)
 
 		_, err = r.GetAccountBalance(context.Background(), acc)

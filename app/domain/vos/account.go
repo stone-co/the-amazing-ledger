@@ -89,18 +89,17 @@ type state struct {
 	componentHasStar bool
 }
 
-// NewSingleAccount creates a new valid Account, which can only represent a single account.
-func NewSingleAccount(account string) (Account, error) {
+// NewAnalyticalAccount creates a new valid Account, which can only represent an analytical account.
+func NewAnalyticalAccount(account string) (Account, error) {
 	return newAccount(account, true)
 }
 
-// NewAccount creates a new valid Account, which can represents a single account,
-// or a group of them through a query format.
+// NewAccount creates a new valid Account, which can represents an analytical account, or a synthetic one.
 func NewAccount(account string) (Account, error) {
 	return newAccount(account, false)
 }
 
-func newAccount(account string, singleOnly bool) (Account, error) {
+func newAccount(account string, analyticalOnly bool) (Account, error) {
 	if len(account) == 0 {
 		return Account{}, app.ErrInvalidAccountStructure
 	}
@@ -125,7 +124,7 @@ func newAccount(account string, singleOnly bool) (Account, error) {
 		case r == dot:
 			err = treatDot(account, st)
 		case r == star:
-			if singleOnly {
+			if analyticalOnly {
 				err = app.ErrInvalidSingleAccountComponentCharacters
 				break
 			}

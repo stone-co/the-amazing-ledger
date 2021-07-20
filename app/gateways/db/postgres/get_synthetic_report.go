@@ -74,7 +74,7 @@ func (r *LedgerRepository) GetSyntheticReport(ctx context.Context, query vos.Acc
 			return nil, err
 		}
 
-		account, err := vos.NewSingleAccount(accStr)
+		account, err := vos.NewAnalyticalAccount(accStr)
 		if err != nil {
 			return nil, err
 		}

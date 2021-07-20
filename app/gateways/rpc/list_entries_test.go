@@ -93,7 +93,7 @@ func TestAPI_ListAccountEntries_Success(t *testing.T) {
 			assert.Equal(t, want, got)
 			assert.Len(t, tt.useCaseSetup.ListAccountEntriesCalls(), 1)
 
-			account, _ := vos.NewSingleAccount(tt.request.AccountPath)
+			account, _ := vos.NewAnalyticalAccount(tt.request.AccountPath)
 			page, _ := pagination.NewPage(nil)
 			assert.Equal(t, vos.AccountEntryRequest{
 				Account:   account,

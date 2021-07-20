@@ -17,7 +17,7 @@ import (
 
 func TestLedgerUseCase_ListAccountEntries(t *testing.T) {
 	t.Run("should list account entries successfully", func(t *testing.T) {
-		account, err := vos.NewSingleAccount(testdata.GenerateAccountPath())
+		account, err := vos.NewAnalyticalAccount(testdata.GenerateAccountPath())
 		assert.NoError(t, err)
 
 		mockedRepository := &mocks.RepositoryMock{
@@ -52,7 +52,7 @@ func TestLedgerUseCase_ListAccountEntries(t *testing.T) {
 	})
 
 	t.Run("should return empty value if no result found", func(t *testing.T) {
-		account, err := vos.NewSingleAccount(testdata.GenerateAccountPath())
+		account, err := vos.NewAnalyticalAccount(testdata.GenerateAccountPath())
 		assert.NoError(t, err)
 
 		mockedRepository := &mocks.RepositoryMock{

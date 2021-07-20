@@ -158,7 +158,7 @@ func TestNewAccount(t *testing.T) {
 			)
 
 			if tt.singleOnly {
-				got, err = NewSingleAccount(tt.account)
+				got, err = NewAnalyticalAccount(tt.account)
 			} else {
 				got, err = NewAccount(tt.account)
 			}

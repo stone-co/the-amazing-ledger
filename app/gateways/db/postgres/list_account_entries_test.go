@@ -17,7 +17,7 @@ import (
 )
 
 func Test_generateListAccountEntriesQuery(t *testing.T) {
-	account, err := vos.NewSingleAccount("liability.test.account1")
+	account, err := vos.NewAnalyticalAccount("liability.test.account1")
 	assert.NoError(t, err)
 
 	size := 10
@@ -132,7 +132,7 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 				return []entities.Transaction{tx}
 			},
 			setupRequest: func(t *testing.T, _ []entities.Transaction) vos.AccountEntryRequest {
-				account, err := vos.NewSingleAccount("liability.abc.account3")
+				account, err := vos.NewAnalyticalAccount("liability.abc.account3")
 				assert.NoError(t, err)
 
 				now := time.Now()
@@ -165,7 +165,7 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 				return []entities.Transaction{tx}
 			},
 			setupRequest: func(t *testing.T, _ []entities.Transaction) vos.AccountEntryRequest {
-				account, err := vos.NewSingleAccount(account1)
+				account, err := vos.NewAnalyticalAccount(account1)
 				assert.NoError(t, err)
 
 				now := time.Now()
@@ -205,7 +205,7 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 				return []entities.Transaction{tx1, tx2}
 			},
 			setupRequest: func(t *testing.T, _ []entities.Transaction) vos.AccountEntryRequest {
-				account, err := vos.NewSingleAccount(account1)
+				account, err := vos.NewAnalyticalAccount(account1)
 				assert.NoError(t, err)
 
 				now := time.Now()
@@ -246,7 +246,7 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 				return []entities.Transaction{tx1, tx2}
 			},
 			setupRequest: func(t *testing.T, txs []entities.Transaction) vos.AccountEntryRequest {
-				account, err := vos.NewSingleAccount(account1)
+				account, err := vos.NewAnalyticalAccount(account1)
 				assert.NoError(t, err)
 
 				cur := cursorFromTransaction(t, txs[0], account1)

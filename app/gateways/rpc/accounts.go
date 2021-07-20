@@ -21,7 +21,7 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 		"handler": "GetAccountBalance",
 	})
 
-	accountName, err := vos.NewSingleAccount(request.AccountPath)
+	accountName, err := vos.NewAnalyticalAccount(request.AccountPath)
 	if err != nil {
 		log.WithError(err).Error("can't create account name")
 		return nil, status.Error(codes.InvalidArgument, err.Error())

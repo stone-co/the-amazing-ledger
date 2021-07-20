@@ -20,7 +20,7 @@ func TestLedgerUseCase_GetSyntheticReport(t *testing.T) {
 		totalCredit := int64(2000)
 		totalDebit := int64(1000)
 
-		accountPath, err := vos.NewSingleAccount("liability.credit_card.invoice")
+		accountPath, err := vos.NewAnalyticalAccount("liability.credit_card.invoice")
 		assert.NoError(t, err)
 
 		paths := []vos.Path{{

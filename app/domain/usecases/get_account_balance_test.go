@@ -15,7 +15,7 @@ import (
 
 func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 	t.Run("should return account balance successfully", func(t *testing.T) {
-		accountPath, err := vos.NewSingleAccount(testdata.GenerateAccountPath())
+		accountPath, err := vos.NewAnalyticalAccount(testdata.GenerateAccountPath())
 		assert.NoError(t, err)
 
 		accountBalance := vos.NewAccountBalance(accountPath, vos.Version(1), 150, 130)
@@ -37,7 +37,7 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 	})
 
 	t.Run("should return an error if account does not exist", func(t *testing.T) {
-		accountPath, err := vos.NewSingleAccount(testdata.GenerateAccountPath())
+		accountPath, err := vos.NewAnalyticalAccount(testdata.GenerateAccountPath())
 		assert.NoError(t, err)
 
 		mockedRepository := &mocks.RepositoryMock{
