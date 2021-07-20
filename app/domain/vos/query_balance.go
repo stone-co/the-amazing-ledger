@@ -1,11 +1,11 @@
 package vos
 
 type QueryBalance struct {
-	Query   AccountQuery
+	Query   Account
 	Balance int
 }
 
-func NewQueryBalance(query AccountQuery, balance int) QueryBalance {
+func NewQueryBalance(query Account, balance int) QueryBalance {
 	return QueryBalance{
 		Query:   query,
 		Balance: balance,

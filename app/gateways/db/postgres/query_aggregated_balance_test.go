@@ -21,7 +21,7 @@ func TestLedgerRepository_QueryAggregatedBalanceFailure(t *testing.T) {
 		r := NewLedgerRepository(pgDocker.DB, logrus.New())
 		ctx := context.Background()
 
-		query, err := vos.NewAccountQuery("liability.agg.*")
+		query, err := vos.NewAccount("liability.agg.*")
 		assert.NoError(t, err)
 
 		_, err = r.QueryAggregatedBalance(ctx, query)
@@ -30,21 +30,21 @@ func TestLedgerRepository_QueryAggregatedBalanceFailure(t *testing.T) {
 }
 
 func TestLedgerRepository_QueryAggregatedBalanceSuccess(t *testing.T) {
-	acc1, err := vos.NewAccountPath("liability.agg.agg1")
+	acc1, err := vos.NewAccount("liability.agg.agg1")
 	assert.NoError(t, err)
 
-	acc2, err := vos.NewAccountPath("liability.agg.agg2")
+	acc2, err := vos.NewAccount("liability.agg.agg2")
 	assert.NoError(t, err)
 
-	acc3, err := vos.NewAccountPath("liability.abc.agg3")
+	acc3, err := vos.NewAccount("liability.abc.agg3")
 	assert.NoError(t, err)
 
-	query, err := vos.NewAccountQuery("liability.agg.*")
+	query, err := vos.NewAccount("liability.agg.*")
 	assert.NoError(t, err)
 
 	type args struct {
-		acc1   vos.AccountPath
-		acc2   vos.AccountPath
+		acc1   vos.Account
+		acc2   vos.Account
 		debit  int
 		credit int
 	}
@@ -78,8 +78,8 @@ func TestLedgerRepository_QueryAggregatedBalanceSuccess(t *testing.T) {
 		{
 			name: "should query aggregated balance involving three accounts (first snapshot)",
 			repoSeed: func(t *testing.T, ctx context.Context, r *LedgerRepository) {
-				e1 := createEntry(t, vos.DebitOperation, acc1.Name(), vos.NextAccountVersion, 100)
-				e2 := createEntry(t, vos.CreditOperation, acc2.Name(), vos.IgnoreAccountVersion, 100)
+				e1 := createEntry(t, vos.DebitOperation, acc1.Value(), vos.NextAccountVersion, 100)
+				e2 := createEntry(t, vos.CreditOperation, acc2.Value(), vos.IgnoreAccountVersion, 100)
 
 				createTransaction(t, ctx, r, e1, e2)
 
@@ -100,16 +100,16 @@ func TestLedgerRepository_QueryAggregatedBalanceSuccess(t *testing.T) {
 		{
 			name: "should query aggregated balance involving three accounts (second snapshot)",
 			repoSeed: func(t *testing.T, ctx context.Context, r *LedgerRepository) {
-				e1 := createEntry(t, vos.DebitOperation, acc1.Name(), vos.NextAccountVersion, 100)
-				e2 := createEntry(t, vos.CreditOperation, acc2.Name(), vos.IgnoreAccountVersion, 100)
+				e1 := createEntry(t, vos.DebitOperation, acc1.Value(), vos.NextAccountVersion, 100)
+				e2 := createEntry(t, vos.CreditOperation, acc2.Value(), vos.IgnoreAccountVersion, 100)
 
 				createTransaction(t, ctx, r, e1, e2)
 
 				_, err = r.QueryAggregatedBalance(ctx, query)
 				assert.NoError(t, err)
 
-				e1 = createEntry(t, vos.DebitOperation, acc1.Name(), vos.IgnoreAccountVersion, 100)
-				e3 := createEntry(t, vos.CreditOperation, acc3.Name(), vos.NextAccountVersion, 100)
+				e1 = createEntry(t, vos.DebitOperation, acc1.Value(), vos.IgnoreAccountVersion, 100)
+				e3 := createEntry(t, vos.CreditOperation, acc3.Value(), vos.NextAccountVersion, 100)
 
 				createTransaction(t, ctx, r, e1, e3)
 
@@ -138,8 +138,8 @@ func TestLedgerRepository_QueryAggregatedBalanceSuccess(t *testing.T) {
 
 			defer tests.TruncateTables(ctx, pgDocker.DB, "entry", "account_version", "aggregated_query_balance")
 
-			e1 := createEntry(t, vos.DebitOperation, tt.args.acc1.Name(), vos.NextAccountVersion, tt.args.debit)
-			e2 := createEntry(t, vos.CreditOperation, tt.args.acc2.Name(), vos.IgnoreAccountVersion, tt.args.credit)
+			e1 := createEntry(t, vos.DebitOperation, tt.args.acc1.Value(), vos.NextAccountVersion, tt.args.debit)
+			e2 := createEntry(t, vos.CreditOperation, tt.args.acc2.Value(), vos.IgnoreAccountVersion, tt.args.credit)
 
 			createTransaction(t, ctx, r, e1, e2)
 
@@ -164,7 +164,7 @@ type querySnapshot struct {
 	date    time.Time
 }
 
-func fetchQuerySnapshot(ctx context.Context, db *pgxpool.Pool, query vos.AccountQuery) (querySnapshot, error) {
+func fetchQuerySnapshot(ctx context.Context, db *pgxpool.Pool, query vos.Account) (querySnapshot, error) {
 	const cmd = "select balance, tx_date from aggregated_query_balance where query = $1;"
 
 	var snap querySnapshot

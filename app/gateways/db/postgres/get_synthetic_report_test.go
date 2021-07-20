@@ -26,16 +26,16 @@ func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
 	accountBase := "liability.assets"
 	accountBaseEmpty := "liability.income"
 
-	acc1Level3, err := vos.NewAccountPath(accountBase + vos.DepthSeparator + "account11")
+	acc1Level3, err := vos.NewAccount(accountBase + ".account11")
 	assert.NoError(t, err)
 
-	acc2Level3, err := vos.NewAccountPath(accountBase + vos.DepthSeparator + "account22")
+	acc2Level3, err := vos.NewAccount(accountBase + ".account22")
 	assert.NoError(t, err)
 
 	e1, _ := entities.NewEntry(
 		uuid.New(),
 		vos.DebitOperation,
-		acc1Level3.Name(),
+		acc1Level3.Value(),
 		vos.IgnoreAccountVersion,
 		100,
 		metadata)
@@ -43,7 +43,7 @@ func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
 	e2, _ := entities.NewEntry(
 		uuid.New(),
 		vos.CreditOperation,
-		acc2Level3.Name(),
+		acc2Level3.Value(),
 		vos.IgnoreAccountVersion,
 		100,
 		metadata,
@@ -64,7 +64,7 @@ func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
 	}{
 		{
 			name:        "should not get a result because there was no data inserted",
-			query:       accountBaseEmpty + vos.DepthSeparator + "*",
+			query:       accountBaseEmpty + ".*",
 			level:       3,
 			startTime:   time.Now().UTC(),
 			endTime:     time.Now().UTC(),
@@ -74,7 +74,7 @@ func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
 		},
 		{
 			name:        "should get a result",
-			query:       accountBase + vos.DepthSeparator + "*",
+			query:       accountBase + ".*",
 			level:       3,
 			startTime:   time.Now().UTC(),
 			endTime:     time.Now().UTC().Add(time.Hour * 1),
@@ -89,7 +89,7 @@ func TestLedgerRepository_GetSyntheticReport(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			query, err := vos.NewAccountQuery(tt.query)
+			query, err := vos.NewAccount(tt.query)
 			assert.NoError(t, err)
 
 			if tt.transaction.Company != "" {

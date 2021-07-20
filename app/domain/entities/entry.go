@@ -12,7 +12,7 @@ import (
 type Entry struct {
 	ID        uuid.UUID
 	Operation vos.OperationType
-	Account   vos.AccountPath
+	Account   vos.Account
 	Version   vos.Version
 	Amount    int
 	Metadata  json.RawMessage
@@ -31,7 +31,7 @@ func NewEntry(id uuid.UUID, operation vos.OperationType, accountID string, versi
 		return Entry{}, app.ErrInvalidAmount
 	}
 
-	acc, err := vos.NewAccountPath(accountID)
+	acc, err := vos.NewAnalyticalAccount(accountID)
 	if err != nil {
 		return Entry{}, err
 	}

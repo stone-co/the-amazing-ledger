@@ -26,16 +26,16 @@ var _ domain.Repository = &RepositoryMock{}
 // 			CreateTransactionFunc: func(contextMoqParam context.Context, transaction entities.Transaction) error {
 // 				panic("mock out the CreateTransaction method")
 // 			},
-// 			GetAccountBalanceFunc: func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
+// 			GetAccountBalanceFunc: func(contextMoqParam context.Context, account vos.Account) (vos.AccountBalance, error) {
 // 				panic("mock out the GetAccountBalance method")
 // 			},
-// 			GetSyntheticReportFunc: func(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+// 			GetSyntheticReportFunc: func(ctx context.Context, query vos.Account, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
 // 				panic("mock out the GetSyntheticReport method")
 // 			},
 // 			ListAccountEntriesFunc: func(contextMoqParam context.Context, accountEntryRequest vos.AccountEntryRequest) ([]vos.AccountEntry, pagination.Cursor, error) {
 // 				panic("mock out the ListAccountEntries method")
 // 			},
-// 			QueryAggregatedBalanceFunc: func(ctx context.Context, account vos.AccountQuery) (vos.QueryBalance, error) {
+// 			QueryAggregatedBalanceFunc: func(contextMoqParam context.Context, account vos.Account) (vos.QueryBalance, error) {
 // 				panic("mock out the QueryAggregatedBalance method")
 // 			},
 // 		}
@@ -49,16 +49,16 @@ type RepositoryMock struct {
 	CreateTransactionFunc func(contextMoqParam context.Context, transaction entities.Transaction) error
 
 	// GetAccountBalanceFunc mocks the GetAccountBalance method.
-	GetAccountBalanceFunc func(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error)
+	GetAccountBalanceFunc func(contextMoqParam context.Context, account vos.Account) (vos.AccountBalance, error)
 
 	// GetSyntheticReportFunc mocks the GetSyntheticReport method.
-	GetSyntheticReportFunc func(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
+	GetSyntheticReportFunc func(ctx context.Context, query vos.Account, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error)
 
 	// ListAccountEntriesFunc mocks the ListAccountEntries method.
 	ListAccountEntriesFunc func(contextMoqParam context.Context, accountEntryRequest vos.AccountEntryRequest) ([]vos.AccountEntry, pagination.Cursor, error)
 
 	// QueryAggregatedBalanceFunc mocks the QueryAggregatedBalance method.
-	QueryAggregatedBalanceFunc func(ctx context.Context, account vos.AccountQuery) (vos.QueryBalance, error)
+	QueryAggregatedBalanceFunc func(contextMoqParam context.Context, account vos.Account) (vos.QueryBalance, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -71,17 +71,17 @@ type RepositoryMock struct {
 		}
 		// GetAccountBalance holds details about calls to the GetAccountBalance method.
 		GetAccountBalance []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
 			// Account is the account argument value.
-			Account vos.AccountPath
+			Account vos.Account
 		}
 		// GetSyntheticReport holds details about calls to the GetSyntheticReport method.
 		GetSyntheticReport []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Query is the query argument value.
-			Query vos.AccountQuery
+			Query vos.Account
 			// Level is the level argument value.
 			Level int
 			// StartTime is the startTime argument value.
@@ -98,10 +98,10 @@ type RepositoryMock struct {
 		}
 		// QueryAggregatedBalance holds details about calls to the QueryAggregatedBalance method.
 		QueryAggregatedBalance []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
 			// Account is the account argument value.
-			Account vos.AccountQuery
+			Account vos.Account
 		}
 	}
 	lockCreateTransaction      sync.RWMutex
@@ -147,33 +147,33 @@ func (mock *RepositoryMock) CreateTransactionCalls() []struct {
 }
 
 // GetAccountBalance calls GetAccountBalanceFunc.
-func (mock *RepositoryMock) GetAccountBalance(ctx context.Context, account vos.AccountPath) (vos.AccountBalance, error) {
+func (mock *RepositoryMock) GetAccountBalance(contextMoqParam context.Context, account vos.Account) (vos.AccountBalance, error) {
 	if mock.GetAccountBalanceFunc == nil {
 		panic("RepositoryMock.GetAccountBalanceFunc: method is nil but Repository.GetAccountBalance was just called")
 	}
 	callInfo := struct {
-		Ctx     context.Context
-		Account vos.AccountPath
+		ContextMoqParam context.Context
+		Account         vos.Account
 	}{
-		Ctx:     ctx,
-		Account: account,
+		ContextMoqParam: contextMoqParam,
+		Account:         account,
 	}
 	mock.lockGetAccountBalance.Lock()
 	mock.calls.GetAccountBalance = append(mock.calls.GetAccountBalance, callInfo)
 	mock.lockGetAccountBalance.Unlock()
-	return mock.GetAccountBalanceFunc(ctx, account)
+	return mock.GetAccountBalanceFunc(contextMoqParam, account)
 }
 
 // GetAccountBalanceCalls gets all the calls that were made to GetAccountBalance.
 // Check the length with:
 //     len(mockedRepository.GetAccountBalanceCalls())
 func (mock *RepositoryMock) GetAccountBalanceCalls() []struct {
-	Ctx     context.Context
-	Account vos.AccountPath
+	ContextMoqParam context.Context
+	Account         vos.Account
 } {
 	var calls []struct {
-		Ctx     context.Context
-		Account vos.AccountPath
+		ContextMoqParam context.Context
+		Account         vos.Account
 	}
 	mock.lockGetAccountBalance.RLock()
 	calls = mock.calls.GetAccountBalance
@@ -182,13 +182,13 @@ func (mock *RepositoryMock) GetAccountBalanceCalls() []struct {
 }
 
 // GetSyntheticReport calls GetSyntheticReportFunc.
-func (mock *RepositoryMock) GetSyntheticReport(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+func (mock *RepositoryMock) GetSyntheticReport(ctx context.Context, query vos.Account, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
 	if mock.GetSyntheticReportFunc == nil {
 		panic("RepositoryMock.GetSyntheticReportFunc: method is nil but Repository.GetSyntheticReport was just called")
 	}
 	callInfo := struct {
 		Ctx       context.Context
-		Query     vos.AccountQuery
+		Query     vos.Account
 		Level     int
 		StartTime time.Time
 		EndTime   time.Time
@@ -210,14 +210,14 @@ func (mock *RepositoryMock) GetSyntheticReport(ctx context.Context, query vos.Ac
 //     len(mockedRepository.GetSyntheticReportCalls())
 func (mock *RepositoryMock) GetSyntheticReportCalls() []struct {
 	Ctx       context.Context
-	Query     vos.AccountQuery
+	Query     vos.Account
 	Level     int
 	StartTime time.Time
 	EndTime   time.Time
 } {
 	var calls []struct {
 		Ctx       context.Context
-		Query     vos.AccountQuery
+		Query     vos.Account
 		Level     int
 		StartTime time.Time
 		EndTime   time.Time
@@ -264,33 +264,33 @@ func (mock *RepositoryMock) ListAccountEntriesCalls() []struct {
 }
 
 // QueryAggregatedBalance calls QueryAggregatedBalanceFunc.
-func (mock *RepositoryMock) QueryAggregatedBalance(ctx context.Context, account vos.AccountQuery) (vos.QueryBalance, error) {
+func (mock *RepositoryMock) QueryAggregatedBalance(contextMoqParam context.Context, account vos.Account) (vos.QueryBalance, error) {
 	if mock.QueryAggregatedBalanceFunc == nil {
 		panic("RepositoryMock.QueryAggregatedBalanceFunc: method is nil but Repository.QueryAggregatedBalance was just called")
 	}
 	callInfo := struct {
-		Ctx     context.Context
-		Account vos.AccountQuery
+		ContextMoqParam context.Context
+		Account         vos.Account
 	}{
-		Ctx:     ctx,
-		Account: account,
+		ContextMoqParam: contextMoqParam,
+		Account:         account,
 	}
 	mock.lockQueryAggregatedBalance.Lock()
 	mock.calls.QueryAggregatedBalance = append(mock.calls.QueryAggregatedBalance, callInfo)
 	mock.lockQueryAggregatedBalance.Unlock()
-	return mock.QueryAggregatedBalanceFunc(ctx, account)
+	return mock.QueryAggregatedBalanceFunc(contextMoqParam, account)
 }
 
 // QueryAggregatedBalanceCalls gets all the calls that were made to QueryAggregatedBalance.
 // Check the length with:
 //     len(mockedRepository.QueryAggregatedBalanceCalls())
 func (mock *RepositoryMock) QueryAggregatedBalanceCalls() []struct {
-	Ctx     context.Context
-	Account vos.AccountQuery
+	ContextMoqParam context.Context
+	Account         vos.Account
 } {
 	var calls []struct {
-		Ctx     context.Context
-		Account vos.AccountQuery
+		ContextMoqParam context.Context
+		Account         vos.Account
 	}
 	mock.lockQueryAggregatedBalance.RLock()
 	calls = mock.calls.QueryAggregatedBalance

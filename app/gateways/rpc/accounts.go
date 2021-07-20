@@ -21,7 +21,7 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 		"handler": "GetAccountBalance",
 	})
 
-	accountName, err := vos.NewAccountPath(request.AccountPath)
+	accountName, err := vos.NewAnalyticalAccount(request.AccountPath)
 	if err != nil {
 		log.WithError(err).Error("can't create account name")
 		return nil, status.Error(codes.InvalidArgument, err.Error())
@@ -39,7 +39,7 @@ func (a *API) GetAccountBalance(ctx context.Context, request *proto.GetAccountBa
 	}
 
 	return &proto.GetAccountBalanceResponse{
-		AccountPath:    accountBalance.Account.Name(),
+		AccountPath:    accountBalance.Account.Value(),
 		CurrentVersion: accountBalance.CurrentVersion.AsInt64(),
 		TotalCredit:    int64(accountBalance.TotalCredit),
 		TotalDebit:     int64(accountBalance.TotalDebit),
@@ -54,7 +54,7 @@ func (a *API) QueryAggregatedBalance(ctx context.Context, request *proto.QueryAg
 		"handler": "QueryAggregatedBalance",
 	})
 
-	query, err := vos.NewAccountQuery(request.Query)
+	query, err := vos.NewAccount(request.Query)
 	if err != nil {
 		log.WithError(err).Error("failed to create account query")
 		return nil, status.Error(codes.InvalidArgument, err.Error())

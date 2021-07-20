@@ -31,7 +31,7 @@ func TestNewEntry(t *testing.T) {
 			args: args{
 				id:        uuid.New(),
 				operation: vos.CreditOperation,
-				account:   "assets.bacen.conta_liquidacao.tesouraria",
+				account:   "asset.bacen.conta_liquidacao.tesouraria",
 				version:   vos.NextAccountVersion,
 				amount:    123,
 				metadata:  json.RawMessage(`{}`),
@@ -43,7 +43,7 @@ func TestNewEntry(t *testing.T) {
 			args: args{
 				id:        uuid.Nil,
 				operation: vos.CreditOperation,
-				account:   "assets.bacen.conta_liquidacao.tesouraria",
+				account:   "asset.bacen.conta_liquidacao.tesouraria",
 				version:   vos.NextAccountVersion,
 				amount:    123,
 				metadata:  json.RawMessage(`{}`),
@@ -55,7 +55,7 @@ func TestNewEntry(t *testing.T) {
 			args: args{
 				id:        uuid.New(),
 				operation: vos.InvalidOperation,
-				account:   "assets.bacen.conta_liquidacao.tesouraria",
+				account:   "asset.bacen.conta_liquidacao.tesouraria",
 				version:   vos.NextAccountVersion,
 				amount:    123,
 				metadata:  json.RawMessage(`{}`),
@@ -67,7 +67,7 @@ func TestNewEntry(t *testing.T) {
 			args: args{
 				id:        uuid.New(),
 				operation: vos.CreditOperation,
-				account:   "assets.bacen.conta_liquidacao.tesouraria",
+				account:   "asset.bacen.conta_liquidacao.tesouraria",
 				version:   vos.NextAccountVersion,
 				amount:    0,
 				metadata:  json.RawMessage(`{}`),
@@ -79,7 +79,7 @@ func TestNewEntry(t *testing.T) {
 			args: args{
 				id:        uuid.New(),
 				operation: vos.CreditOperation,
-				account:   "assets.bacen.conta_liquidacao.tesouraria",
+				account:   "asset.bacen.conta_liquidacao.tesouraria",
 				version:   vos.NextAccountVersion,
 				amount:    -1,
 				metadata:  json.RawMessage(`{}`),
@@ -91,7 +91,7 @@ func TestNewEntry(t *testing.T) {
 			args: args{
 				id:        uuid.New(),
 				operation: vos.CreditOperation,
-				account:   "assets.bacen",
+				account:   "asset.bacen",
 				version:   vos.NextAccountVersion,
 				amount:    123,
 				metadata:  json.RawMessage(`{}`),
@@ -110,7 +110,7 @@ func TestNewEntry(t *testing.T) {
 			} else {
 				assert.Equal(t, tt.args.id, entry.ID)
 				assert.Equal(t, tt.args.operation, entry.Operation)
-				assert.Equal(t, tt.args.account, entry.Account.Name())
+				assert.Equal(t, tt.args.account, entry.Account.Value())
 				assert.Equal(t, tt.args.version, entry.Version)
 				assert.Equal(t, tt.args.amount, entry.Amount)
 				assert.Equal(t, string(tt.args.metadata), string(entry.Metadata))

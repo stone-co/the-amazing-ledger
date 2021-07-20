@@ -37,7 +37,7 @@ func (r LedgerRepository) CreateTransaction(ctx context.Context, transaction ent
 			entry.Version,
 			entry.Amount,
 			transaction.CompetenceDate,
-			entry.Account.Name(),
+			entry.Account.Value(),
 			transaction.Company,
 			entry.Metadata,
 		)

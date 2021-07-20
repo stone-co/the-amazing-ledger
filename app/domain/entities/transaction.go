@@ -29,7 +29,7 @@ func NewTransaction(id uuid.UUID, event uint32, company string, competenceDate t
 
 	// sort entries by account name to avoid deadlock
 	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].Account.Name() < entries[j].Account.Name()
+		return entries[i].Account.Value() < entries[j].Account.Value()
 	})
 
 	balance := 0

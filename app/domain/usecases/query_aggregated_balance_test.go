@@ -14,28 +14,28 @@ import (
 
 func TestLedgerUseCase_QueryAggregatedBalance(t *testing.T) {
 	t.Run("should return aggregated balance successfully", func(t *testing.T) {
-		query, err := vos.NewAccountQuery("liability.stone.clients.*")
+		account, err := vos.NewAccount("liability.stone.clients.*")
 		assert.NoError(t, err)
 
-		queryBalance := vos.NewQueryBalance(query, 20)
+		queryBalance := vos.NewQueryBalance(account, 20)
 		mockedRepository := &mocks.RepositoryMock{
-			QueryAggregatedBalanceFunc: func(ctx context.Context, account vos.AccountQuery) (vos.QueryBalance, error) {
+			QueryAggregatedBalanceFunc: func(ctx context.Context, account vos.Account) (vos.QueryBalance, error) {
 				return queryBalance, nil
 			},
 		}
 		usecase := NewLedgerUseCase(logrus.New(), mockedRepository)
 
-		got, err := usecase.QueryAggregatedBalance(context.Background(), query)
+		got, err := usecase.QueryAggregatedBalance(context.Background(), account)
 		assert.NoError(t, err)
 		assert.Equal(t, queryBalance.Balance, got.Balance)
 	})
 
 	t.Run("should return an error if account does not exist", func(t *testing.T) {
-		query, err := vos.NewAccountQuery("liability.stone.clients.*")
+		query, err := vos.NewAccount("liability.stone.clients.*")
 		assert.NoError(t, err)
 
 		mockedRepository := &mocks.RepositoryMock{
-			QueryAggregatedBalanceFunc: func(ctx context.Context, account vos.AccountQuery) (vos.QueryBalance, error) {
+			QueryAggregatedBalanceFunc: func(ctx context.Context, account vos.Account) (vos.QueryBalance, error) {
 				return vos.QueryBalance{}, app.ErrAccountNotFound
 			},
 		}

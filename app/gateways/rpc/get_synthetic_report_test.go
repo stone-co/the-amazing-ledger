@@ -20,7 +20,7 @@ import (
 func TestAPI_GetSyntheticReport(t *testing.T) {
 	t.Run("should get synthetic report successfully", func(t *testing.T) {
 		mockedUsecase := &mocks.UseCaseMock{
-			GetSyntheticReportFunc: func(ctx context.Context, accountQuery vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+			GetSyntheticReportFunc: func(ctx context.Context, account vos.Account, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
 				return &vos.SyntheticReport{}, nil
 			},
 		}
@@ -39,7 +39,7 @@ func TestAPI_GetSyntheticReport(t *testing.T) {
 
 	t.Run("should return an error if account query is invalid", func(t *testing.T) {
 		mockedUsecase := &mocks.UseCaseMock{
-			GetSyntheticReportFunc: func(ctx context.Context, accountQuery vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+			GetSyntheticReportFunc: func(ctx context.Context, account vos.Account, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
 				return nil, app.ErrInvalidAccountComponentSize
 			},
 		}

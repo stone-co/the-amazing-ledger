@@ -18,10 +18,10 @@ import (
 )
 
 func TestLedgerRepository_GetAccountBalanceSuccess(t *testing.T) {
-	acc1, err := vos.NewAccountPath(testdata.GenerateAccountPath())
+	acc1, err := vos.NewAnalyticalAccount(testdata.GenerateAccountPath())
 	assert.NoError(t, err)
 
-	acc2, err := vos.NewAccountPath(testdata.GenerateAccountPath())
+	acc2, err := vos.NewAnalyticalAccount(testdata.GenerateAccountPath())
 	assert.NoError(t, err)
 
 	type accountValues struct {
@@ -58,8 +58,8 @@ func TestLedgerRepository_GetAccountBalanceSuccess(t *testing.T) {
 		{
 			name: "should get account balance successfully when is the second request",
 			repoSeed: func(t *testing.T, ctx context.Context, r *LedgerRepository) {
-				e1 := createEntry(t, vos.DebitOperation, acc1.Name(), vos.NextAccountVersion, 100)
-				e2 := createEntry(t, vos.CreditOperation, acc2.Name(), vos.NextAccountVersion, 100)
+				e1 := createEntry(t, vos.DebitOperation, acc1.Value(), vos.NextAccountVersion, 100)
+				e2 := createEntry(t, vos.CreditOperation, acc2.Value(), vos.NextAccountVersion, 100)
 
 				createTransaction(t, ctx, r, e1, e2)
 
@@ -87,8 +87,8 @@ func TestLedgerRepository_GetAccountBalanceSuccess(t *testing.T) {
 		{
 			name: "should get account balance successfully when is the third request",
 			repoSeed: func(t *testing.T, ctx context.Context, r *LedgerRepository) {
-				e1 := createEntry(t, vos.DebitOperation, acc1.Name(), vos.NextAccountVersion, 100)
-				e2 := createEntry(t, vos.CreditOperation, acc2.Name(), vos.NextAccountVersion, 100)
+				e1 := createEntry(t, vos.DebitOperation, acc1.Value(), vos.NextAccountVersion, 100)
+				e2 := createEntry(t, vos.CreditOperation, acc2.Value(), vos.NextAccountVersion, 100)
 
 				createTransaction(t, ctx, r, e1, e2)
 
@@ -98,8 +98,8 @@ func TestLedgerRepository_GetAccountBalanceSuccess(t *testing.T) {
 				_, err = r.GetAccountBalance(ctx, acc2)
 				assert.NoError(t, err)
 
-				e3 := createEntry(t, vos.DebitOperation, acc1.Name(), vos.NextAccountVersion, 100)
-				e4 := createEntry(t, vos.CreditOperation, acc2.Name(), vos.NextAccountVersion, 100)
+				e3 := createEntry(t, vos.DebitOperation, acc1.Value(), vos.NextAccountVersion, 100)
+				e4 := createEntry(t, vos.CreditOperation, acc2.Value(), vos.NextAccountVersion, 100)
 
 				createTransaction(t, ctx, r, e3, e4)
 
@@ -135,8 +135,8 @@ func TestLedgerRepository_GetAccountBalanceSuccess(t *testing.T) {
 
 			defer tests.TruncateTables(ctx, pgDocker.DB, "entry", "account_version", "account_balance")
 
-			e1 := createEntry(t, vos.DebitOperation, acc1.Name(), vos.NextAccountVersion, 100)
-			e2 := createEntry(t, vos.CreditOperation, acc2.Name(), vos.NextAccountVersion, 100)
+			e1 := createEntry(t, vos.DebitOperation, acc1.Value(), vos.NextAccountVersion, 100)
+			e2 := createEntry(t, vos.CreditOperation, acc2.Value(), vos.NextAccountVersion, 100)
 
 			createTransaction(t, ctx, r, e1, e2)
 
@@ -175,7 +175,7 @@ func TestLedgerRepository_GetAccountBalanceFailure(t *testing.T) {
 	t.Run("should return an error if account does not exist", func(t *testing.T) {
 		r := NewLedgerRepository(pgDocker.DB, logrus.New())
 
-		acc, err := vos.NewAccountPath(testdata.GenerateAccountPath())
+		acc, err := vos.NewAnalyticalAccount(testdata.GenerateAccountPath())
 		assert.NoError(t, err)
 
 		_, err = r.GetAccountBalance(context.Background(), acc)
@@ -189,12 +189,12 @@ type snapshot struct {
 	date   time.Time
 }
 
-func fetchSnapshot(ctx context.Context, db *pgxpool.Pool, account vos.AccountPath) (snapshot, error) {
+func fetchSnapshot(ctx context.Context, db *pgxpool.Pool, account vos.Account) (snapshot, error) {
 	const query = "select credit, debit, tx_date from account_balance where account = $1;"
 
 	var snap snapshot
 
-	err := db.QueryRow(ctx, query, account.Name()).Scan(
+	err := db.QueryRow(ctx, query, account.Value()).Scan(
 		&snap.credit,
 		&snap.debit,
 		&snap.date,

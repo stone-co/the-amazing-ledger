@@ -29,7 +29,7 @@ const timeParamsQueryEnd = " and created_at < $4 "
 
 const groupByQuery = "group by 1;"
 
-func (r *LedgerRepository) GetSyntheticReport(ctx context.Context, query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
+func (r *LedgerRepository) GetSyntheticReport(ctx context.Context, query vos.Account, level int, startTime time.Time, endTime time.Time) (*vos.SyntheticReport, error) {
 	const operation = "Repository.GetSyntheticReport"
 
 	sqlQuery, params := buildQueryAndParams(query, level, startTime, endTime)
@@ -74,7 +74,7 @@ func (r *LedgerRepository) GetSyntheticReport(ctx context.Context, query vos.Acc
 			return nil, err
 		}
 
-		account, err := vos.NewAccountPath(accStr)
+		account, err := vos.NewAnalyticalAccount(accStr)
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +108,7 @@ func (r *LedgerRepository) GetSyntheticReport(ctx context.Context, query vos.Acc
 	return syntheticReport, nil
 }
 
-func buildQueryAndParams(query vos.AccountQuery, level int, startTime time.Time, endTime time.Time) (string, []string) {
+func buildQueryAndParams(query vos.Account, level int, startTime time.Time, endTime time.Time) (string, []string) {
 	sqlQuery := syntheticReportQuery
 	sqlQuery = fmt.Sprintf(sqlQuery, vos.CreditOperation, vos.DebitOperation)
 

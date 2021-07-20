@@ -17,14 +17,14 @@ const queryAggregatedBalanceQuery = `
 select query_aggregated_account_balance($1);
 `
 
-func (r LedgerRepository) QueryAggregatedBalance(ctx context.Context, query vos.AccountQuery) (vos.QueryBalance, error) {
+func (r LedgerRepository) QueryAggregatedBalance(ctx context.Context, account vos.Account) (vos.QueryBalance, error) {
 	const operation = "Repository.QueryAggregatedBalance"
 
 	defer newrelic.NewDatastoreSegment(ctx, collection, operation, queryAggregatedBalanceQuery).End()
 
 	var balance int
 
-	err := r.db.QueryRow(ctx, queryAggregatedBalanceQuery, query.Value()).Scan(&balance)
+	err := r.db.QueryRow(ctx, queryAggregatedBalanceQuery, account.Value()).Scan(&balance)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if !errors.As(err, &pgErr) {
@@ -38,5 +38,5 @@ func (r LedgerRepository) QueryAggregatedBalance(ctx context.Context, query vos.
 		return vos.QueryBalance{}, fmt.Errorf("failed to query aggregated balance: %w", pgErr)
 	}
 
-	return vos.NewQueryBalance(query, balance), nil
+	return vos.NewQueryBalance(account, balance), nil
 }

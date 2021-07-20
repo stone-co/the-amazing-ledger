@@ -106,7 +106,7 @@ func (r LedgerRepository) ListAccountEntries(ctx context.Context, req vos.Accoun
 
 func generateListAccountEntriesQuery(req vos.AccountEntryRequest) (string, []interface{}, error) {
 	query := _accountEntriesQueryPrefix
-	args := []interface{}{req.Account.Name(), req.StartDate, req.EndDate, req.Page.Size + 1}
+	args := []interface{}{req.Account.Value(), req.StartDate, req.EndDate, req.Page.Size + 1}
 
 	if req.Page.Cursor != nil {
 		var cursor listAccountEntriesCursor
