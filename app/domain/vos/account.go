@@ -58,8 +58,8 @@ const (
 	conciliateDebit  = "conciliate_debit"
 	equity           = "equity"
 	expense          = "expense"
-	income           = "income"
 	liability        = "liability"
+	revenue          = "revenue"
 )
 
 // Symbols
@@ -145,7 +145,7 @@ func newAccount(account string, singleOnly bool) (Account, error) {
 
 	if st.totalComponents == 0 && !st.componentHasStar {
 		switch account[:st.componentSize] {
-		case asset, conciliateCredit, conciliateDebit, equity, expense, income, liability:
+		case asset, conciliateCredit, conciliateDebit, equity, expense, revenue, liability:
 		default:
 			return Account{}, app.ErrAccountPathViolation
 		}
@@ -172,7 +172,7 @@ func treatDot(account string, st *state) error {
 	// Checks if the account has a valid class and if number of components is greater than maximum.
 	if st.totalComponents == 0 && !st.componentHasStar {
 		switch account[:st.componentSize] {
-		case asset, conciliateCredit, conciliateDebit, equity, expense, income, liability:
+		case asset, conciliateCredit, conciliateDebit, equity, expense, revenue, liability:
 		default:
 			return app.ErrAccountPathViolation
 		}
