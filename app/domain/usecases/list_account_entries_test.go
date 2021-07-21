@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/stone-co/the-amazing-ledger/app/domain/probes"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/app/pagination"
 	"github.com/stone-co/the-amazing-ledger/app/tests/mocks"
@@ -35,7 +36,7 @@ func TestLedgerUseCase_ListAccountEntries(t *testing.T) {
 				}, nil, nil
 			},
 		}
-		usecase := NewLedgerUseCase(logrus.New(), mockedRepository)
+		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New()))
 
 		page, err := pagination.NewPage(nil)
 		assert.NoError(t, err)
@@ -60,7 +61,7 @@ func TestLedgerUseCase_ListAccountEntries(t *testing.T) {
 				return []vos.AccountEntry{}, nil, nil
 			},
 		}
-		usecase := NewLedgerUseCase(logrus.New(), mockedRepository)
+		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New()))
 
 		page, err := pagination.NewPage(nil)
 		assert.NoError(t, err)
