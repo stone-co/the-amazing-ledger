@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
+	"github.com/stone-co/the-amazing-ledger/app/domain/probes"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/app/pagination"
 	"github.com/stone-co/the-amazing-ledger/app/tests"
@@ -276,7 +276,7 @@ func TestLedgerRepository_ListAccountEntries(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			r := NewLedgerRepository(pgDocker.DB, logrus.New())
+			r := NewLedgerRepository(pgDocker.DB, &probes.LedgerProbe{})
 			ctx := context.Background()
 
 			tests.TruncateTables(ctx, pgDocker.DB, "account_version, entry")

@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
@@ -25,7 +26,7 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 				return accountBalance, nil
 			},
 		}
-		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New()))
+		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New(), &newrelic.Application{}))
 
 		got, err := usecase.GetAccountBalance(context.Background(), accountPath)
 		assert.NoError(t, err)
@@ -46,7 +47,7 @@ func TestLedgerUseCase_GetAccountBalance(t *testing.T) {
 				return vos.AccountBalance{}, app.ErrAccountNotFound
 			},
 		}
-		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New()))
+		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New(), &newrelic.Application{}))
 
 		got, err := usecase.GetAccountBalance(context.Background(), accountPath)
 		assert.Empty(t, got)
