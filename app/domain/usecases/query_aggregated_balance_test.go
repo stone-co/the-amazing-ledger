@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
@@ -24,7 +25,7 @@ func TestLedgerUseCase_QueryAggregatedBalance(t *testing.T) {
 				return queryBalance, nil
 			},
 		}
-		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New()))
+		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New(), &newrelic.Application{}))
 
 		got, err := usecase.QueryAggregatedBalance(context.Background(), query)
 		assert.NoError(t, err)
@@ -40,7 +41,7 @@ func TestLedgerUseCase_QueryAggregatedBalance(t *testing.T) {
 				return vos.QueryBalance{}, app.ErrAccountNotFound
 			},
 		}
-		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New()))
+		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New(), &newrelic.Application{}))
 
 		got, err := usecase.QueryAggregatedBalance(context.Background(), query)
 		assert.Empty(t, got)

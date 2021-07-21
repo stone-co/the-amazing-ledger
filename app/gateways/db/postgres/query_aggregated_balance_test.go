@@ -8,17 +8,17 @@ import (
 
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/stone-co/the-amazing-ledger/app"
+	"github.com/stone-co/the-amazing-ledger/app/domain/probes"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/app/tests"
 )
 
 func TestLedgerRepository_QueryAggregatedBalanceFailure(t *testing.T) {
 	t.Run("should return an error if accounts do not exist", func(t *testing.T) {
-		r := NewLedgerRepository(pgDocker.DB, logrus.New())
+		r := NewLedgerRepository(pgDocker.DB, &probes.LedgerProbe{})
 		ctx := context.Background()
 
 		query, err := vos.NewAccountQuery("liability.agg.*")
@@ -132,7 +132,7 @@ func TestLedgerRepository_QueryAggregatedBalanceSuccess(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			r := NewLedgerRepository(pgDocker.DB, logrus.New())
+			r := NewLedgerRepository(pgDocker.DB, &probes.LedgerProbe{})
 
 			tt.repoSeed(t, ctx, r)
 

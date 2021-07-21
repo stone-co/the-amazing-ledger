@@ -29,10 +29,12 @@ func main() {
 		log.WithError(err).Fatal("unable to load app configuration")
 	}
 
-	nr, err := newrelic.App(cfg.NewRelic.AppName, cfg.NewRelic.LicenseKey, logrus.NewEntry(log))
+	newrelic, err := newrelic.NewNewrelic(cfg.NewRelic.AppName, cfg.NewRelic.LicenseKey, logrus.NewEntry(log))
 	if err != nil {
 		log.WithError(err).Fatal("error starting new relic")
 	}
+
+	ledgerProbe := probes.NewLedgerProbe(log, newrelic)
 
 	conn, err := postgres.ConnectPool(cfg.Postgres.DSN(), log)
 	if err != nil {
@@ -44,8 +46,7 @@ func main() {
 		log.WithError(err).Fatal("running postgres migrations")
 	}
 
-	ledgerProbe := probes.NewLedgerProbe(log)
-	ledgerRepository := postgres.NewLedgerRepository(conn, log)
+	ledgerRepository := postgres.NewLedgerRepository(conn, ledgerProbe)
 	ledgerUseCase := usecases.NewLedgerUseCase(ledgerRepository, ledgerProbe)
 
 	httpServer := server.NewHttpServer(cfg.HttpServer, BuildGitCommit, BuildTime, log)
@@ -62,7 +63,7 @@ func main() {
 	}()
 
 	// Initialize the server (grpc-gateway)
-	rpcServer, err := NewGRPCServer(ledgerUseCase, nr, cfg.RPCServer, log)
+	rpcServer, err := NewGRPCServer(ledgerUseCase, newrelic, cfg.RPCServer, log)
 	if err != nil {
 		log.WithError(err).Fatal("failed to initialize the server")
 	}

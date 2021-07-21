@@ -10,12 +10,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
+	"github.com/stone-co/the-amazing-ledger/app/domain/probes"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/app/tests"
 )
@@ -91,7 +91,7 @@ func TestLedgerRepository_CreateTransactionSuccess(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			r := NewLedgerRepository(pgDocker.DB, logrus.New())
+			r := NewLedgerRepository(pgDocker.DB, &probes.LedgerProbe{})
 
 			defer tests.TruncateTables(ctx, pgDocker.DB, "entry", "account_version")
 
@@ -192,7 +192,7 @@ func TestLedgerRepository_CreateTransactionFailure(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			r := NewLedgerRepository(pgDocker.DB, logrus.New())
+			r := NewLedgerRepository(pgDocker.DB, &probes.LedgerProbe{})
 
 			defer tests.TruncateTables(ctx, pgDocker.DB, "entry", "account_version")
 
