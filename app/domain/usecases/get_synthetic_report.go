@@ -22,5 +22,6 @@ func (l *LedgerUseCase) GetSyntheticReport(ctx context.Context, query vos.Accoun
 		return nil, fmt.Errorf("failed to get synthetic report: %w", err)
 	}
 
+	l.probe.GotSyntheticReport(ctx, "done", *syntheticReport)
 	return syntheticReport, nil
 }

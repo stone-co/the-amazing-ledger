@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/stone-co/the-amazing-ledger/app"
+	"github.com/stone-co/the-amazing-ledger/app/domain/probes"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/app/tests/mocks"
 )
@@ -23,7 +24,7 @@ func TestLedgerUseCase_QueryAggregatedBalance(t *testing.T) {
 				return queryBalance, nil
 			},
 		}
-		usecase := NewLedgerUseCase(logrus.New(), mockedRepository)
+		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New()))
 
 		got, err := usecase.QueryAggregatedBalance(context.Background(), query)
 		assert.NoError(t, err)
@@ -39,7 +40,7 @@ func TestLedgerUseCase_QueryAggregatedBalance(t *testing.T) {
 				return vos.QueryBalance{}, app.ErrAccountNotFound
 			},
 		}
-		usecase := NewLedgerUseCase(logrus.New(), mockedRepository)
+		usecase := NewLedgerUseCase(mockedRepository, probes.NewLedgerProbe(logrus.New()))
 
 		got, err := usecase.QueryAggregatedBalance(context.Background(), query)
 		assert.Empty(t, got)

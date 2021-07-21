@@ -46,7 +46,7 @@ func main() {
 
 	ledgerProbe := probes.NewLedgerProbe(log)
 	ledgerRepository := postgres.NewLedgerRepository(conn, log)
-	ledgerUseCase := usecases.NewLedgerUseCase(log, ledgerRepository, ledgerProbe)
+	ledgerUseCase := usecases.NewLedgerUseCase(ledgerRepository, ledgerProbe)
 
 	httpServer := server.NewHttpServer(cfg.HttpServer, BuildGitCommit, BuildTime, log)
 	defer func() {

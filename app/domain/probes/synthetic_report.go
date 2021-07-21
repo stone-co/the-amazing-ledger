@@ -11,7 +11,7 @@ import (
 const tag = "SyntheticReport[usecase]"
 
 func (i *LedgerProbe) GettingSyntheticReport(ctx context.Context, account vos.AccountQuery, startTime time.Time, endTime time.Time) {
-	i.Log(ctx, fmt.Sprintf("%s:%s/%d-%d", tag, account.Value(), startTime, endTime))
+	i.Log(ctx, fmt.Sprintf("%s:%s/%s-%s", tag, account.Value(), startTime.String(), endTime.String()))
 }
 
 func (i *LedgerProbe) GotSyntheticReport(ctx context.Context, value string, report vos.SyntheticReport) {
