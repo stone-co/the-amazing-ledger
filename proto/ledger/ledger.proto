@@ -10,12 +10,17 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
 
 service LedgerService {
+  // CreateTransaction accepts a list of entries, which together compose a transaction, and saves them.
+  // The transaction must have at least two entries, with the sum of all the debits and credits being equal to zero (0).
+  // This validation represents the "Double entry" definition. More info about it here:
+  // https://en.wikipedia.org/wiki/Double-entry_bookkeeping
   rpc CreateTransaction(CreateTransactionRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       post: "/api/v1/transactions"
       body: "*"
     };
   };
+  // GetAccountBalance returns the current balance of a given account.
   rpc GetAccountBalance(GetAccountBalanceRequest) returns (GetAccountBalanceResponse){
     option (google.api.http) = {
       get: "/api/v1/accounts/{account_path}/balance"
@@ -26,6 +31,7 @@ service LedgerService {
       get: "/api/v1/aggregated/{query}/balance"
     };
   };
+  // ListAccountEntries return the history of entries for a given account and time period.
   rpc ListAccountEntries(ListAccountEntriesRequest) returns (ListAccountEntriesResponse){
     option (google.api.http) = {
       get: "/api/v1/accounts/{account_path}/history"
@@ -40,17 +46,18 @@ service LedgerService {
 
 // CreateTransactionRequest represents a transaction to be saved. A transaction must
 // have at least two entries, with a valid balance. More info here:
-// https://en.wikipedia.org/wiki/Double-entry_bookkeeping
+//
 message CreateTransactionRequest {
   // ID (UUID) to link the entries to a transaction.
   string id = 1;
-  // The list of entries, where len(entries) must be >= 2.
+  // The list of entries, where len(entries) must be >= 2 and respect the Double Entry principle.
   repeated Entry entries = 2;
-  // The transaction competence date (execution date).
+  // The transaction competence date (execution date). Is the exact timestamp of when the transaction happened.
+  // Timestamps in the past (for now) and in the future are invalid.
   google.protobuf.Timestamp competence_date = 3;
   // The ledgers owner. Eg.: company name
   string company = 4;
-  // The event which triggered the transaction.
+  // The id of the event which triggered the transaction.
   uint32 event = 5;
 }
 
@@ -66,7 +73,7 @@ message Entry  {
   Operation operation = 4;
   // Amount (in cents).
   int32 amount = 5;
-  // The entry metadata.
+  // Extra metadata.
   google.protobuf.Struct metadata = 6;
 }
 
