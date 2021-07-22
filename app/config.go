@@ -35,6 +35,7 @@ type RPCServerConfig struct {
 }
 
 type HttpServerConfig struct {
+	Host            string        `envconfig:"HTTP_HOST" default:"0.0.0.0"`
 	Port            int           `envconfig:"HTTP_PORT" default:"3001"`
 	ShutdownTimeout time.Duration `envconfig:"HTTP_SHUTDOWN_TIMEOUT" default:"1s"`
 	ReadTimeout     time.Duration `envconfig:"HTTP_READ_TIMEOUT" default:"30s"`

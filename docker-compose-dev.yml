@@ -13,11 +13,3 @@ services:
       POSTGRES_DB: dev
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-
-  prometheus:
-    image: prom/prometheus
-    ports:
-      - 9090:9090
-    volumes:
-      - ./prometheus/:/etc/prometheus/
-    network_mode: host
