@@ -26,6 +26,13 @@ func (lp LedgerProbe) Log(ctx context.Context, value string) {
 	lp.logger.Infof(value)
 }
 
+func (lp LedgerProbe) MonitorSegment(ctx context.Context) domain.Segment {
+	txn := newrelic.FromContext(ctx)
+	seg := &newrelic.Segment{}
+	seg.StartTime = txn.StartSegmentNow()
+	return seg
+}
+
 func (lp LedgerProbe) MonitorDataSegment(ctx context.Context, collection, operation, query string) domain.Segment {
 	txn := newrelic.FromContext(ctx)
 	seg := &newrelic.DatastoreSegment{
