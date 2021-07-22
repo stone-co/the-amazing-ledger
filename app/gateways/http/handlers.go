@@ -5,8 +5,13 @@ import (
 	"net/http"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 )
+
+func MetricsHandler(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	promhttp.Handler().ServeHTTP(w, r)
+}
 
 func VersionHandler(commit, time string) runtime.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
