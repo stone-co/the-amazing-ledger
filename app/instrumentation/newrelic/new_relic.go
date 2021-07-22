@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func App(appName, licenseKey string, log *logrus.Entry) (*newrelic.Application, error) {
+func NewApp(appName, licenseKey string, log *logrus.Entry) (*newrelic.Application, error) {
 	if appName == "" || licenseKey == "" {
 		log.Warnf("empty app name or license key for new relic application: falling back to empty tracer")
 

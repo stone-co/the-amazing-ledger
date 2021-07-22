@@ -7,11 +7,13 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/stone-co/the-amazing-ledger/app"
 	"github.com/stone-co/the-amazing-ledger/app/domain/entities"
+	"github.com/stone-co/the-amazing-ledger/app/domain/probes"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/app/tests/mocks"
 	"github.com/stone-co/the-amazing-ledger/app/tests/testdata"
@@ -88,7 +90,7 @@ func TestLedgerUseCase_CreateTransaction(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			usecase := NewLedgerUseCase(logrus.New(), tt.repoSetup)
+			usecase := NewLedgerUseCase(tt.repoSetup, probes.NewLedgerProbe(logrus.New(), &newrelic.Application{}))
 
 			tx, err := entities.NewTransaction(uuid.New(), 1, "abc", time.Now(), tt.entries(t)...)
 			assert.NoError(t, err)

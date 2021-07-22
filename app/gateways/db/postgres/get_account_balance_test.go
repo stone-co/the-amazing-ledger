@@ -8,10 +8,10 @@ import (
 
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/stone-co/the-amazing-ledger/app"
+	"github.com/stone-co/the-amazing-ledger/app/domain/probes"
 	"github.com/stone-co/the-amazing-ledger/app/domain/vos"
 	"github.com/stone-co/the-amazing-ledger/app/tests"
 	"github.com/stone-co/the-amazing-ledger/app/tests/testdata"
@@ -129,7 +129,7 @@ func TestLedgerRepository_GetAccountBalanceSuccess(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			r := NewLedgerRepository(pgDocker.DB, logrus.New())
+			r := NewLedgerRepository(pgDocker.DB, &probes.LedgerProbe{})
 
 			tt.repoSeed(t, ctx, r)
 
@@ -173,7 +173,7 @@ func TestLedgerRepository_GetAccountBalanceSuccess(t *testing.T) {
 
 func TestLedgerRepository_GetAccountBalanceFailure(t *testing.T) {
 	t.Run("should return an error if account does not exist", func(t *testing.T) {
-		r := NewLedgerRepository(pgDocker.DB, logrus.New())
+		r := NewLedgerRepository(pgDocker.DB, &probes.LedgerProbe{})
 
 		acc, err := vos.NewAnalyticalAccount(testdata.GenerateAccountPath())
 		assert.NoError(t, err)
